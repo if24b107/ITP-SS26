@@ -1,3 +1,533 @@
 body {
+  padding-top: 80px;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #fef9f7;
+  color: #2d2d2d;
+}
+
+/* ===== TYPOGRAPHY ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+h1, h2, h3, .category-title {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* ===== VARIABLEN (für einfache Farbanpassung) ===== */
+:root {
+  --rosé-hell: #f8f0f0;
+  --rosé-mittel: #d4a5a5;
+  --rosé-dunkel: #b58383;
+  --braun-warm: #4a3b35;
+  --braun-hell: #7a5e54;
+  --grau-text: #4a4a4a;
+  --weiß: #ffffff;
+}
+
+/* ===== WILLKOMMENSBEREICH ===== */
+.welcome-section {
+  padding: 3rem 0;
+}
+
+.welcome-title {
+  font-size: 5.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--braun-warm);
+  margin-bottom: 1rem;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.welcome-subtitle {
+  font-size: 1.8rem;
+  color: var(--rosé-dunkel);
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--grau-text);
+  margin-bottom: 2rem;
+}
+
+/* ===== BUTTONS ===== */
+/* Willkommens-Button */
+.welcome-btn {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  color: white;
+  font-size: 1.3rem;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  border-width: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(212, 165, 165, 0.3);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.welcome-btn:hover {
+  background-color: var(--rosé-dunkel);
+  border-color: var(--rosé-dunkel);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(212, 165, 165, 0.5);
+}
+
+/* Service-Karten Buttons */
+.service-card .btn-outline-primary {
+  border-color: var(--rosé-mittel);
+  color: var(--rosé-mittel);
+  border-width: 2px;
+  border-radius: 50px;
+  padding: 0.6rem 2rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: transparent;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.service-card .btn-outline-primary:hover {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
+}
+
+/* Call-to-Action Button */
+.bg-light .btn-primary {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  color: white;
+  border-radius: 50px;
+  padding: 0.8rem 2.5rem;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.bg-light .btn-primary:hover {
+  background-color: var(--rosé-dunkel);
+  border-color: var(--rosé-dunkel);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
+}
+
+/* ===== SERVICE KARTEN ===== */
+.service-card {
+  background: var(--weiß);
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  height: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #f0e0e0;
+  text-align: center;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(212, 165, 165, 0.15);
+  border-color: var(--rosé-mittel);
+}
+
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: var(--rosé-hell);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.icon-wrapper i {
+  font-size: 2.5rem;
+  color: var(--rosé-mittel);
+}
+
+.service-card h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--braun-warm);
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.service-card p {
+  color: var(--grau-text);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== FAQ BEREICH ===== */
+/* Hauptcontainer */
+.faq-wrapper {
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(2px);
+  border-radius: 3rem 3rem 2rem 2rem;
+  box-shadow: 0 30px 60px -15px rgba(160, 120, 110, 0.2);
+  padding: 3rem 2.5rem;
+  border: 1px solid rgba(230, 200, 190, 0.3);
+}
+
+/* Hauptüberschrift */
+.faq-wrapper h1 {
+  font-size: 3.2rem;
+  font-weight: 600;
+  color: var(--braun-warm);
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Verzierung */
+.faq-wrapper h1::after {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d4b2a0, #b28b7d, #d4b2a0, transparent);
+  margin: 0.8rem auto 0;
+}
+
+/* Untertitel */
+.faq-wrapper .subtitle {
+  text-align: center;
+  color: var(--braun-hell);
+  font-size: 1.1rem;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  font-style: italic;
+}
+
+/* Kategorie-Überschriften */
+.category-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #5f4b42;
+  margin: 3rem 0 1.8rem 0;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #eedad2;
+}
+
+/* Accordion Items */
+.accordion-item {
+  border: none;
+  margin-bottom: 1.2rem;
+  border-radius: 1.8rem !important;
+  background: var(--weiß);
+  box-shadow: 0 8px 25px -8px rgba(140, 100, 90, 0.15);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid #f5e2db;
+}
+
+.accordion-item:hover {
+  box-shadow: 0 15px 35px -10px rgba(170, 130, 120, 0.25);
+  border-color: var(--rosé-mittel);
+}
+
+/* Frage-Button */
+.accordion-button {
+  background: white;
+  border-radius: 1.8rem !important;
+  padding: 1.5rem 2rem;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--braun-warm);
+  border: none;
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #fef6f2;
+  color: var(--rosé-dunkel);
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* Antwort-Bereich */
+.accordion-body {
+  padding: 1.8rem 2rem;
+  background: var(--weiß);
+  border-bottom-left-radius: 1.8rem;
+  border-bottom-right-radius: 1.8rem;
+  border: 1px solid #f5e2db;
+  border-top: none;
+  font-weight: 300;
+  line-height: 1.7;
+  color: #4f423b;
+  font-size: 1.05rem;
+}
+
+/* Links in Antworten */
+.accordion-body a {
+  color: #b28374;
+  text-decoration: none;
+  border-bottom: 1px dotted #d4b2a0;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.accordion-body a:hover {
+  color: #7b4f43;
+  border-bottom-color: #7b4f43;
+}
+
+/* Footer-Link */
+.faq-wrapper .text-muted a {
+  color: #b28374;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid #eedad2;
+}
+
+.faq-wrapper .text-muted a:hover {
+  color: #7b4f43;
+  border-bottom-color: #7b4f43;
+}
+
+/* ===== UTILITIES ===== */
+.bg-light {
+  background-color: #f9f9f9 !important;
+}
+
+.text-muted {
+  color: var(--braun-hell) !important;
+}
+
+.section-title {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: var(--braun-warm);
+  margin-bottom: 0.5rem;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Bild-Styling */
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.rounded-4 {
+  border-radius: 1.5rem;
+}
+
+.shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  /* Globale Anpassungen */
+  body {
     padding-top: 70px;
+  }
+  
+  /* Willkommensbereich */
+  .welcome-title {
+    font-size: 3.5rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.4rem;
+  }
+  
+  .welcome-btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+  }
+  
+  .row.align-items-center {
+    text-align: center;
+  }
+  
+  .col-md-6:first-child {
+    margin-bottom: 2rem;
+  }
+  
+  /* Service Karten */
+  .service-card {
+    padding: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  /* FAQ */
+  .faq-wrapper {
+    padding: 2rem 1.5rem;
+    border-radius: 2rem;
+  }
+  
+  .faq-wrapper h1 {
+    font-size: 2.5rem;
+  }
+  
+  .category-title {
+    font-size: 1.9rem;
+  }
+  
+  .accordion-button {
+    padding: 1.2rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .accordion-body {
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Willkommensbereich */
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+  
+  .welcome-btn {
+    padding: 0.7rem 1.5rem;
+  }
+  
+  /* FAQ */
+  .faq-wrapper {
+    padding: 1.5rem 1rem;
+  }
+  
+  .faq-wrapper h1 {
+    font-size: 2rem;
+  }
+  
+  .category-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* ===== NAVIGATIONSLEISTE ===== */
+.navbar-rose {
+  background-color: var(--weiß) !important;
+  box-shadow: 0 5px 20px rgba(212, 165, 165, 0.15);
+  padding: 0.8rem 0;
+  border-bottom: 2px solid var(--rosé-mittel);
+}
+
+/* Brand/Logo */
+.navbar-rose .navbar-brand {
+  color: var(--rosé-dunkel);
+  font-size: 1.8rem;
+  font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+}
+
+.navbar-rose .navbar-brand:hover {
+  color: var(--rosé-mittel);
+}
+
+/* Nav-Links - einfaches Styling ohne Unterstreichung */
+.navbar-rose .nav-link {
+  color: var(--braun-warm);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  margin: 0 0.2rem;
+  transition: color 0.3s;
+}
+
+.navbar-rose .nav-link:hover {
+  color: var(--rosé-mittel);
+}
+
+/* Aktiver Link - nur Farbänderung, keine Unterstreichung */
+.navbar-rose .nav-link.active {
+  color: var(--rosé-mittel);
+  font-weight: 600;
+}
+
+/* Dropdown-Toggle Icon (Pfeil) */
+.navbar-rose .dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: "";
+  border-top: 0.3em solid var(--rosé-mittel);
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+/* Dropdown-Menü */
+.dropdown-menu-rose {
+  background-color: var(--weiß);
+  border: 1px solid var(--rosé-hell);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(212, 165, 165, 0.2);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-menu-rose .dropdown-item {
+  color: var(--braun-warm);
+  font-size: 1rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.8rem;
+  transition: all 0.3s;
+}
+
+.dropdown-menu-rose .dropdown-item:hover {
+  background-color: var(--rosé-hell);
+  color: var(--rosé-dunkel);
+  transform: translateX(5px);
+}
+
+/* Hamburger-Button */
+.navbar-rose .navbar-toggler {
+  border-color: var(--rosé-mittel);
+  color: var(--rosé-mittel);
+}
+
+.navbar-rose .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(212, 165, 165, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 992px) {
+  .navbar-rose .navbar-collapse {
+    background-color: var(--weiß);
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 10px 30px rgba(212, 165, 165, 0.2);
+    border: 1px solid var(--rosé-hell);
+  }
+  
+  .navbar-rose .nav-link {
+    padding: 0.8rem 1rem !important;
+    text-align: center;
+  }
+  
+  .dropdown-menu-rose {
+    background-color: var(--rosé-hell);
+    border: none;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-rose .navbar-brand {
+    font-size: 1.5rem;
+  }
 }
