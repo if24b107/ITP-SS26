@@ -531,3 +531,52 @@ h1, h2, h3, .category-title {
     font-size: 1.5rem;
   }
 }
+
+/* ===== LOGIN SEITE ===== by Melinda*/ 
+.login-card {
+  background: var(--weiß);
+  border-radius: 2rem;
+  box-shadow: 0 20px 40px rgba(212, 165, 165, 0.2);
+  border: 1px solid var(--rosé-hell);
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Input Styling */
+.login-card .form-control {
+  border-radius: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid #f0dede;
+}
+
+.login-card .form-control:focus {
+  border-color: var(--rosé-mittel);
+  box-shadow: 0 0 0 0.2rem rgba(212, 165, 165, 0.2);
+}
+
+/* Button */
+.login-btn-main {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  border-radius: 50px;
+  padding: 0.7rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-btn-main:hover {
+  background-color: var(--rosé-dunkel);
+  border-color: var(--rosé-dunkel);
+  transform: translateY(-2px);
+}
+
+/* Links */
+.small-link {
+  color: var(--rosé-dunkel);
+  text-decoration: none;
+}
+
+.small-link:hover {
+  color: var(--rosé-mittel);
+  text-decoration: underline;
+}
