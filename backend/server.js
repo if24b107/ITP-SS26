@@ -6,8 +6,22 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// LOGIN - Fehlermeldung
+//LOGIN - Prüfung von Benutzername/Passwort
 app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+
+    //jetzt irgendwas, weil keine DB
+    const correctUser = "admin";
+    const correctPass = "1234";
+
+    if (username === correctUser && password === correctPass) {
+        return res.json({
+            success: true,
+            message: "Login erfolgreich"
+        });
+    }
+
+    //Fehlermeldung
     return res.status(401).json({
         success: false,
         message: "Ungültige Zugangsdaten"
