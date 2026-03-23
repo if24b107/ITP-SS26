@@ -6,18 +6,12 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// LOGIN
+// LOGIN - Fehlermeldung
 app.post("/login", (req, res) => {
-  const { email, password } = req.body;
-
-  if (email === "test@test.com" && password === "1234") {
-    return res.json({
-      success: true,
-      token: "FAKE_TOKEN_123"
+    return res.status(401).json({
+        success: false,
+        message: "Ungültige Zugangsdaten"
     });
-  }
-
-  res.status(401).json({ success: false, message: "Invalid credentials" });
 });
 
 // LOGOUT
