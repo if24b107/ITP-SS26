@@ -908,3 +908,231 @@ h1, h2, h3, .category-title {
     color: var(--rosé-dunkel);
     font-weight: bold;
 }
+
+/* ===== TERMIN-BUTTONS IM KALENDER ===== */
+
+/* Container für Termine an einem Tag (für mehrere Termine nebeneinander) */
+.calendar-day .events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+/* Einzelner Termin-Button */
+.event-item {
+    display: inline-block;
+    background-color: var(--rosé-mittel);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Mehrere Termine an einem Tag – kleinerer Padding */
+.calendar-day .events-container .event-item {
+    flex: 1 1 auto;
+    min-width: 40px;
+}
+
+/* Hover-Effekt für Termin-Buttons */
+.event-item:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(212, 165, 165, 0.4);
+}
+
+/* Wenn nur ein Termin an einem Tag – etwas größer */
+.calendar-day .events-container:has(.event-item:only-child) .event-item {
+    padding: 4px 12px;
+}
+
+/* Optional: Termin-Buttons in der Monatsansicht bei mehreren Terminen */
+@media (max-width: 768px) {
+    .event-item {
+        font-size: 0.6rem;
+        padding: 2px 5px;
+    }
+    
+    .calendar-day .events-container {
+        gap: 2px;
+    }
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn-primary {
+    background-color: var(--rosé-mittel) !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+}
+
+/* ===== ERROR MESSAGES ===== */
+.error-msg {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* ===== DELETE MODAL ===== */
+.delete-modal-content {
+    max-width: 500px;
+}
+
+.delete-modal-buttons {
+    justify-content: space-between;
+}
+
+.delete-btn {
+    background-color: #dc3545 !important;
+}
+
+.delete-btn:hover {
+    background-color: #c82333 !important;
+}
+
+/* ===== EVENTS RADIO GROUP ===== */
+.events-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.event-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: var(--rosé-hell);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.event-radio-label input {
+    cursor: pointer;
+}
+
+.event-description {
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.placeholder-text {
+    color: gray;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== MODAL INPUTS ===== */
+.modal-content input[type="date"] {
+    margin-bottom: 1.5rem;
+}
+
+#eventsListContainer {
+    margin-bottom: 1.5rem;
+}
+
+#eventsList {
+    margin-top: 0.5rem;
+}
+
+/* ===== BEARBEITEN-MODAL BUTTONS ===== */
+
+/* Container für die Button-Gruppe im Bearbeiten-Modal */
+.edit-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Rechte Button-Gruppe (Löschen + Aktualisieren) */
+.edit-modal-buttons-right {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* Alle Buttons im Bearbeiten-Modal */
+.edit-modal-buttons button,
+.edit-modal-buttons-right button {
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+}
+
+/* Abbrechen Button */
+.edit-modal-buttons .cancel-btn {
+    background: #e0d5c8;
+    color: var(--braun-warm);
+}
+
+.edit-modal-buttons .cancel-btn:hover {
+    background: #d4c4b8;
+    transform: translateY(-2px);
+}
+
+/* Löschen Button */
+.edit-modal-buttons-right .delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.edit-modal-buttons-right .delete-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Aktualisieren Button */
+.edit-modal-buttons-right .save-btn {
+    background: var(--rosé-mittel);
+    color: white;
+}
+
+.edit-modal-buttons-right .save-btn:hover {
+    background: var(--rosé-dunkel);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 165, 165, 0.3);
+}
+
+/* Responsive für mobile Geräte */
+@media (max-width: 480px) {
+    .edit-modal-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .edit-modal-buttons-right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .edit-modal-buttons .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

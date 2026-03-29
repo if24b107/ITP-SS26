@@ -12,11 +12,23 @@
 <body>
     <div id="navbar-placeholder"></div>
     
-    <!-- Hauptinhalt: Kalender -->
     <main class="container my-5">
         <div class="calendar-container">
             
-            <!-- Kalender Kopf mit Monat und Navigation -->
+            <!-- Buttons -->
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+                <button class="btn btn-primary" id="newEventBtn">
+                    <i class="fas fa-plus"></i> Neuer Termin
+                </button>
+                <button class="btn btn-primary" id="editEventBtn">
+                    <i class="fas fa-edit"></i> Termin Bearbeiten
+                </button>
+                <button class="btn btn-danger" id="deleteEventBtn">
+                    <i class="fas fa-trash"></i> Termin Löschen
+                </button>
+            </div>
+
+            <!-- Monatsanzeige + Navigation -->
             <div class="calendar-header">
                 <div class="month-year" id="monthYear">März 2026</div>
                 <div class="nav-buttons">
@@ -43,29 +55,229 @@
         </div>
     </main>
 
+    <!-- Modal für Neuen Termin -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-calendar-plus"></i> Neuen Termin erstellen</h3>
+            <label for="eventTitle">Titel *</label>
+            <input type="text" id="eventTitle" placeholder="z. B. Location Besichtigung">
+            <label for="eventDate">Datum *</label>
+            <input type="date" id="eventDate">
+            <label for="eventDescription">Beschreibung (optional)</label>
+            <textarea id="eventDescription" placeholder="z. B. Uhrzeit, Adresse, Notizen..." rows="3"></textarea>
+            <div id="errorMsg" class="error-msg"></div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="closeModalBtn">Abbrechen</button>
+                <button class="save-btn" id="saveEventBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Termin bearbeiten -->
+    <div id="editEventModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-edit"></i> Termin bearbeiten</h3>
+            <input type="hidden" id="editEventId">
+            <label for="editEventTitle">Titel *</label>
+            <input type="text" id="editEventTitle" placeholder="z. B. Location Besichtigung">
+            <label for="editEventDate">Datum *</label>
+            <input type="date" id="editEventDate">
+            <label for="editEventDescription">Beschreibung (optional)</label>
+            <textarea id="editEventDescription" placeholder="z. B. Uhrzeit, Adresse, Notizen..." rows="3"></textarea>
+            <div id="editErrorMsg" class="error-msg"></div>
+            <div class="edit-modal-buttons">
+                <button class="cancel-btn" id="closeEditModalBtn">Abbrechen</button>
+                <div class="edit-modal-buttons-right">
+                    <button class="save-btn delete-btn" id="deleteFromEditBtn">Löschen</button>
+                    <button class="save-btn" id="updateEventBtn">Aktualisieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Termin Löschen (mit Datumsauswahl) -->
+    <div id="deleteSelectionModal" class="modal">
+        <div class="modal-content delete-modal-content">
+            <h3><i class="fas fa-trash-alt"></i> Termin löschen</h3>
+            
+            <label for="deleteDate">Datum wählen *</label>
+            <input type="date" id="deleteDate">
+            
+            <div id="eventsListContainer">
+                <label>Termine an diesem Datum:</label>
+                <div id="eventsList"></div>
+            </div>
+            
+            <div id="deleteErrorMsg" class="error-msg"></div>
+            
+            <div class="modal-buttons delete-modal-buttons">
+                <button class="cancel-btn" id="closeDeleteSelectionModalBtn">Abbrechen</button>
+                <button class="save-btn delete-btn" id="confirmDeleteSelectedBtn" disabled>Ausgewählten Termin löschen</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Aktuelles Datum
+        // ========== DATUM VARIABLEN ==========
         let currentDate = new Date();
         let currentYear = currentDate.getFullYear();
         let currentMonth = currentDate.getMonth();
 
-        // Heutiges Datum für Highlight
         const todayYear = currentDate.getFullYear();
         const todayMonth = currentDate.getMonth();
         const todayDay = currentDate.getDate();
 
-        // Monatsnamen Deutsch
-        const monthNames = [
-            "Januar", "Februar", "März", "April", "Mai", "Juni",
-            "Juli", "August", "September", "Oktober", "November", "Dezember"
+        let events = [
+            { id: 1, title: "Demo Termin", date: "2026-03-29", description: "Das ist ein Testtermin" },
+            { id: 2, title: "Catering Verkostung", date: "2026-03-20", description: "Feinkost Schmidt" },
+            { id: 3, title: "Location Besichtigung", date: "2026-03-15", description: "Gutshaus am See" }
         ];
 
-        // Prüft, ob ein Tag der heutige Tag ist
+        let selectedEventId = null;
+        let currentlySelectedDeleteEventId = null;
+
+        const monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+
+        // ========== MODAL FUNKTIONEN ==========
+        function openModal() {
+            document.getElementById("eventModal").style.display = "flex";
+            document.getElementById("eventTitle").value = "";
+            document.getElementById("eventDate").value = "";
+            document.getElementById("eventDescription").value = "";
+            document.getElementById("errorMsg").innerHTML = "";
+        }
+
+        function closeModal() {
+            document.getElementById("eventModal").style.display = "none";
+        }
+
+        function openEditModal(eventId, title, date, description) {
+            selectedEventId = eventId;
+            document.getElementById("editEventId").value = eventId;
+            document.getElementById("editEventTitle").value = title;
+            document.getElementById("editEventDate").value = date;
+            document.getElementById("editEventDescription").value = description || "";
+            document.getElementById("editErrorMsg").innerHTML = "";
+            document.getElementById("editEventModal").style.display = "flex";
+        }
+
+        function closeEditModal() {
+            document.getElementById("editEventModal").style.display = "none";
+            selectedEventId = null;
+        }
+
+        // ========== LÖSCHEN MODAL MIT DATUMSAUSWAHL ==========
+        function openDeleteSelectionModal() {
+            document.getElementById("deleteSelectionModal").style.display = "flex";
+            document.getElementById("deleteDate").value = "";
+            document.getElementById("eventsList").innerHTML = "";
+            document.getElementById("deleteErrorMsg").innerHTML = "";
+            document.getElementById("confirmDeleteSelectedBtn").disabled = true;
+            currentlySelectedDeleteEventId = null;
+        }
+
+        function closeDeleteSelectionModal() {
+            document.getElementById("deleteSelectionModal").style.display = "none";
+        }
+
+        function loadEventsForDate() {
+            const date = document.getElementById("deleteDate").value;
+            if (!date) {
+                document.getElementById("eventsList").innerHTML = "<p class='placeholder-text'>Bitte wählen Sie zuerst ein Datum.</p>";
+                document.getElementById("confirmDeleteSelectedBtn").disabled = true;
+                return;
+            }
+
+            const eventsAtDate = events.filter(event => event.date === date);
+            const eventsListDiv = document.getElementById("eventsList");
+            
+            if (eventsAtDate.length === 0) {
+                eventsListDiv.innerHTML = "<p class='placeholder-text'>Keine Termine an diesem Datum.</p>";
+                document.getElementById("confirmDeleteSelectedBtn").disabled = true;
+                return;
+            }
+
+            let html = '<div class="events-radio-group">';
+            eventsAtDate.forEach(event => {
+                html += `
+                    <label class="event-radio-label">
+                        <input type="radio" name="deleteEvent" value="${event.id}">
+                        <strong>${event.title}</strong>
+                        <span class="event-description">${event.description || "Keine Beschreibung"}</span>
+                    </label>
+                `;
+            });
+            html += '</div>';
+            eventsListDiv.innerHTML = html;
+
+            document.querySelectorAll('input[name="deleteEvent"]').forEach(radio => {
+                radio.addEventListener("change", function() {
+                    currentlySelectedDeleteEventId = parseInt(this.value);
+                    document.getElementById("confirmDeleteSelectedBtn").disabled = false;
+                });
+            });
+        }
+
+        function confirmDeleteSelectedEvent() {
+            if (!currentlySelectedDeleteEventId) {
+                document.getElementById("deleteErrorMsg").innerHTML = "Bitte wählen Sie einen Termin aus.";
+                return;
+            }
+
+            const eventToDelete = events.find(e => e.id === currentlySelectedDeleteEventId);
+            if (eventToDelete && confirm(`Möchten Sie den Termin "${eventToDelete.title}" wirklich löschen?`)) {
+                const eventIndex = events.findIndex(e => e.id === currentlySelectedDeleteEventId);
+                if (eventIndex !== -1) {
+                    events.splice(eventIndex, 1);
+                }
+                closeDeleteSelectionModal();
+                renderCalendar();
+                alert("Termin wurde gelöscht");
+            }
+        }
+
+        function updateEvent() {
+            const id = parseInt(document.getElementById("editEventId").value);
+            const title = document.getElementById("editEventTitle").value;
+            const date = document.getElementById("editEventDate").value;
+            const description = document.getElementById("editEventDescription").value;
+            
+            if (title === "") {
+                document.getElementById("editErrorMsg").innerHTML = "Bitte geben Sie einen Titel ein.";
+                return;
+            }
+            if (date === "") {
+                document.getElementById("editErrorMsg").innerHTML = "Bitte wählen Sie ein Datum aus.";
+                return;
+            }
+
+            const eventIndex = events.findIndex(e => e.id === id);
+            if (eventIndex !== -1) events[eventIndex] = { id, title, date, description };
+            
+            closeEditModal();
+            renderCalendar();
+            alert("Termin wurde aktualisiert");
+        }
+
+        function deleteFromEdit() {
+            const id = parseInt(document.getElementById("editEventId").value);
+            const title = document.getElementById("editEventTitle").value;
+            
+            if (confirm(`Möchten Sie den Termin "${title}" wirklich löschen?`)) {
+                const eventIndex = events.findIndex(e => e.id === id);
+                if (eventIndex !== -1) events.splice(eventIndex, 1);
+                closeEditModal();
+                renderCalendar();
+                selectedEventId = null;
+                alert("Termin wurde gelöscht");
+            }
+        }
+
+        // ========== KALENDER RENDERN ==========
         function isToday(year, month, day) {
             return (year === todayYear && month === todayMonth && day === todayDay);
         }
 
-        // Kalender rendern
         function renderCalendar() {
             document.getElementById("monthYear").innerHTML = `${monthNames[currentMonth]} ${currentYear}`;
 
@@ -79,41 +291,44 @@
             const grid = document.getElementById("calendarGrid");
             grid.innerHTML = "";
 
-            // Tage aus Vormonat
             for (let i = startOffset - 1; i >= 0; i--) {
                 let prevMonthDay = daysInPrevMonth - i;
-                let prevMonth = currentMonth - 1;
-                let prevYear = currentYear;
-                if (prevMonth < 0) {
-                    prevMonth = 11;
-                    prevYear--;
-                }
-                
                 const dayDiv = document.createElement("div");
                 dayDiv.className = "calendar-day other-month";
                 dayDiv.innerHTML = `<div class="day-number">${prevMonthDay}</div>`;
                 grid.appendChild(dayDiv);
             }
 
-            // Tage des aktuellen Monats
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayDiv = document.createElement("div");
                 dayDiv.className = "calendar-day";
+                const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
-                
-                // Highlight für heutigen Tag
-                if (isToday(currentYear, currentMonth, day)) {
-                    dayDiv.classList.add("today-highlight");
-                }
-                
+
+                if (isToday(currentYear, currentMonth, day)) dayDiv.classList.add("today-highlight");
+
+                const eventsContainer = document.createElement("div");
+                eventsContainer.className = "events-container";
+
+                const dayEvents = events.filter(event => event.date === dateString);
+                dayEvents.forEach(event => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "event-item";
+                    eventDiv.innerText = event.title.length > 15 ? event.title.substring(0, 12) + "..." : event.title;
+                    eventDiv.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        selectedEventId = event.id;
+                        openEditModal(event.id, event.title, event.date, event.description);
+                    });
+                    eventsContainer.appendChild(eventDiv);
+                });
+                dayDiv.appendChild(eventsContainer);
                 grid.appendChild(dayDiv);
             }
 
-            // Tage aus nächstem Monat
             let totalCells = 42;
             let currentCells = grid.children.length;
             let nextMonthDay = 1;
-            
             for (let i = currentCells; i < totalCells; i++) {
                 const dayDiv = document.createElement("div");
                 dayDiv.className = "calendar-day other-month";
@@ -123,37 +338,78 @@
             }
         }
 
-        // Navigation: Vorheriger Monat
-        document.getElementById("prevMonthBtn").addEventListener("click", function() {
+        // ========== EVENT LISTENER ==========
+        document.getElementById("newEventBtn").addEventListener("click", openModal);
+        document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+        
+        document.getElementById("saveEventBtn").addEventListener("click", function() {
+            const title = document.getElementById("eventTitle").value;
+            const date = document.getElementById("eventDate").value;
+            const description = document.getElementById("eventDescription").value;
+            
+            if (!title) {
+                document.getElementById("errorMsg").innerHTML = "Bitte geben Sie einen Titel ein.";
+                return;
+            }
+            if (!date) {
+                document.getElementById("errorMsg").innerHTML = "Bitte wählen Sie ein Datum aus.";
+                return;
+            }
+            
+            const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
+            events.push({ id: newId, title, date, description });
+            closeModal();
+            renderCalendar();
+            alert("Termin wurde gespeichert");
+        });
+
+        document.getElementById("editEventBtn").addEventListener("click", function() {
+            if (!selectedEventId) {
+                alert("Bitte klicken Sie zuerst auf einen Termin im Kalender.");
+                return;
+            }
+            const event = events.find(e => e.id === selectedEventId);
+            if (event) openEditModal(event.id, event.title, event.date, event.description);
+        });
+
+        document.getElementById("deleteEventBtn").addEventListener("click", openDeleteSelectionModal);
+        
+        document.getElementById("closeDeleteSelectionModalBtn").addEventListener("click", closeDeleteSelectionModal);
+        document.getElementById("confirmDeleteSelectedBtn").addEventListener("click", confirmDeleteSelectedEvent);
+        document.getElementById("deleteDate").addEventListener("change", loadEventsForDate);
+        
+        document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
+        document.getElementById("updateEventBtn").addEventListener("click", updateEvent);
+        document.getElementById("deleteFromEditBtn").addEventListener("click", deleteFromEdit);
+
+        document.getElementById("prevMonthBtn").addEventListener("click", () => {
             currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
             renderCalendar();
         });
 
-        // Navigation: Nächster Monat
-        document.getElementById("nextMonthBtn").addEventListener("click", function() {
+        document.getElementById("nextMonthBtn").addEventListener("click", () => {
             currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             renderCalendar();
         });
 
-        // Navigation: Heute
-        document.getElementById("todayBtn").addEventListener("click", function() {
+        document.getElementById("todayBtn").addEventListener("click", () => {
             currentDate = new Date();
             currentYear = currentDate.getFullYear();
             currentMonth = currentDate.getMonth();
             renderCalendar();
         });
 
-        // Kalender initial laden
+        window.onclick = (event) => {
+            if (event.target === document.getElementById("eventModal")) closeModal();
+            if (event.target === document.getElementById("editEventModal")) closeEditModal();
+            if (event.target === document.getElementById("deleteSelectionModal")) closeDeleteSelectionModal();
+        }
+
         renderCalendar();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="navbar-loader.js"></script>
 </body>
 </html>
