@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <title>Catering-Vorschläge - JAMMM Together</title>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+    
+    <main class="container my-5">
+        <div class="catering-container">
+            
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="catering-title">🍽️ Catering-Vorschläge</h1>
+                <p class="catering-subtitle">Hier findest du eine Auswahl an empfehlenswerten Catering-Anbietern für deine Hochzeit in Österreich.</p>
+            </div>
+
+            <!-- Catering Karten Grid -->
+            <div class="catering-grid">
+                
+                <!-- Karte 1: Wiener Schmankerl -->
+                <div class="catering-card" data-id="1">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="catering-card-title">Wiener Schmankerl</h3>
+                    <p class="catering-card-description">
+                        Traditionelle Wiener Küche vom Feinsten. Von Schnitzel über Tafelspitz bis zum Apfelstrudel – echte Hausmannskost mit Herz.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Wien / Niederösterreich</p>
+                        <p><i class="fas fa-phone"></i> 01 234 56 78</p>
+                        <p><i class="fas fa-envelope"></i> office@wienerschmankerl.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 2: Alpen Genuss -->
+                <div class="catering-card" data-id="2">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h3 class="catering-card-title">Alpen Genuss</h3>
+                    <p class="catering-card-description">
+                        Tiroler Spezialitäten mit Alpenblick. Käsespätzle, Tiroler Gröstl und hausgemachte Mehlspeisen für eine gemütliche Hochzeit im Gebirge.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Innsbruck / Tirol</p>
+                        <p><i class="fas fa-phone"></i> 0512 987 65 43</p>
+                        <p><i class="fas fa-envelope"></i> info@alpengenuss.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 3: Steirer Kulinarik -->
+                <div class="catering-card" data-id="3">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h3 class="catering-card-title">Steirer Kulinarik</h3>
+                    <p class="catering-card-description">
+                        Steirische Genüsse mit Kürbiskernöl, Backhendl und selbergemachten Mehlspeisen. Regionale Produkte aus der Steiermark.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Graz / Steiermark</p>
+                        <p><i class="fas fa-phone"></i> 0316 55 44 33</p>
+                        <p><i class="fas fa-envelope"></i> office@steirerkulinarik.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 4: Salzkammergut Feinkost -->
+                <div class="catering-card" data-id="4">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <h3 class="catering-card-title">Salzkammergut Feinkost</h3>
+                    <p class="catering-card-description">
+                        Frische Fischspezialitäten aus den Seen der Region. Saibling, Reinanke und mehr – perfekt für eine Hochzeit am Wasser.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Salzkammergut / Oberösterreich</p>
+                        <p><i class="fas fa-phone"></i> 0613 22 44 55</p>
+                        <p><i class="fas fa-envelope"></i> info@salzkammergut-feinkost.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 5: Kärntner Kas & Speck -->
+                <div class="catering-card" data-id="5">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-cheese"></i>
+                    </div>
+                    <h3 class="catering-card-title">Kärntner Kas & Speck</h3>
+                    <p class="catering-card-description">
+                        Kärntner Brettljause, Kasnudeln und Reindling. Traditionelle Schmankerl aus Kärnten für eine urige Hochzeitsfeier.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Klagenfurt / Kärnten</p>
+                        <p><i class="fas fa-phone"></i> 0463 11 22 33</p>
+                        <p><i class="fas fa-envelope"></i> office@kaerntner-kas-speck.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 6: Burgenland Weinkultur -->
+                <div class="catering-card" data-id="6">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-wine-bottle"></i>
+                    </div>
+                    <h3 class="catering-card-title">Burgenland Weinkultur</h3>
+                    <p class="catering-card-description">
+                        Weinbegleitete Menüs mit erlesenen Weinen aus dem Burgenland. Perfekt für eine Hochzeit inmitten der Weinberge.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Eisenstadt / Burgenland</p>
+                        <p><i class="fas fa-phone"></i> 0268 22 33 44</p>
+                        <p><i class="fas fa-envelope"></i> info@burgenland-weinkultur.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 7: Vorarlberg Alpenküche -->
+                <div class="catering-card" data-id="7">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h3 class="catering-card-title">Vorarlberg Alpenküche</h3>
+                    <p class="catering-card-description">
+                        Käsefondue, Raclette und bodenständige Alpenküche. Ideal für eine Winterhochzeit oder eine Hüttenfeier.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Bregenz / Vorarlberg</p>
+                        <p><i class="fas fa-phone"></i> 05574 88 99 00</p>
+                        <p><i class="fas fa-envelope"></i> hallo@vorarlberg-alpenkueche.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 8: Wiener Zuckerbäckerei -->
+                <div class="catering-card" data-id="8">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-cake-candles"></i>
+                    </div>
+                    <h3 class="catering-card-title">Wiener Zuckerbäckerei</h3>
+                    <p class="catering-card-description">
+                        Hochzeitstorten, Sachertorten, Cremeschnitten und Dessert-Buffets. Handgemachte Süßigkeiten für deinen großen Tag.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Wien / NÖ</p>
+                        <p><i class="fas fa-phone"></i> 01 987 65 43</p>
+                        <p><i class="fas fa-envelope"></i> office@zuckerbäckerei.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 9: Donau Genuss -->
+                <div class="catering-card" data-id="9">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <h3 class="catering-card-title">Donau Genuss</h3>
+                    <p class="catering-card-description">
+                        Regionale Spezialitäten aus dem Donautal. Von der Vorspeise bis zum Hauptgang – alles aus der Region.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Linz / Oberösterreich</p>
+                        <p><i class="fas fa-phone"></i> 0732 66 77 88</p>
+                        <p><i class="fas fa-envelope"></i> info@donaugenuss.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+                <!-- Karte 10: Tiroler Kreativküche -->
+                <div class="catering-card" data-id="10">
+                    <div class="catering-card-icon">
+                        <i class="fas fa-utensil-spoon"></i>
+                    </div>
+                    <h3 class="catering-card-title">Tiroler Kreativküche</h3>
+                    <p class="catering-card-description">
+                        Moderne Interpretationen von Tiroler Klassikern. Innovativ, regional und einzigartig.
+                    </p>
+                    <div class="catering-card-details">
+                        <p><i class="fas fa-map-marker-alt"></i> Kitzbühel / Tirol</p>
+                        <p><i class="fas fa-phone"></i> 05356 77 88 99</p>
+                        <p><i class="fas fa-envelope"></i> office@tiroler-kreativkueche.at</p>
+                    </div>
+                    <a href="#" class="catering-card-btn">Mehr erfahren</a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal für Catering-Details mit individuellen Paketen und Bild -->
+    <div id="cateringModal" class="modal">
+        <div class="modal-content catering-modal-content">
+            <span class="close-modal" id="closeModalBtn">&times;</span>
+            
+            <!-- Bildbereich -->
+            <div class="catering-modal-image" id="modalImage">
+                <img src="" alt="Catering Bild" id="modalImg">
+            </div>
+            
+            <div class="catering-modal-icon" id="modalIcon">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <h2 id="modalTitle">Catering Name</h2>
+            <p id="modalDescription" class="catering-modal-description">Beschreibung</p>
+            
+            <div class="catering-modal-details">
+                <p><i class="fas fa-map-marker-alt"></i> <span id="modalLocation"></span></p>
+                <p><i class="fas fa-phone"></i> <span id="modalPhone"></span></p>
+                <p><i class="fas fa-envelope"></i> <span id="modalEmail"></span></p>
+            </div>
+            
+            <!-- PAKET BEREICH (wird dynamisch befüllt) -->
+            <div class="catering-packages" id="packagesContainer">
+                <!-- Pakete werden per JavaScript eingefügt -->
+            </div>
+            
+            <!-- HINWEIS ZUR ORGANISATION -->
+            <div class="catering-modal-note">
+                <i class="fas fa-calendar-alt"></i> 
+                Unser Team übernimmt gerne die Organisation für Sie. 
+                Kontaktieren Sie uns unter <strong>kontakt@JAMMM.com</strong>
+            </div>
+            
+            <button class="catering-modal-close" id="closeModalFooterBtn">Schließen</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== CATERING DATEN (mit individuellen Paketen und Bildern) ==========
+        const cateringData = {
+            1: {
+                icon: "fa-utensils",
+                title: "Wiener Schmankerl",
+                description: "Traditionelle Wiener Küche vom Feinsten. Von Schnitzel über Tafelspitz bis zum Apfelstrudel – echte Hausmannskost mit Herz.",
+                location: "Wien / Niederösterreich",
+                phone: "01 234 56 78",
+                email: "office@wienerschmankerl.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🍽️ Wiener Klassiker", price: "ab € 49,-/Person", description: "Genießen Sie die traditionelle Wiener Küche in ihrer reinsten Form. Perfekt für alle, die das Besondere lieben.", highlights: ["Wiener Schnitzel vom Kalb", "Original Apfelstrudel", "Erdäpfelsalat nach Großmutters Art"], content: ["Rindsuppe mit Frittaten", "Wiener Schnitzel mit Erdäpfelsalat", "Apfelstrudel mit Vanillesauce", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 4 Personen"] },
+                    { name: "🥩 Tafelspitz Edition", price: "ab € 69,-/Person", description: "Das kulinarische Highlight für echte Genießer. Unser berühmter Tafelspitz – zart, saftig und unvergesslich.", highlights: ["Tafelspitz vom steirischen Rind", "Hausgemachter Apfelkren", "Cremesuppe vom Kürbis"], content: ["Cremesuppe vom Kürbis", "Tafelspitz mit Semmelkren und Apfelkren", "Kaiserschmarrn mit Zwetschkenröster", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Kaiser Menü", price: "ab € 99,-/Person", description: "Kaiserlich speisen – ein Menü, das an die große Zeit der Habsburger erinnert. Exklusiv und unvergesslich.", highlights: ["Sektempfang mit Canapés", "Lachs-Tatar vom Grill", "Zwiebelrostbraten mit Rösti"], content: ["Sektempfang mit Canapés", "Lachs-Tatar mit Avocado", "Zwiebelrostbraten mit Bratkartoffeln", "Sachertorte mit Schlagobers", "Freier Getränkefluss"] }
+                ]
+            },
+            2: {
+                icon: "fa-mountain",
+                title: "Alpen Genuss",
+                description: "Tiroler Spezialitäten mit Alpenblick. Käsespätzle, Tiroler Gröstl und hausgemachte Mehlspeisen.",
+                location: "Innsbruck / Tirol",
+                phone: "0512 987 65 43",
+                email: "info@alpengenuss.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🏔️ Bergbauern-Menü", price: "ab € 45,-/Person", description: "Echt, bodenständig und voller Geschmack. So schmeckt die Heimat.", highlights: ["Tiroler Speck vom Bergbauern", "Käsespätzle mit Röstzwiebeln", "Kaiserschmarrn"], content: ["Tiroler Speckplatte mit Bauernbrot", "Käsespätzle mit Röstzwiebeln", "Kaiserschmarrn mit Zwetschkenröster", "1 Maß Bier pro Person"] },
+                    { name: "⛷️ Jäger Menü", price: "ab € 75,-/Person", description: "Wild und würzig – ein Festmahl für alle, die alpine Küche lieben.", highlights: ["Wildsuppe mit Kräutern", "Hirschragout mit Preiselbeeren", "Germknödel"], content: ["Wildsuppe mit Kräutern", "Hirschragout mit Serviettenknödel", "Germknödel mit Mohn und Butter", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "🏔️ Gipfelstürmer", price: "ab € 110,-/Person", description: "Das exklusive Menü für alle, die das Besondere suchen. Ein kulinarisches Alpenerlebnis.", highlights: ["Almkäse-Buffet", "Zillertaler Krautinger-Rind", "Tiroler Dessert-Buffet"], content: ["Almkäse-Buffet mit 5 Sorten", "Tiroler Gröstl vom Zillertaler Rind", "Zillertaler Krautinger-Rind mit Knödeln", "Tiroler Dessert-Buffet", "Freier Getränkefluss + Schnapsverkostung"] }
+                ]
+            },
+            3: {
+                icon: "fa-apple-alt",
+                title: "Steirer Kulinarik",
+                description: "Steirische Genüsse mit Kürbiskernöl, Backhendl und selbergemachten Mehlspeisen.",
+                location: "Graz / Steiermark",
+                phone: "0316 55 44 33",
+                email: "office@steirerkulinarik.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🎃 Kernöl Genuss", price: "ab € 48,-/Person", description: "Das steirische Kürbiskernöl ist unser Star. Lassen Sie sich verführen!", highlights: ["Steirischer Käferbohnensalat", "Backhendl mit Kernöl", "Kürbiskern-Eis"], content: ["Steirischer Käferbohnensalat mit Kernöl", "Backhendl mit Kernöl-Mayonnaise", "Kürbiskern-Eis mit Kernölkaramell", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 4 Personen"] },
+                    { name: "🍎 Apfelstraße", price: "ab € 72,-/Person", description: "Die steirische Apfelstraße kulinarisch erleben. Süß, sauer, verführerisch.", highlights: ["Steirer-Steak", "Apfelstrudel vom Blech", "Steirische Rindssuppe"], content: ["Rindssuppe mit Frittaten", "Steirer-Steak mit Kernöl", "Apfelstrudel mit Vanillesauce", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Steirer Hof", price: "ab € 105,-/Person", description: "Steirische Spitzenküche, die begeistert. Ein Fest für alle Sinne.", highlights: ["Kürbiskernöl-Degustation", "Grazer Käferbohnen-Carpaccio", "Steirer-Rind"], content: ["Kürbiskernöl-Degustation mit Brot", "Grazer Käferbohnen-Carpaccio", "Steirer-Rind mit Kernöl", "Steirisches Mehlspeisen-Buffet", "Freier Getränkefluss"] }
+                ]
+            },
+            4: {
+                icon: "fa-fish",
+                title: "Salzkammergut Feinkost",
+                description: "Frische Fischspezialitäten aus den Seen der Region. Saibling, Reinanke und mehr.",
+                location: "Salzkammergut / Oberösterreich",
+                phone: "0613 22 44 55",
+                email: "info@salzkammergut-feinkost.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🐟 Fischermenü", price: "ab € 55,-/Person", description: "Frisch aus dem See – Fischspezialitäten, wie sie nur das Salzkammergut bietet.", highlights: ["Fischsuppe vom Salzkammergut", "Gebratener Saibling", "Topfenstrudel"], content: ["Fischsuppe vom Salzkammergut", "Gebratener Saibling mit Kräuterbutter", "Topfenstrudel mit Vanillesauce", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 4 Personen"] },
+                    { name: "🎣 Seeblick", price: "ab € 85,-/Person", description: "Genießen Sie die feinsten Fischgerichte mit traumhaftem Seeblick.", highlights: ["Lachs-Tatar", "Reinanke mit Kräuterkruste", "Cremeschnitte"], content: ["Lachs-Tatar mit Avocado", "Reinanke mit Kräuterkruste", "Cremeschnitte", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Seeräuber", price: "ab € 125,-/Person", description: "Exklusive Fischspezialitäten für höchste Ansprüche. Ein kulinarisches Abenteuer.", highlights: ["Hummer-Suppe", "Hummer mit Knoblauchbutter", "Dessert-Buffet"], content: ["Sektempfang mit Kaviar", "Hummer-Suppe mit Sahne", "Hummer mit Knoblauchbutter", "Dessert-Buffet mit 5 Variationen", "Freier Getränkefluss"] }
+                ]
+            },
+            5: {
+                icon: "fa-cheese",
+                title: "Kärntner Kas & Speck",
+                description: "Kärntner Brettljause, Kasnudeln und Reindling. Traditionelle Schmankerl aus Kärnten.",
+                location: "Klagenfurt / Kärnten",
+                phone: "0463 11 22 33",
+                email: "office@kaerntner-kas-speck.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🧀 Brettljause", price: "ab € 35,-/Person", description: "Die klassische Kärntner Brettljause – herzhaft, deftig, einzigartig.", highlights: ["Kärntner Speck", "Gailtaler Almkäse", "Bauernbrot"], content: ["Kärntner Brettljause mit Speck, Käse, Kren", "Bauernbrot", "Kärntner Reindling", "1 Glas Wein pro Person"] },
+                    { name: "🥟 Kasnudel Fest", price: "ab € 59,-/Person", description: "Die berühmten Kärntner Kasnudeln – ein Fest der Tradition.", highlights: ["Kärntner Suppe", "Kasnudeln mit Butter", "Reindling"], content: ["Kärntner Suppe mit Einlage", "Kasnudeln mit Butter und Schnittlauch", "Kärntner Reindling", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Kärntner Hof", price: "ab € 95,-/Person", description: "Kärntner Gastlichkeit auf höchstem Niveau. Ein Menü für Kenner.", highlights: ["Brettljause mit Prosecco", "Kärntner Laxen", "Kärntner Rind"], content: ["Brettljause mit Prosecco", "Kärntner Laxen", "Kärntner Rind mit Kren", "Dessert-Buffet", "Freier Getränkefluss"] }
+                ]
+            },
+            6: {
+                icon: "fa-wine-bottle",
+                title: "Burgenland Weinkultur",
+                description: "Weinbegleitete Menüs mit erlesenen Weinen aus dem Burgenland.",
+                location: "Eisenstadt / Burgenland",
+                phone: "0268 22 33 44",
+                email: "info@burgenland-weinkultur.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🍷 Weinverkostung", price: "ab € 49,-/Person", description: "Eine Reise durch die burgenländische Weinwelt. Perfekt für Weinliebhaber.", highlights: ["3 erlesene Weine", "Käseplatte", "Brot und Aufstriche"], content: ["Käseplatte mit 5 Sorten", "Weinverkostung mit 3 Sorten", "Brot und Aufstriche", "Die verkosteten Weine"] },
+                    { name: "🍇 Winzermenü", price: "ab € 79,-/Person", description: "Ein Menü, das perfekt auf die Weine der Region abgestimmt ist.", highlights: ["Zanderfilet", "Ziegenkäse", "4-Gang Weinbegleitung"], content: ["Ziegenkäse mit Honig", "Zanderfilet mit Kräuterkruste", "Sekt zur Begrüßung", "4-Gang Weinbegleitung"] },
+                    { name: "✨ Wein & Genuss", price: "ab € 115,-/Person", description: "Exklusive Weinbegleitung mit persönlichem Sommelier. Ein Genuss der Extraklasse.", highlights: ["Sekt mit Canapés", "Rinderfilet", "Wein-Sommelier"], content: ["Sektempfang mit Canapés", "Lachs-Tatar", "Rinderfilet mit Rotweinsauce", "Dessert-Buffet", "Freier Getränkefluss + Wein-Sommelier"] }
+                ]
+            },
+            7: {
+                icon: "fa-mountain",
+                title: "Vorarlberg Alpenküche",
+                description: "Käsefondue, Raclette und bodenständige Alpenküche.",
+                location: "Bregenz / Vorarlberg",
+                phone: "05574 88 99 00",
+                email: "hallo@vorarlberg-alpenkueche.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🧀 Käsefondue", price: "ab € 48,-/Person", description: "Klassisches Schweizer Fondue mit dem besten Käse aus den Alpen.", highlights: ["Käsefondue mit 3 Sorten", "Frisches Brot", "Gemüse"], content: ["Käsefondue mit 3 Käsesorten", "Frisches Brot", "Gemüsesticks", "1 Glas Weißwein"] },
+                    { name: "🔥 Raclette Abend", price: "ab € 68,-/Person", description: "Geselliger Raclette-Abend – jeder darf selbst grillen und genießen.", highlights: ["3 Käsesorten", "Kartoffeln", "Schokoladenfondue"], content: ["Raclette mit 3 Käsesorten", "Kartoffeln, Gemüse, Fleisch", "Schokoladenfondue mit Früchten", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Alpenfest", price: "ab € 98,-/Person", description: "Ein Fest der Alpenküche. Fondue, Raclette und mehr – ein kulinarisches Erlebnis.", highlights: ["Sektempfang", "Käse- & Wurstplatte", "Käsefondue & Raclette"], content: ["Sektempfang", "Käse- & Wurstplatte", "Käsefondue & Raclette", "Dessert-Buffet", "Freier Getränkefluss"] }
+                ]
+            },
+            8: {
+                icon: "fa-cake-candles",
+                title: "Wiener Zuckerbäckerei",
+                description: "Hochzeitstorten, Sachertorten, Cremeschnitten und Dessert-Buffets.",
+                location: "Wien / NÖ",
+                phone: "01 987 65 43",
+                email: "office@zuckerbäckerei.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🎂 Kleine Sünde", price: "ab € 25,-/Person", description: "Eine kleine süße Versuchung für Ihre Gäste.", highlights: ["1 Stück Hochzeitstorte", "Kaffee oder Tee", "Kleine Kekse"], content: ["1 Stück Hochzeitstorte nach Wahl", "Kaffee oder Tee", "Kleine Kekse"] },
+                    { name: "🍰 Dessert Buffet", price: "ab € 45,-/Person", description: "Ein Buffet voller süßer Köstlichkeiten. Für alle, die es gerne süß mögen.", highlights: ["5 Dessert-Variationen", "Sektempfang", "Kaffee & Tee"], content: ["5 verschiedene Desserts", "Kaffee & Tee", "Sekt zur Begrüßung"] },
+                    { name: "✨ Zucker König", price: "ab € 75,-/Person", description: "Das ultimative Dessert-Erlebnis. Mehrstöckige Torte und exklusive Desserts.", highlights: ["Mehrstöckige Hochzeitstorte", "10 Dessert-Variationen", "Personalisierte Tortenfigur"], content: ["Mehrstöckige Hochzeitstorte", "Dessert-Buffet mit 10 Sorten", "Sekt & Kaffee", "Personalisierte Tortenfigur"] }
+                ]
+            },
+            9: {
+                icon: "fa-fish",
+                title: "Donau Genuss",
+                description: "Regionale Spezialitäten aus dem Donautal.",
+                location: "Linz / Oberösterreich",
+                phone: "0732 66 77 88",
+                email: "info@donaugenuss.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🐟 Donauwalzer", price: "ab € 52,-/Person", description: "Leichte Fischgerichte, die an die Donau erinnern.", highlights: ["Donau-Suppe", "Zanderfilet", "Linzer Torte"], content: ["Donau-Suppe", "Zanderfilet mit Kräuterkruste", "Linzer Torte", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 4 Personen"] },
+                    { name: "🍽️ Schiffahrtsmenü", price: "ab € 78,-/Person", description: "Ein Menü für Genießer, inspiriert von der Donau.", highlights: ["Lachs-Carpaccio", "Waller mit Kräuterkruste", "Mohnnudeln"], content: ["Lachs-Carpaccio", "Waller mit Kräuterkruste", "Mohnnudeln", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Kapitänsmenü", price: "ab € 115,-/Person", description: "Exklusives Menü für höchste Ansprüche. Wie auf einer Donaukreuzfahrt.", highlights: ["Hummer-Suppe", "Hummer", "Dessert-Buffet"], content: ["Sektempfang mit Kaviar", "Hummer-Suppe", "Hummer mit Knoblauchbutter", "Dessert-Buffet", "Freier Getränkefluss"] }
+                ]
+            },
+            10: {
+                icon: "fa-utensil-spoon",
+                title: "Tiroler Kreativküche",
+                description: "Moderne Interpretationen von Tiroler Klassikern.",
+                location: "Kitzbühel / Tirol",
+                phone: "05356 77 88 99",
+                email: "office@tiroler-kreativkueche.at",
+                image: "./assets/catering/platzhalter.jpg",
+                packages: [
+                    { name: "🍽️ Modern Alpine", price: "ab € 58,-/Person", description: "Alpine Küche, modern interpretiert. Ein Genuss für die Sinne.", highlights: ["Trüffel-Risotto", "Kalbsfilet", "Mousse au chocolat"], content: ["Trüffel-Risotto", "Kalbsfilet mit Kräuterkruste", "Mousse au chocolat", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 4 Personen"] },
+                    { name: "⭐ Sterne Küche", price: "ab € 89,-/Person", description: "Haubenküche vom Feinsten. Für Liebhaber der gehobenen Gastronomie.", highlights: ["Lachs-Tatar", "Wagyu-Rinderfilet", "Tiramisu"], content: ["Lachs-Tatar mit Avocado", "Wagyu-Rinderfilet", "Tiramisu", "1 Glas Sekt zur Begrüßung", "1 Flasche Wein pro 2 Personen"] },
+                    { name: "✨ Gipfelstürmer", price: "ab € 135,-/Person", description: "Das exklusivste Menü – für Ihren besonderen Tag.", highlights: ["Hummer", "Wagyu-Rind", "Dessert-Buffet"], content: ["Sektempfang mit Trüffel-Ciabatta", "Hummer mit Knoblauchbutter", "Wagyu-Rinderfilet", "Dessert-Buffet", "Freier Getränkefluss"] }
+                ]
+            }
+        };
+
+        // ========== PAKETE ANZEIGEN (schön formatiert, ohne Herz) ==========
+        function renderPackages(packages) {
+            const container = document.getElementById("packagesContainer");
+            if (!packages || packages.length === 0) {
+                container.innerHTML = "<p>Keine Paket-Informationen verfügbar.</p>";
+                return;
+            }
+            
+            let html = '<h3><i class="fas fa-box-open"></i> Unsere Hochzeitspakete</h3>';
+            packages.forEach((pkg, index) => {
+                const packageId = `pkg_${Date.now()}_${index}`;
+                html += `
+                    <div class="package-item">
+                        <div class="package-header" onclick="togglePackage('${packageId}')">
+                            <span class="package-title">${pkg.name}</span>
+                            <span class="package-price">${pkg.price}</span>
+                            <i class="fas fa-chevron-down package-icon" id="icon_${packageId}"></i>
+                        </div>
+                        <div class="package-content" id="content_${packageId}">
+                            
+                                ${pkg.description}
+                            
+                            <div class="package-highlights">
+                                <strong>⭐ Highlights:</strong>
+                                <ul>
+                                    ${pkg.highlights.map(h => `<li>${h}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="package-details">
+                                <strong>📋 Im Paket enthalten:</strong>
+                                <ul>
+                                    ${pkg.content.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ========== TOGGLE FUNKTION ==========
+        function togglePackage(packageId) {
+            const content = document.getElementById(`content_${packageId}`);
+            const icon = document.getElementById(`icon_${packageId}`);
+            
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                icon.classList.remove("rotated");
+            } else {
+                content.style.display = "block";
+                icon.classList.add("rotated");
+            }
+        }
+
+        // Modal öffnen
+        function openCateringModal(id) {
+            const data = cateringData[id];
+            if (!data) return;
+            
+            // Bild setzen
+            const modalImg = document.getElementById("modalImg");
+            modalImg.src = data.image;
+            modalImg.alt = data.title;
+            
+            // Icon setzen
+            document.getElementById("modalIcon").innerHTML = `<i class="fas ${data.icon}"></i>`;
+            document.getElementById("modalTitle").innerText = data.title;
+            document.getElementById("modalDescription").innerText = data.description;
+            document.getElementById("modalLocation").innerText = data.location;
+            document.getElementById("modalPhone").innerText = data.phone;
+            document.getElementById("modalEmail").innerText = data.email;
+            
+            // Pakete rendern
+            renderPackages(data.packages);
+            
+            document.getElementById("cateringModal").style.display = "flex";
+        }
+
+        // Modal schließen
+        function closeCateringModal() {
+            document.getElementById("cateringModal").style.display = "none";
+        }
+
+        // Event Listener für alle "Mehr erfahren" Buttons
+        document.querySelectorAll(".catering-card-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const card = btn.closest(".catering-card");
+                const id = card.getAttribute("data-id");
+                openCateringModal(parseInt(id));
+            });
+        });
+
+        // Modal schließen Events
+        document.getElementById("closeModalBtn").addEventListener("click", closeCateringModal);
+        document.getElementById("closeModalFooterBtn").addEventListener("click", closeCateringModal);
+        
+        // Modal schließen bei Klick außerhalb
+        window.addEventListener("click", (e) => {
+            const modal = document.getElementById("cateringModal");
+            if (e.target === modal) {
+                closeCateringModal();
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="navbar-loader.js"></script>
+</body>
+</html>

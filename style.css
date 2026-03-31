@@ -421,6 +421,10 @@ h1, h2, h3, .category-title {
   box-shadow: 0 5px 20px rgba(212, 165, 165, 0.15);
   padding: 0.8rem 0;
   border-bottom: 2px solid var(--rosé-mittel);
+  position: fixed; 
+  top: 0;
+  width: 100%;
+  z-index: 900;
 }
 
 /* Brand/Logo */
@@ -1135,4 +1139,395 @@ h1, h2, h3, .category-title {
         width: 100%;
         text-align: center;
     }
+}
+
+/* ===== CATERING SEITE ===== */
+
+.catering-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.catering-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+
+.catering-subtitle {
+    font-size: 1.2rem;
+    color: var(--braun-hell);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Grid für Catering-Karten */
+.catering-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* Catering-Karte */
+.catering-card {
+    background: var(--weiß);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(212, 165, 165, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--rosé-hell);
+    text-align: center;
+}
+
+.catering-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.2);
+    border-color: var(--rosé-mittel);
+}
+
+/* Icon */
+.catering-card-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--rosé-hell);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.catering-card-icon i {
+    font-size: 2.5rem;
+    color: var(--rosé-mittel);
+}
+
+/* Titel */
+.catering-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+
+/* Beschreibung */
+.catering-card-description {
+    color: var(--grau-text);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Details (Adresse, Telefon, E-Mail) */
+.catering-card-details {
+    text-align: left;
+    background: var(--rosé-hell);
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.catering-card-details p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--braun-warm);
+}
+
+.catering-card-details i {
+    width: 25px;
+    color: var(--rosé-mittel);
+    margin-right: 8px;
+}
+
+/* Button */
+.catering-card-btn {
+    display: inline-block;
+    background-color: var(--rosé-mittel);
+    color: white;
+    padding: 0.6rem 1.8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.catering-card-btn:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .catering-title {
+        font-size: 2.5rem;
+    }
+    
+    .catering-subtitle {
+        font-size: 1rem;
+    }
+    
+    .catering-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .catering-card {
+        padding: 1.5rem;
+    }
+}
+
+/* ===== CATERING MODAL ===== */
+.catering-modal-content {
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    margin: 80px auto; /* Abstand nach oben (unter der Navbar) */
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.3s;
+}
+
+.close-modal:hover {
+    background: var(--rosé-mittel);
+    color: white;
+}
+
+/* Bildbereich */
+.catering-modal-image {
+    width: 100%;
+    height: 700px;
+    overflow: hidden;
+}
+
+.catering-modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Icon */
+.catering-modal-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--rosé-hell);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -40px auto 1rem;
+    position: relative;
+    z-index: 5;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.catering-modal-icon i {
+    font-size: 2.5rem;
+    color: var(--rosé-mittel);
+}
+
+.catering-modal-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--braun-warm);
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    padding: 0 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.catering-modal-description {
+    color: var(--grau-text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    padding: 0 1.5rem;
+    font-size: 0.95rem;
+}
+
+.catering-modal-details {
+    text-align: left;
+    background: var(--rosé-hell);
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: 0 1.5rem 1rem 1.5rem;
+}
+
+.catering-modal-details p {
+    margin-bottom: 0.5rem;
+    color: var(--braun-warm);
+}
+
+.catering-modal-details i {
+    width: 25px;
+    color: var(--rosé-mittel);
+    margin-right: 8px;
+}
+
+/* ===== CATERING PAKETE ===== */
+.catering-packages {
+    margin: 1rem 1.5rem;
+    text-align: left;
+}
+
+.catering-packages h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--rosé-hell);
+}
+
+.package-item {
+    margin-bottom: 0.8rem;
+    border-radius: 0.8rem;
+    overflow: hidden;
+    border: 1px solid var(--rosé-hell);
+}
+
+.package-header {
+    background: var(--rosé-hell);
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.package-header:hover {
+    background: #f0e2e2;
+}
+
+.package-title {
+    font-weight: 600;
+    color: var(--braun-warm);
+}
+
+.package-price {
+    color: var(--rosé-mittel);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.package-icon {
+    color: var(--rosé-mittel);
+    transition: transform 0.3s;
+}
+
+.package-icon.rotated {
+    transform: rotate(180deg);
+}
+
+.package-content {
+    display: none;
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid var(--rosé-hell);
+}
+
+.package-description {
+    background: #fff9f5;
+    padding: 0.8rem;
+    border-radius: 0.8rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--braun-hell);
+    border-left: 3px solid var(--rosé-mittel);
+}
+
+.package-highlights {
+    margin-bottom: 1rem;
+}
+
+.package-highlights strong {
+    color: var(--braun-warm);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.package-highlights ul {
+    margin: 0 0 0 1.2rem;
+    padding: 0;
+}
+
+.package-highlights li {
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--grau-text);
+}
+
+.package-details strong {
+    color: var(--braun-warm);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.package-details ul {
+    margin: 0 0 0 1.2rem;
+    padding: 0;
+}
+
+.package-details li {
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--grau-text);
+}
+
+/* ===== CATERING NOTE ===== */
+.catering-modal-note {
+    background: #fff3e6;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    margin: 0 1.5rem 1.5rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--braun-hell);
+}
+
+.catering-modal-note i {
+    color: var(--rosé-mittel);
+    margin-right: 5px;
+}
+
+.catering-modal-close {
+    background-color: var(--rosé-mittel);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 0 0 1.5rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    font-weight: 500;
+}
+
+.catering-modal-close:hover {
+    background-color: var(--rosé-dunkel);
 }
