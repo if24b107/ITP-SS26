@@ -24,7 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         alert(data.message);
-        window.location.href = "index.html";
+        
+        //Weiterleitung zum PersonalDashboard (temporär über URL weitergegeben)
+        window.location.href = `personaldashboard.html?user=${data.name}`;
       } else {
         alert(data.message);
       }
@@ -38,3 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //REGISTRIERUNG
+//Testversion: 
+function register(event) {
+    event.preventDefault();
+
+    alert("Registrierung erfolgreich (Demo)");
+
+    //nur Weiterleitung zurück zum Login
+    window.location.href = "login.html";
+    }

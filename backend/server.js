@@ -16,7 +16,7 @@ app.post("/login", async (req, res) => {
     ];
 
     //"User aus DB holen"
-    const user = fakeDB.find(u => u.username === username);
+    const user = fakeDB.find(u => u.email === email);
 
     //User existiert nicht
     if (!user) {

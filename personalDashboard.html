@@ -122,17 +122,21 @@
 
     <!-- Willkommenstext eingeloggter User:-->
     <script>
-    const user = localStorage.getItem("user");
-    if (user) {
-    document.getElementById("welcome-user").innerHTML =
-        `<h4>Willkommen in deinem Dashboard, ${user} 💍</h4>`;
-    } else {
-    // Falls nicht eingeloggt → zurück zur Startseite
-    window.location.href = "login.html";
-    }
+        //Testversion: redirect über URL, keine registrierungsprüfung vorest; 
+        const params = new URLSearchParams(window.location.search);
+        const user = params.get("user");
 
-    //Logout Funktion einfügen: 
-    //function logout() {}
+        if (user) {
+        document.getElementById("welcome-user").innerHTML =
+            `<h4>Willkommen in deinem Dashboard 💍</h4>`; //ursprung:  `<h4>Willkommen in deinem Dashboard, ${user} 💍</h4>`;
+        } else {
+        window.location.href = "login.html";
+        }
+
+        // Logout (nur redirect)
+        function logout() {
+        window.location.href = "login.html";
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="navbar-loader.js"></script>
