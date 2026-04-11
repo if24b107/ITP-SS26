@@ -11,9 +11,11 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-/* =========================
-   LOGIN
-========================= */
+
+/*
+ =========================
+   ALTER LOGIN
+========================= 
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -61,8 +63,48 @@ app.post("/login", async (req, res) => {
       success: true,
       message: "Login erfolgreich"
     });
+  }
+});
+*/
 
-  } catch (err) {
+/*
+// LOGIN - Prüfung von Benutzername/Passwort
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    //Fake-Datenbank (statt Hardcode)
+    const fakeDB = [
+        { email: "admin@test.com", password: "1234" }
+    ];
+
+    //"User aus DB holen"
+    const user = fakeDB.find(u => u.username === username);
+
+    //User existiert nicht
+    if (!user) {
+        return res.status(401).json({
+        success: false,
+        message: "User nicht gefunden"
+        });
+    }
+
+    //Passwort falsch
+    if (user.password !== password) {
+        return res.status(401).json({
+        success: false,
+        message: "Falsches Passwort"
+        });
+    }
+
+    //Erfolg
+    return res.json({
+        success: true,
+        message: "Login erfolgreich"
+    });
+});
+
+
+ } catch (err) {
     console.error(err);
     return res.status(500).json({
       success: false,
@@ -70,6 +112,7 @@ app.post("/login", async (req, res) => {
     });
   }
 });
+*/
 
 /* =========================
    REGISTRIERUNG
@@ -148,6 +191,43 @@ app.post("/register", async (req, res) => {
 /* =========================
    LOGOUT
 ========================= */
+
+//erwarteter Code bei vorhandener DB: 
+/*
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  // User aus DB holen
+  const user = await db.getUserByUsername(username);
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "User nicht gefunden"
+    });
+  }
+
+  // Passwort prüfen (später mit bcrypt!)
+  if (user.password !== password) {
+    return res.status(401).json({
+      success: false,
+      message: "Falsches Passwort"
+    });
+  }
+
+  return res.json({
+    success: true,
+    message: "Login erfolgreich"
+  });
+}); 
+*/
+
+//REGISTRIERUNG: 
+
+
+
+// LOGOUT
+
 app.post("/logout", (req, res) => {
   res.json({ success: true });
 });
