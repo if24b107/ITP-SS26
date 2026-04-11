@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+
+    <title>Hochzeitsdatum - JAMMM Together</title>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+
+        <div class="calendar-container">
+
+            <!-- Titel -->
+            <div class="text-center mb-4">
+                <h2 class="section-title">
+                    <i class="fas fa-heart"></i> Hochzeitsdatum festlegen
+                </h2>
+                <p class="text-muted">
+                    Hochzeitsdatum setzen oder ändern
+                </p>
+            </div>
+
+            <!-- Formular -->
+            <form id="weddingDateForm">
+
+                <div class="mb-3">
+                    <label for="weddingDate" class="form-label">
+                        Hochzeitsdatum *
+                    </label>
+                    <input 
+                        type="date" 
+                        id="weddingDate" 
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">
+                        Notizen (optional)
+                    </label>
+                    <textarea 
+                        id="notes" 
+                        class="form-control"
+                        rows="3"
+                        placeholder="z. B. Location, Uhrzeit, besondere Hinweise..."
+                    ></textarea>
+                </div>
+
+                <!-- Error -->
+                <div id="errorMsg" class="error-msg"></div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-danger" id="resetBtn">
+                        <i class="fas fa-trash"></i> Zurücksetzen
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Speichern
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Anzeige aktuelles Datum -->
+            <hr class="my-4">
+
+            <div class="text-center">
+                <h5>Aktuell festgelegtes Datum:</h5>
+                <p id="currentWeddingDate" class="fw-bold text-muted">
+                    Noch kein Datum gesetzt
+                </p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        
+        //zugriff nur wenn eingeloggt
+        const user = JSON.parse(localStorage.getItem("user")).email;
+        if (!user) {
+            window.location.href = "login.html";
+        }
+        // ===== STATE (später ggf. Backend ersetzen) =====
+        let weddingDate = null;
+
+        // ===== ELEMENTS =====
+        const form = document.getElementById("weddingDateForm");
+        const dateInput = document.getElementById("weddingDate");
+        const notesInput = document.getElementById("notes");
+        const errorMsg = document.getElementById("errorMsg");
+        const currentWeddingDate = document.getElementById("currentWeddingDate");
+        const resetBtn = document.getElementById("resetBtn");
+
+        // ===== RENDER =====
+        function renderWeddingDate() {
+            // ===== LOAD FROM LOCALSTORAGE =====
+            let saved = localStorage.getItem("weddingDate");
+
+            if (!saved) {
+                currentWeddingDate.innerText = "Noch kein Datum gesetzt";
+                return;
+            }
+
+            const weddingDate = JSON.parse(saved);
+
+            if (!weddingDate.date) {
+                currentWeddingDate.innerText = "Noch kein Datum gesetzt";
+                return;
+            }
+
+            const date = new Date(weddingDate.date);
+
+            const formatted = date.toLocaleDateString("de-DE", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            });
+
+            currentWeddingDate.innerText = formatted;
+        }
+
+        // ===== SAVE =====
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const date = dateInput.value;
+
+            if (!date) {
+                errorMsg.innerText = "Bitte ein Hochzeitsdatum auswählen.";
+                return;
+            }
+
+            const weddingData = {
+                date: date,
+                notes: notesInput.value
+            };
+
+            //user bezogen
+            const user = JSON.parse(localStorage.getItem("user")).email;
+            localStorage.setItem("weddingDate_" + user, JSON.stringify({
+                date: date,
+                notes: notesInput.value
+            }));
+
+            errorMsg.innerText = "";
+
+            alert("Hochzeitsdatum gespeichert!");
+            renderWeddingDate();
+        });
+
+        // ===== RESET =====
+        resetBtn.addEventListener("click", function() {
+            if (confirm("Möchtest du das Hochzeitsdatum wirklich löschen?")) {
+                weddingDate = null;
+                dateInput.value = "";
+                notesInput.value = "";
+                renderWeddingDate();
+            }
+        });
+
+        //initial render
+        renderWeddingDate();
+    </script>
+
+    <script src="navbar-loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

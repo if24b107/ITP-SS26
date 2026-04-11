@@ -25,8 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.ok) {
         alert(data.message);
         
-        //Weiterleitung zum PersonalDashboard (temporär über URL weitergegeben)
-        window.location.href = `personaldashboard.html?user=${data.name}`;
+        localStorage.setItem("user", JSON.stringify({
+            email: email
+        }));
+
+  // Weiterleitung ohne URL
+        window.location.href = "personaldashboard.html";
       } else {
         alert(data.message);
       }

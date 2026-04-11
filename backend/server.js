@@ -37,7 +37,8 @@ app.post("/login", async (req, res) => {
     //Erfolg
     return res.json({
         success: true,
-        message: "Login erfolgreich"
+        message: "Login erfolgreich",
+        name: user.email   //WICHTIG für Frontend
     });
 });
 

@@ -93,7 +93,7 @@
             </div>
             <h3>Kalender & Terminplanung</h3>
             <p>Behaltet den Überblick über alle wichtigen Termine – von der Location-Besichtigung bis zur Anprobe.</p>
-            <a href="" class="btn btn-outline-primary">Mehr erfahren</a>
+            <a href="calendarOverview.html" class="btn btn-outline-primary">Mehr erfahren</a>
             </div>
         </div>
 
@@ -122,9 +122,8 @@
 
     <!-- Willkommenstext eingeloggter User:-->
     <script>
-        //Testversion: redirect über URL, keine registrierungsprüfung vorest; 
-        const params = new URLSearchParams(window.location.search);
-        const user = params.get("user");
+        //Testversion mit auth/session system
+        const user = JSON.parse(localStorage.getItem("user"));
 
         if (user) {
         document.getElementById("welcome-user").innerHTML =
@@ -135,9 +134,79 @@
 
         // Logout (nur redirect)
         function logout() {
-        window.location.href = "login.html";
+            localStorage.removeItem("user");
+            window.location.href = "login.html";window.location.href = "login.html";
         }
     </script>
+
+    <!-- COUNTDOWN SECTION -->
+    <section class="container my-5 text-center">
+        <div class="service-card p-4">
+
+            <div class="icon-wrapper mb-3">
+                <i class="fas fa-heart"></i>
+            </div>
+
+            <h2>Euer Hochzeits-Countdown</h2>
+
+            <p class="text-muted">Die Zeit bis zu eurem großen Tag läuft 💍</p>
+
+            <div id="countdown" class="display-6 fw-bold my-3">
+                Lade Countdown...
+            </div>
+
+            <a href="weddingDate.html" class="btn btn-primary">
+                Datum festlegen / ändern
+            </a>
+
+        </div>
+    </section>
+    
+    <script>
+    // ===== LOAD WEDDING DATE =====
+    function getWeddingDate() {
+        const user = JSON.parse(localStorage.getItem("user")).email;
+        const saved = localStorage.getItem("weddingDate_" + user);
+
+        if (!saved) return null;
+
+        return JSON.parse(saved).date;
+    }
+
+    // ===== COUNTDOWN LOGIC =====
+    function updateCountdown() {
+        const targetDate = getWeddingDate();
+
+        const countdownEl = document.getElementById("countdown");
+
+        if (!targetDate) {
+            countdownEl.innerText = "Noch kein Hochzeitsdatum gesetzt";
+            return;
+        }
+
+        const now = new Date().getTime();
+        const target = new Date(targetDate).getTime();
+
+        const diff = target - now;
+
+        if (diff <= 0) {
+            countdownEl.innerText = "🎉 Heute ist euer Hochzeitstag!";
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+        countdownEl.innerText = `${days} Tage · ${hours} Std · ${minutes} Min`;
+    }
+
+    // ===== INIT =====
+    updateCountdown();
+    setInterval(updateCountdown, 60000); // jede Minute refresh
+    </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="navbar-loader.js"></script>
 </body>
