@@ -12,7 +12,9 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <title>Login – JAMMM Together</title>
+  <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+
+  <title>Registrieren – JAMMM Together</title>
 </head>
 
 <body>
@@ -20,36 +22,49 @@
   <!-- Navbar -->
   <div id="navbar-placeholder"></div>
 
-  <!-- LOGIN SECTION -->
+  <!-- REGISTER SECTION -->
   <section class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     
     <div class="login-card p-5">
       
-      <h2 class="text-center mb-4">Login</h2>
-      <p class="text-center text-muted mb-4">Bitte zum Anmelden ausfüllen:</p>
+      <h2 class="text-center mb-4">Registrieren</h2>
+      <p class="text-center text-muted mb-4">Erstelle dein Konto:</p>
 
-      <form onsubmit="login(event)"> <!-- für login Funktionalität-->
+      <form onsubmit="register(event)">
+        
+        <!-- Name -->
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" placeholder="Max Mustermann" required>
+        </div>
+
         <!-- Email -->
         <div class="mb-3">
           <label class="form-label">E-Mail</label>
-          <input type="email" id="email" class="form-control" placeholder="deine@email.com">
+          <input type="email" id= email class="form-control" placeholder="deine@email.com" required>
         </div>
 
         <!-- Passwort -->
         <div class="mb-3">
           <label class="form-label">Passwort</label>
-          <input type="password" id="password" class="form-control" placeholder="••••••••">
+          <input type="password" id= password class="form-control" placeholder="••••••••" required>
         </div>
 
-        <!-- Login Button -->
+        <!-- Passwort bestätigen -->
+        <div class="mb-3">
+          <label class="form-label">Passwort bestätigen</label>
+          <input type="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <!-- Button -->
         <button type="submit" class="btn btn-primary w-100 login-btn-main">
-          Einloggen
+          Registrieren
         </button>
 
         <!-- Zusatzlinks -->
         <div class="text-center mt-2">
-          <span>Noch kein Konto?</span>
-          <a href="#" class="small-link">Registrieren</a>
+          <span>Schon ein Konto?</span>
+          <a href="login.html" class="small-link">Einloggen</a>
         </div>
 
       </form>
@@ -58,9 +73,11 @@
 
   </section>
 
-  <!-- Scripts -->
+  <!-- Scripts unvollständig; Testversion-->
+  <script> 
+    //registration
+  </script>
 
-  <script src="js/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="navbar-loader.js"></script>
 
