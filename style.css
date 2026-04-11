@@ -1531,3 +1531,39 @@ h1, h2, h3, .category-title {
 .catering-modal-close:hover {
     background-color: var(--rosé-dunkel);
 }
+
+/* ===== FOOTER ===== */
+.footer-rose {
+  background-color: var(--weiß);
+  border-top: 2px solid var(--rosé-mittel);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--braun-hell);
+}
+
+.footer-links {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--braun-warm);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: var(--rosé-mittel);
+  text-decoration: underline;
+}
+
+.footer-separator {
+  margin: 0 0.8rem;
+  color: var(--rosé-hell);
+}
+
+.footer-copyright {
+  font-size: 0.8rem;
+  color: var(--braun-hell);
+}
