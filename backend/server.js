@@ -1,12 +1,6 @@
-
 require("dotenv").config();
 const supabase = require("./supabaseClient");
 const bcrypt = require("bcrypt");
-/*
-require('dotenv').config();
-const supabase = require('./supabaseClient');
-const bcrypt = require('bcrypt');
-*/
 
 const express = require("express");
 const cors = require("cors");
@@ -17,26 +11,24 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-
-/*
- =========================
-   ALTER LOGIN
-========================= 
+/* =========================
+   LOGIN
+========================= */
 app.post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !password) {
+    if ((!email && !username) || !password) {
       return res.status(400).json({
         success: false,
-        message: "Username und Passwort erforderlich"
+        message: "Email oder Username und Passwort erforderlich"
       });
     }
 
     const { data: users, error } = await supabase
       .from("users")
       .select("*")
-      .eq("username", username)
+      .eq(email ? "email" : "username", email || username)
       .limit(1);
 
     if (error) {
@@ -69,47 +61,14 @@ app.post("/login", async (req, res) => {
       success: true,
       message: "Login erfolgreich"
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Serverfehler"
+    });
   }
 });
-*/
-
-/*
-// LOGIN - Prüfung von Benutzername/Passwort
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-
-    //Fake-Datenbank (statt Hardcode)
-    const fakeDB = [
-        { email: "admin@test.com", password: "1234" }
-    ];
-
-    //"User aus DB holen"
-    const user = fakeDB.find(u => u.username === username);
-
-    //User existiert nicht
-    if (!user) {
-        return res.status(401).json({
-        success: false,
-        message: "User nicht gefunden"
-        });
-    }
-
-    //Passwort falsch
-    if (user.password !== password) {
-        return res.status(401).json({
-        success: false,
-        message: "Falsches Passwort"
-        });
-    }
-
-    //Erfolg
-    return res.json({
-        success: true,
-        message: "Login erfolgreich"
-    });
-});
-*/
-
 
 /* =========================
    REGISTRIERUNG
@@ -185,8 +144,9 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// LOGOUT
-
+/* =========================
+   LOGOUT
+========================= */
 app.post("/logout", (req, res) => {
   res.json({ success: true });
 });
