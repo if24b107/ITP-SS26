@@ -1,6 +1,12 @@
+
 require("dotenv").config();
 const supabase = require("./supabaseClient");
 const bcrypt = require("bcrypt");
+/*
+require('dotenv').config();
+const supabase = require('./supabaseClient');
+const bcrypt = require('bcrypt');
+*/
 
 const express = require("express");
 const cors = require("cors");
@@ -102,17 +108,8 @@ app.post("/login", async (req, res) => {
         message: "Login erfolgreich"
     });
 });
-
-
- } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: "Serverfehler"
-    });
-  }
-});
 */
+
 
 /* =========================
    REGISTRIERUNG
@@ -187,44 +184,6 @@ app.post("/register", async (req, res) => {
     });
   }
 });
-
-/* =========================
-   LOGOUT
-========================= */
-
-//erwarteter Code bei vorhandener DB: 
-/*
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  // User aus DB holen
-  const user = await db.getUserByUsername(username);
-
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "User nicht gefunden"
-    });
-  }
-
-  // Passwort prüfen (später mit bcrypt!)
-  if (user.password !== password) {
-    return res.status(401).json({
-      success: false,
-      message: "Falsches Passwort"
-    });
-  }
-
-  return res.json({
-    success: true,
-    message: "Login erfolgreich"
-  });
-}); 
-*/
-
-//REGISTRIERUNG: 
-
-
 
 // LOGOUT
 
