@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         alert(data.message);
+
         
         localStorage.setItem("user", JSON.stringify({
             email: email
@@ -31,6 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Weiterleitung ohne URL
         window.location.href = "personaldashboard.html";
+
+/*
+        window.location.href = "index.html";
+*/
       } else {
         alert(data.message);
       }
@@ -43,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
 //REGISTRIERUNG
 //Testversion: 
 function register(event) {
@@ -53,3 +59,6 @@ function register(event) {
     //nur Weiterleitung zurück zum Login
     window.location.href = "login.html";
     }
+
+//REGISTRIERUNG
+
