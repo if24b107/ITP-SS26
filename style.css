@@ -1692,3 +1692,21 @@ h1, h2, h3, .category-title {
     background: var(--rosé-hell);
     border-radius: 2rem;
 }
+
+.profile-icon-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 0.5rem;
+}
+.profile-icon-btn::after {
+    display: none;
+}
+.profile-icon-btn:hover {
+    opacity: 0.8;
+}
+.dropdown-menu-rose .dropdown-item i {
+    width: 1.5rem;
+    margin-right: 0.5rem;
+    color: var(--rosé-mittel);
+}
