@@ -2,73 +2,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("loginForm");
 
-  if (form) {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      try {
-        const response = await fetch("http://localhost:3000/login", {
-          method: "POST",
-          credentials: "include",               //neu für sessions
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ email, password })
-        });
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (data.success) {
-          window.location.href = "personaldashboard.html";
-        } else {
-          alert(data.message);
-        }
+      if (response.ok) {
+        alert(data.message);
 
-      } catch (error) {
-        alert("Server Fehler");
+        
+        localStorage.setItem("user", JSON.stringify({
+            email: email
+        }));
+
+  // Weiterleitung ohne URL
+        window.location.href = "personaldashboard.html";
+
+/*
+        window.location.href = "index.html";
+*/
+      } else {
+        alert(data.message);
       }
-    });
-  }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server nicht erreichbar!");
+    }
+  });
 
 });
 
 
-//REGISTRIERUNG Neu
+//REGISTRIERUNG
+//Testversion: 
+function register(event) {
+    event.preventDefault();
 
-async function register(event) {
-  event.preventDefault();
+    alert("Registrierung erfolgreich (Demo)");
 
-  const username = document.getElementById("username").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const passwordConfirm = document.getElementById("passwordConfirm").value;
-
-  if (!username || !email || !password) {
-    alert("Bitte alle Felder ausfüllen");
-    return;
-  }
-  if (password !== passwordConfirm) {
-    alert("Passwörter stimmen nicht überein");
-    return;
-  }
-
-  const res = await fetch("http://localhost:3000/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ username, email, password })
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
-    alert("Registrierung erfolgreich");
+    //nur Weiterleitung zurück zum Login
     window.location.href = "login.html";
-  } else {
-    alert(data.message);
-  }
-}
+    }
+
+//REGISTRIERUNG
+
