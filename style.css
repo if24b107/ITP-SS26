@@ -1285,7 +1285,8 @@ h1, h2, h3, .category-title {
 
 /* ===== CATERING MODAL ===== */
 .catering-modal-content {
-    max-width: 600px;
+    max-width: 800px;
+    width: 90%;
     text-align: center;
     position: relative;
     padding: 0;
@@ -1321,7 +1322,7 @@ h1, h2, h3, .category-title {
 /* Bildbereich */
 .catering-modal-image {
     width: 100%;
-    height: 700px;
+    height: 400px;
     overflow: hidden;
 }
 
@@ -1566,4 +1567,146 @@ h1, h2, h3, .category-title {
 .footer-copyright {
   font-size: 0.8rem;
   color: var(--braun-hell);
+}
+
+/* ===== HOCHZEITSPLANUNG SEITE ===== */
+
+.planning-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+
+.planning-subtitle {
+    font-size: 1.2rem;
+    color: var(--braun-hell);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.planning-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--grau-text);
+    margin-bottom: 1rem;
+}
+
+.planning-details {
+    margin-top: 2rem;
+}
+
+.planning-block {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rosé-hell);
+}
+
+.planning-block-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 0.5rem;
+}
+
+.planning-block-title i {
+    color: var(--rosé-mittel);
+    margin-right: 0.5rem;
+    width: 2rem;
+}
+
+.planning-block-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--grau-text);
+}
+
+.planning-outro-text {
+    font-size: 1.2rem;
+    background-color: var(--rosé-hell);
+    padding: 1.5rem;
+    border-radius: 2rem;
+    color: var(--braun-warm);
+}
+
+.planning-link {
+    color: var(--rosé-dunkel);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid var(--rosé-mittel);
+}
+
+.planning-link:hover {
+    color: var(--rosé-mittel);
+}
+
+/* ===== KONTAKT SEITE ===== */
+.contact-card {
+    background: var(--weiß);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.15);
+    border: 1px solid var(--rosé-hell);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+}
+.contact-card:hover {
+    transform: translateY(-5px);
+}
+.contact-icon {
+    width: 90px;
+    height: 90px;
+    background: var(--rosé-hell);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+.contact-icon i {
+    font-size: 2.8rem;
+    color: var(--rosé-mittel);
+}
+.contact-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+.contact-detail {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--rosé-dunkel);
+    margin-bottom: 0.5rem;
+}
+.contact-hint {
+    font-size: 0.9rem;
+    color: var(--braun-hell);
+}
+.contact-message {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--rosé-hell);
+    border-radius: 2rem;
+}
+
+.profile-icon-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 0.5rem;
+}
+.profile-icon-btn::after {
+    display: none;
+}
+.profile-icon-btn:hover {
+    opacity: 0.8;
+}
+.dropdown-menu-rose .dropdown-item i {
+    width: 1.5rem;
+    margin-right: 0.5rem;
+    color: var(--rosé-mittel);
 }

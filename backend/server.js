@@ -4,40 +4,59 @@ const bcrypt = require("bcrypt");
 
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session"); //neu MP
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+//neu: flexibler CORS
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
 app.use(express.json());
+
+//Session Config
+app.use(session({
+  secret: process.env.SESSION_SECRET || "devsecret", //fallback
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    sameSite: "lax"
+  }
+}));
 
 /* =========================
    LOGIN
 ========================= */
 app.post("/login", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, password } = req.body;
 
-    if ((!email && !username) || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email oder Username und Passwort erforderlich"
+        message: "Email und Passwort erforderlich"
       });
     }
 
-    const { data: users, error } = await supabase
+    const { data: users } = await supabase
       .from("users")
       .select("*")
-      .eq(email ? "email" : "username", email || username)
+      .eq("email", email)
       .limit(1);
 
+    /*  
     if (error) {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "Datenbankfehler"
+        //message: "Datenbankfehler"
       });
-    }
+    } */
 
     if (!users || users.length === 0) {
       return res.status(401).json({
@@ -53,9 +72,16 @@ app.post("/login", async (req, res) => {
     if (!isValid) {
       return res.status(401).json({
         success: false,
-        message: "Falsches Passwort"
+        message: "Falsche Eingaben"  //zuvor: "falsches passwort"
       });
     }
+
+    //neu: Session setzen
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      username: user.username
+    };
 
     return res.json({
       success: true,
@@ -69,6 +95,19 @@ app.post("/login", async (req, res) => {
     });
   }
 });
+
+//neu
+/* =========================
+   SESSION CHECK
+========================= */
+app.get("/me", (req, res) => {
+  if (req.session.user) {
+    return res.json({ loggedIn: true, user: req.session.user });
+  } else {
+    return res.json({ loggedIn: false });
+  }
+});
+
 
 /* =========================
    REGISTRIERUNG
@@ -144,13 +183,15 @@ app.post("/register", async (req, res) => {
   }
 });
 
-/* =========================
-   LOGOUT
+/*=========================
+   LOGOUT 
 ========================= */
 app.post("/logout", (req, res) => {
-  res.json({ success: true });
+  req.session.destroy(() => {       //neu
+    res.json({ success: true });
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Backend läuft auf Port ${PORT}`);
-});
+  console.log(`Server läuft auf Port ${PORT}`);
+});  
