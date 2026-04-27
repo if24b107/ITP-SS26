@@ -13,11 +13,11 @@ const path = require("path");
 
 app.use(express.static(path.join(__dirname, "..")));
 
-/*
+
 app.use(cors({
   origin: true,
   credentials: true
-}));*/
+}));
 
 app.use(express.json());
 
@@ -177,12 +177,12 @@ app.post("/logout", (req, res) => {
    Tabelle: calendar (id, user_id, title, date, time, description)
 =========================*/
 app.post("/appointments", async (req, res) => {
-  /*if (!req.session.user) {
+  if (!req.session.user) {
     return res.status(401).json({
       success: false,
       message: "Nicht eingeloggt"
     });
-  }*/
+  }
 
   try {
     const { title, date, time, description } = req.body;
@@ -219,7 +219,7 @@ app.post("/appointments", async (req, res) => {
       .from("calendar")
       .insert([
         {
-          user_id: "e323e37d-b016-4dbc-b8f5-150b6d9fd8c3",//req.session.user.id,
+          user_id: req.session.user.id,
           title: title.trim(),
           date: date,
           time: time || null,
