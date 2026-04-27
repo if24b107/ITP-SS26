@@ -18,10 +18,7 @@
     <!-- persönliches Willkommen: -->
     <div id="welcome-user" class="text-center mt-3"></div>
 
-    <!-- Logout Button-->
-    <div class="text-center mt-3">
-        <button class="btn logout-btn" onclick="logout()">Logout</button>
-    </div>
+    <!-- Logout Button entfernt-->
 
     <section class="container my-5 pt-4 welcome-section">
         <div class="row align-items-center">
@@ -131,7 +128,7 @@
     <!-- Willkommenstext eingeloggter User:-->
     <script> //neu: 
         async function checkLogin() {
-            const res = await fetch("http://localhost:3000/me", {
+            const res = await fetch("/me", {
                 credentials: "include"
             });
 
@@ -178,7 +175,7 @@
         async function getUser() {
             if (cachedUser) return cachedUser;
 
-            const res = await fetch("http://localhost:3000/me", {
+            const res = await fetch("/me", {
                 credentials: "include"
             });
 
@@ -193,7 +190,7 @@
             return cachedUser;
         }
 
-        // 2. WEDDING DATE ÜBER SESSION USER // Aunahme noch mit localstorage, ändeurng noch notwendig
+        // 2. WEDDING DATE ÜBER SESSION USER // Ausnahme noch mit localstorage, ändeurng noch notwendig
         async function getWeddingDate(userEmail) {
             const saved = localStorage.getItem("weddingDate_" + userEmail);
             if (!saved) return null;
