@@ -240,7 +240,6 @@ app.post("/appointments", async (req, res) => {
       message: "Termin angelegt",
       appointment: data[0]
     });
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({
@@ -280,15 +279,39 @@ app.put("/appointments/:id", async (req, res) => {
 //Termin löschen
 app.delete("/appointments/:id", async (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const appointmentId = Number(req.params.id);
+  if (!Number.isInteger(appointmentId) || appointmentId <= 0) {
+    return res.status(400).json({ success: false, message: "Ungueltige Termin-ID" });
+  }
+
+  const { data: appointment, error: findError } = await supabase
+    .from("calendar")
+    .select("id, user_id")
+    .eq("id", appointmentId)
+    .maybeSingle();
+
+  if (findError) {
+    console.error(findError);
+    return res.status(500).json({ success: false, message: "Fehler beim Pruefen des Termins" });
+  }
+
+  if (!appointment) {
+    return res.status(404).json({ success: false, message: "Termin nicht gefunden" });
+  }
+
+  if (appointment.user_id !== req.session.user.id) {
+    return res.status(403).json({ success: false, message: "Kein Zugriff auf diesen Termin" });
+  }
+
   const { error } = await supabase
     .from("calendar")
     .delete()
-    .eq("id", req.params.id)
+    .eq("id", appointmentId)
     .eq("user_id", req.session.user.id);
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
-  return res.json({ success: true });
-});
 
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  return res.json({ success: true, message: "Termin gelöscht" });
+});
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });
