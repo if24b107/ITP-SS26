@@ -174,27 +174,21 @@
     <!-- Änderungen notwendig: hier noch localstorage, noch keine session zusammenarbeit-->
     <script>
         // ===== LOAD WEDDING DATE =====
-        function getWeddingDate() {
-            const user = JSON.parse(localStorage.getItem("user")).email;
+        async function getWeddingDate() {
+            //const user = JSON.parse(localStorage.getItem("user")).email;
 
-            /* obere zeile durch______ ersetzen ?
-            const res = await fetch("http://localhost:3000/me", {
+            const res = await fetch("http://localhost:3000/wedding-date", {
                 credentials: "include"
             });
             const data = await res.json();
-            const user = data.user.email;
-            */
-           
-            const saved = localStorage.getItem("weddingDate_" + user);
+            if(!data.success || !data.wedding_date) return null;
 
-            if (!saved) return null;
-
-            return JSON.parse(saved).date;
+            return data.wedding_date;
         }
 
         // ===== COUNTDOWN LOGIC =====
-        function updateCountdown() {
-            const targetDate = getWeddingDate();
+        async function updateCountdown() {
+            const targetDate = await getWeddingDate();
 
             const countdownEl = document.getElementById("countdown");
 

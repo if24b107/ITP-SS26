@@ -288,6 +288,29 @@ app.delete("/appointments/:id", async (req, res) => {
   if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
   return res.json({ success: true });
 });
+//POST /wedding-date – Datum speichern
+app.post("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { wedding_date } = req.body;
+  if (!wedding_date) return res.status(400).json({ success: false, message: "Datum fehlt" });
+  const { error } = await supabase
+    .from("users")
+    .update({ wedding_date })
+    .eq("id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  return res.json({ success: true });
+});
+// GET /wedding-date – Datum laden
+app.get("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("users")
+    .select("wedding_date")
+    .eq("id", req.session.user.id)
+    .single();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, wedding_date: data.wedding_date });
+});
 
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
