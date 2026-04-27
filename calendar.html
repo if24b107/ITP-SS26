@@ -303,17 +303,21 @@
             else { document.getElementById("editErrorMsg").innerHTML = data.message; }
         });
 
-        function deleteFromEdit() {
-            const id = parseInt(document.getElementById("editEventId").value);
+        async function deleteFromEdit() {
+            const id = document.getElementById("editEventId").value;
             const title = document.getElementById("editEventTitle").value;
 
             if (confirm(`Möchten Sie den Termin "${title}" wirklich löschen?`)) {
-                const eventIndex = events.findIndex(e => e.id === id);
-                if (eventIndex !== -1) events.splice(eventIndex, 1);
-                closeEditModal();
-                renderCalendar();
-                selectedEventId = null;
-                alert("Termin wurde gelöscht");
+                const res = await fetch(`http://localhost:3000/appointments/${id}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeEditModal();
+                    loadEvents();
+                    alert("Termin gelöscht");
+                }
             }
         }
 
