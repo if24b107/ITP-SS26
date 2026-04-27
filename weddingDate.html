@@ -87,12 +87,13 @@
         if (!user) {
             window.location.href = "login.html";
         }*/
-        let user;
-        try {
-            user = JSON.parse(localStorage.getItem("user")).email;
-        } catch (e) {
-            window.location.href = "login.html";
-        }
+        (async () => {
+            const meRes = await fetch("http://localhost:3000/me", { credentials: "include" });
+            const meData = await meRes.json();
+            if (!meData.loggedIn) {
+                window.location.href = "login.html";
+            }
+        })();
         // ===== STATE (später ggf. Backend ersetzen) =====
         let weddingDate = null;
 
