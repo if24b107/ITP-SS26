@@ -31,6 +31,68 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, "..")));
 
+// =========================
+//   TO-DO ENDPOINTS
+// =========================
+
+// To-dos abrufen (nur eigene)
+app.get("/todos", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("todo")
+    .select("*")
+    .eq("user_id", req.session.user.id)
+    .order("created_at", { ascending: false });
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, todos: data });
+});
+
+// To-do anlegen
+app.post("/todos", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { title, priority } = req.body;
+  if (!title) return res.status(400).json({ success: false, message: "Titel erforderlich" });
+  const { data, error } = await supabase
+    .from("todo")
+    .insert([{ user_id: req.session.user.id, title, priority: priority || 0 }])
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  return res.status(201).json({ success: true, todo: data[0] });
+});
+
+// To-do aktualisieren (z.B. Titel, completed, priority)
+app.put("/todos/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const todoId = Number(req.params.id);
+  const { title, completed, priority } = req.body;
+  const updateObj = {};
+  if (title !== undefined) updateObj.title = title;
+  if (completed !== undefined) updateObj.completed = completed;
+  if (priority !== undefined) updateObj.priority = priority;
+  updateObj.updated_at = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("todo")
+    .update(updateObj)
+    .eq("id", todoId)
+    .eq("user_id", req.session.user.id)
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+  return res.json({ success: true, todo: data[0] });
+});
+
+// To-do löschen
+app.delete("/todos/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const todoId = Number(req.params.id);
+  const { error } = await supabase
+    .from("todo")
+    .delete()
+    .eq("id", todoId)
+    .eq("user_id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  return res.json({ success: true, message: "To-do gelöscht" });
+});
+
 /* =========================
    LOGIN
 ========================= */
