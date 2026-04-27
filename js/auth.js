@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("password").value;
 
       try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch("/login", { //"http://localhost:3000/login"
           method: "POST",
           credentials: "include",               //neu für sessions
           headers: {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          window.location.href = "personaldashboard.html";
+          window.location.href = "personalDashboard.html";
         } else {
           alert(data.message);
         }
