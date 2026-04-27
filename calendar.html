@@ -224,7 +224,7 @@
 
             document.querySelectorAll('input[name="deleteEvent"]').forEach(radio => {
                 radio.addEventListener("change", function () {
-                    currentlySelectedDeleteEventId = parseInt(this.value);
+                    currentlySelectedDeleteEventId = this.value;
                     document.getElementById("confirmDeleteSelectedBtn").disabled = false;
                 });
             });

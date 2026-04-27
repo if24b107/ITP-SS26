@@ -288,6 +288,7 @@ app.delete("/appointments/:id", async (req, res) => {
   if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
   return res.json({ success: true });
 });
+
 //POST /wedding-date – Datum speichern
 app.post("/wedding-date", async (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
