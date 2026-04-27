@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const response = await fetch("/login", { //"http://localhost:3000/login"
           method: "POST",
-          credentials: "include",               //neu für sessions
+          credentials: "include",               
           headers: {
             "Content-Type": "application/json"
           },
