@@ -11,9 +11,6 @@ const PORT = 3000;
 
 const path = require("path");
 
-app.use(express.static(path.join(__dirname, "..")));
-
-
 app.use(cors({
   origin: true,
   credentials: true
@@ -31,6 +28,8 @@ app.use(session({
     sameSite: "lax"
   }
 }));
+
+app.use(express.static(path.join(__dirname, "..")));
 
 /* =========================
    LOGIN
