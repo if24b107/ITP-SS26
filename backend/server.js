@@ -9,10 +9,15 @@ const session = require("express-session");
 const app = express();
 const PORT = 3000;
 
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "..")));
+
+/*
 app.use(cors({
   origin: true,
   credentials: true
-}));
+}));*/
 
 app.use(express.json());
 
@@ -78,7 +83,7 @@ app.post("/login", async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Serverfehler"
+      message: "Serverfehler1"
     });
   }
 });
@@ -153,7 +158,7 @@ app.post("/register", async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Serverfehler"
+      message: "Serverfehler2"
     });
   }
 });
@@ -167,19 +172,17 @@ app.post("/logout", (req, res) => {
   });
 });
 
-/* =========================
+/*=========================
    TERMIN ANLEGEN
    Tabelle: calendar (id, user_id, title, date, time, description)
-   HINWEIS: Spalten "time" und "description" müssen in Supabase
-   noch angelegt werden (Table Editor → calendar → Add Column).
-========================= */
+=========================*/
 app.post("/appointments", async (req, res) => {
-  if (!req.session.user) {
+  /*if (!req.session.user) {
     return res.status(401).json({
       success: false,
       message: "Nicht eingeloggt"
     });
-  }
+  }*/
 
   try {
     const { title, date, time, description } = req.body;
@@ -216,7 +219,7 @@ app.post("/appointments", async (req, res) => {
       .from("calendar")
       .insert([
         {
-          user_id: req.session.user.id,
+          user_id: "e323e37d-b016-4dbc-b8f5-150b6d9fd8c3",//req.session.user.id,
           title: title.trim(),
           date: date,
           time: time || null,
@@ -243,14 +246,11 @@ app.post("/appointments", async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Serverfehler"
+      message: "Serverfehler3"
     });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
 //Termine laden
 app.get("/appointments", async (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
@@ -288,4 +288,8 @@ app.delete("/appointments/:id", async (req, res) => {
     .eq("user_id", req.session.user.id);
   if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
   return res.json({ success: true });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
 });
