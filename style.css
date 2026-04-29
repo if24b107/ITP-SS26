@@ -603,7 +603,33 @@ h1, h2, h3, .category-title {
   box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
 }
 
-/* ===== LOGIN SEITE ===== by Melinda*/ 
+/* Profile Icon */
+.profile-icon-btn i {
+  color: var(--rosé-mittel);
+  transition: color 0.3s ease;
+}
+
+.profile-icon-btn i:hover {
+  color: var(--rosé-dunkel);
+}
+
+/* ===== LOGIN BUTTON ===== */
+.login-btn {
+  border: 2px solid var(--rosé-mittel);
+  color: var(--rosé-mittel);
+  background: transparent;
+  border-radius: 50px;
+  padding: 0.4rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: var(--rosé-mittel);
+  color: white;
+}
+
+/* ===== LOGIN SEITE ===== */ 
 .login-card {
   background: var(--weiß);
   border-radius: 2rem;

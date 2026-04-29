@@ -186,29 +186,62 @@
     <script src="js/auth-nav.js"></script>
 
     <script>
-    // Benutzername laden (Session-basiert)
-    /*    async function loadUsername() {
-        try {
-            const response = await fetch('/me', {
-            credentials: 'include'  // wichtig für Session-Cookie
-            });
-            const data = await response.json();
-
-            if (data.loggedIn && data.user && data.user.username) {
-            document.getElementById('username-placeholder').innerText = data.user.username;
-            } else {
-            // Nicht eingeloggt → zur Login-Seite
-            window.location.href = './login.html';
+        // Benutzername laden (Session-basiert)
+        /*    async function loadUsername() {
+            try {
+                const response = await fetch('/me', {
+                credentials: 'include'  // wichtig für Session-Cookie
+                });
+                const data = await response.json();
+    
+                if (data.loggedIn && data.user && data.user.username) {
+                document.getElementById('username-placeholder').innerText = data.user.username;
+                } else {
+                // Nicht eingeloggt → zur Login-Seite
+                window.location.href = './login.html';
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden des Benutzers:', error);
+                window.location.href = './login.html';
             }
-        } catch (error) {
-            console.error('Fehler beim Laden des Benutzers:', error);
-            window.location.href = './login.html';
-        }
-        }
-
-        loadUsername(); */
+            }
+    
+            loadUsername(); */
     </script>
 
+    <script>
+        async function initUserSession() {
+            try {
+                const res = await fetch("/me", {
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+
+                if (!data.loggedIn) {
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                // Username anzeigen
+                const el = document.getElementById("username-placeholder");
+                if (el) {
+                    el.innerText = data.user.username;
+                }
+                /*
+                const welcome = document.getElementById("welcome-user");
+                if (welcome) {
+                    welcome.innerHTML = `<h4>Willkommen ${data.user.username} 💍</h4>`;
+                }*/
+
+            } catch (err) {
+                console.error("Session error:", err);
+                window.location.replace("login.html");
+            }
+        }
+
+        initUserSession();
+    </script>
 
 </body>
 

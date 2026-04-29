@@ -18,10 +18,7 @@
     <!-- persönliches Willkommen: -->
     <div id="welcome-user" class="text-center mt-3"></div>
 
-    <!-- Logout Button-->
-    <div class="text-center mt-3">
-        <button class="btn logout-btn" onclick="logout()">Logout</button>
-    </div>
+    <!-- Logout Button entfernt-->
 
     <section class="container my-5 pt-4 welcome-section">
         <div class="row align-items-center">
@@ -131,7 +128,7 @@
     <!-- Willkommenstext eingeloggter User:-->
     <script> //neu: 
         async function checkLogin() {
-            const res = await fetch("http://localhost:3000/me", {
+            const res = await fetch("/me", {
                 credentials: "include"
             });
 
@@ -171,30 +168,42 @@
         </div>
     </section>
 
-    <!-- Änderungen notwendig: hier noch localstorage, noch keine session zusammenarbeit-->
     <script>
-        // ===== LOAD WEDDING DATE =====
-        function getWeddingDate() {
-            const user = JSON.parse(localStorage.getItem("user")).email;
 
-            /* obere zeile durch______ ersetzen ?
-            const res = await fetch("http://localhost:3000/me", {
+        // 1. USER ÜBER SESSION HOLEN
+        let cachedUser = null;
+        async function getUser() {
+            if (cachedUser) return cachedUser;
+
+            const res = await fetch("/me", {
                 credentials: "include"
             });
-            const data = await res.json();
-            const user = data.user.email;
-            */
-           
-            const saved = localStorage.getItem("weddingDate_" + user);
 
+            const data = await res.json();
+
+            if (!data.loggedIn) {
+                window.location.href = "login.html";
+                return null;
+            }
+
+            cachedUser = data.user;
+            return cachedUser;
+        }
+
+        // 2. WEDDING DATE ÜBER SESSION USER // Ausnahme noch mit localstorage, ändeurng noch notwendig
+        async function getWeddingDate(userEmail) {
+            const saved = localStorage.getItem("weddingDate_" + userEmail);
             if (!saved) return null;
 
             return JSON.parse(saved).date;
         }
 
-        // ===== COUNTDOWN LOGIC =====
-        function updateCountdown() {
-            const targetDate = getWeddingDate();
+        // 3. COUNTDOWN LOGIK
+        async function updateCountdown() {
+            const user = await getUser();
+            if (!user) return;
+
+            const targetDate = await getWeddingDate(user.email);
 
             const countdownEl = document.getElementById("countdown");
 
@@ -217,12 +226,14 @@
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-            countdownEl.innerText = `${days} Tage · ${hours} Std · ${minutes} Min`;
+            countdownEl.innerText =
+                `${days} Tage · ${hours} Std · ${minutes} Min`;
         }
 
-        // ===== INIT =====
+        // 4. INIT
         updateCountdown();
-        setInterval(updateCountdown, 60000); // jede Minute refresh
+        setInterval(updateCountdown, 60000);
+
     </script>
 
 

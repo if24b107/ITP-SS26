@@ -9,11 +9,16 @@ const session = require("express-session"); //neu MP
 const app = express();
 const PORT = 3000;
 
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "..")));
+
+/*
 //neu: flexibler CORS
 app.use(cors({
-  origin: true,
+  origin: true, //"http://127.0.0.1:5500",  //before: true
   credentials: true
-}));
+})); */
 
 app.use(express.json());
 
@@ -25,7 +30,7 @@ app.use(session({
   cookie: {
     secure: false,
     httpOnly: true,
-    sameSite: "lax"
+    sameSite: "lax" //before: none
   }
 }));
 
@@ -34,6 +39,7 @@ app.use(session({
 ========================= */
 app.post("/login", async (req, res) => {
   try {
+    console.log("SESSION BEFORE LOGIN:", req.session);
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -43,20 +49,20 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    const { data: users } = await supabase
+    const { data: users, error } = await supabase
       .from("users")
       .select("*")
       .eq("email", email)
       .limit(1);
 
-    /*  
+
     if (error) {
       console.error(error);
       return res.status(500).json({
         success: false,
-        //message: "Datenbankfehler"
+        message: "Datenbankfehler"
       });
-    } */
+    }
 
     if (!users || users.length === 0) {
       return res.status(401).json({
@@ -66,8 +72,11 @@ app.post("/login", async (req, res) => {
     }
 
     const user = users[0];
+    console.log("INPUT:", password);
+    console.log("HASH:", user.password_hash);
 
     const isValid = await bcrypt.compare(password, user.password_hash);
+    console.log("PASSWORD VALID:", isValid);
 
     if (!isValid) {
       return res.status(401).json({
@@ -82,6 +91,9 @@ app.post("/login", async (req, res) => {
       email: user.email,
       username: user.username
     };
+
+    console.log("SESSION AFTER LOGIN:", req.session);
+    console.log("SESSION USER:", req.session.user);
 
     return res.json({
       success: true,
