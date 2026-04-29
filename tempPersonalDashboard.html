@@ -28,8 +28,7 @@
     <main class="container my-5">
         <div class="text-center">
             <h1>Willkommen, <span id="username-placeholder">Gast</span>!</h1>
-            <p>Alle Werkzeuge an einem Ort: Kalender, To‑Do‑Liste, Countdown und persönliche Empfehlungen – strukturiert
-                und stressfrei.</p>
+            <p>Alle Werkzeuge an einem Ort: Kalender, To‑Do‑Liste, Countdown und persönliche Empfehlungen – strukturiert und stressfrei.</p>
         </div>
     </main>
 
@@ -43,7 +42,7 @@
 
             <h2>Euer Hochzeits-Countdown</h2>
 
-            <p class="text-muted">Die Zeit bis zu eurem großen Tag läuft 💍
+            <p class="text-muted">Die Zeit bis zu eurem großen Tag läuft 💍 
                 Jeder Tag bringt euch näher – wir freuen uns mit euch!</p>
 
             <div id="countdown" class="display-6 fw-bold my-3">
@@ -67,8 +66,7 @@
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                     <h3>Gemeinsamer Kalender</h3>
-                    <p>Besichtigungen, Verkostungen, Gespräche – mit unserem gemeinsamen Kalender behaltet ihr immer den
-                        Überblick.</p>
+                    <p>Besichtigungen, Verkostungen, Gespräche – mit unserem gemeinsamen Kalender behaltet ihr immer den Überblick.</p>
                     <a href="./calendar.html" class="btn btn-outline-primary">Zum Kalender →</a>
                 </div>
             </div>
@@ -112,13 +110,12 @@
         </div>
     </section>
 
-
+     
     <section class="bg-light py-5">
         <div class="container text-center">
-            <h2 class="mb-4">Hast du noch Fragen oder wünschst dir persönliche Unterstützung?</h2>
-            <p class="lead mb-4">Wir sind für dich da – ganz unkompliziert und von Herzen.</p>
-            <a href="./kontaktAufnehmen.html" class="btn btn-primary btn-lg">Lass uns gemeinsam über deine Wünsche
-                sprechen</a>
+        <h2 class="mb-4">Hast du noch Fragen oder wünschst dir persönliche Unterstützung?</h2>
+        <p class="lead mb-4">Wir sind für dich da – ganz unkompliziert und von Herzen.</p>
+        <a href="./kontaktAufnehmen.html" class="btn btn-primary btn-lg">Lass uns gemeinsam über deine Wünsche sprechen</a>
         </div>
     </section>
 
@@ -130,24 +127,24 @@
     <!-- Änderungen notwendig: hier noch localstorage, noch keine session zusammenarbeit-->
     <script>
         // ===== LOAD WEDDING DATE =====
-        /* function getWeddingDate() {
-             const user = JSON.parse(localStorage.getItem("user")).email;
- 
-             /* obere zeile durch______ ersetzen ?
-             const res = await fetch("http://localhost:3000/me", {
-                 credentials: "include"
-             });
-             const data = await res.json();
-             const user = data.user.email;
-             
+       /* function getWeddingDate() {
+            const user = JSON.parse(localStorage.getItem("user")).email;
+
+            /* obere zeile durch______ ersetzen ?
+            const res = await fetch("http://localhost:3000/me", {
+                credentials: "include"
+            });
+            const data = await res.json();
+            const user = data.user.email;
             
-             const saved = localStorage.getItem("weddingDate_" + user);
- 
-             if (!saved) return null;
- 
-             return JSON.parse(saved).date;
-         }
-         */
+           
+            const saved = localStorage.getItem("weddingDate_" + user);
+
+            if (!saved) return null;
+
+            return JSON.parse(saved).date;
+        }
+        */
 
         // ===== COUNTDOWN LOGIC =====
         function updateCountdown() {
