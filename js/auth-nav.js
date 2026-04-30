@@ -1,11 +1,12 @@
 // WAIT FOR NAVBAR 
-function waitForAuthNavItem() {
+function waitForAuthNavContainers() {
     return new Promise((resolve) => {
         const check = setInterval(() => {
-            const nav = document.getElementById("auth-nav-item");
-            if (nav) {
+            const dynamicLinks = document.getElementById("dynamic-nav-links");
+            const authContainer = document.getElementById("auth-nav-item");
+            if (dynamicLinks && authContainer) {
                 clearInterval(check);
-                resolve(nav);
+                resolve({ dynamicLinks, authContainer });
             }
         }, 50);
     });
@@ -14,8 +15,8 @@ function waitForAuthNavItem() {
 // MAIN AUTH NAV FUNCTION
 window.initAuthNav = async function () {
 
-    const nav = await waitForAuthNavItem();
-    if (!nav) return;
+    const { dynamicLinks, authContainer } = await waitForAuthNavContainers();
+    if (!dynamicLinks || !authContainer) return;
 
     try {
         const res = await fetch("/me", {
@@ -27,7 +28,13 @@ window.initAuthNav = async function () {
         
         // LOGGED IN STATE
         if (data.loggedIn) {
-            nav.innerHTML = `
+            // Normale Menüpunkte für eingeloggte Benutzer
+            dynamicLinks.innerHTML = `
+                <li class="nav-item"><a class="nav-link" href="personalDashboard.html">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender</a></li>
+                <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
+            `;
+            authContainer.innerHTML = `
                 <div class="dropdown">
                     <button class="btn btn-link dropdown-toggle profile-icon-btn"
                         type="button" data-bs-toggle="dropdown">
@@ -63,7 +70,8 @@ window.initAuthNav = async function () {
 
         // LOGGED OUT STATE
         else {
-            nav.innerHTML = `
+            dynamicLinks.innerHTML = "";
+            authContainer.innerHTML = `
                 <a href="login.html" class="btn login-btn">Login</a>
             `;
         }
@@ -71,8 +79,10 @@ window.initAuthNav = async function () {
     } catch (err) {
         console.error("Auth Nav Fehler:", err);
 
+        dynamicLinks.innerHTML = "";
+
         // Fallback UI
-        nav.innerHTML = `
+        authContainer.innerHTML = `
             <a href="login.html" class="btn login-btn">Login</a>
         `;
     }

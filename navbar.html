@@ -12,9 +12,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-
-
+      <ul class="navbar-nav">
         <!-- Dropdown-Menü -->
         <li class="nav-item dropdown">
           <!-- Allgemeine Service Seite gestalen oder leer lassen? -->
@@ -27,12 +25,10 @@
             <li><a class="dropdown-item" href="./location.html">Location</a></li> <!-- Links einfügen -->
           </ul>
         </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="./calendar.html">Kalender</a>
-        </li>
-
       </ul>
+
+       <!-- Dynamische Links (nur eingeloggte Benutzer) -->
+      <ul class="navbar-nav me-auto" id="dynamic-nav-links"></ul>
 
       <div id="auth-nav-item" class="d-flex align-items-center"></div>
     </div>
