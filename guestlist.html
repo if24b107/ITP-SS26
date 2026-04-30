@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <title>Gästeliste - JAMMM Together</title>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+        <div class="text-center mb-4">
+            <h1 class="planning-title">📋 Gästeliste</h1>
+            <p class="planning-subtitle">Verwalte alle Gäste, ihren Status und die Anzahl der Begleitpersonen.</p>
+        </div>
+
+        <div class="guestlist-container">
+            <div class="mb-2">
+                <button id="addGuestBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Gast hinzufügen</button>
+            </div>
+            <div class="text-muted small mb-3">
+                <i class="fas fa-info-circle"></i> 
+                Einfache Änderung des Status: Klicken Sie auf das farbige Feld und wählen Sie den neuen Status.
+            </div>
+
+            <div class="table-responsive">
+                <table class="guest-table" id="guestTable">
+                    <thead>
+                        <tr><th>Name</th><th>Status</th><th>Begleitpersonen</th><th>Notiz</th><th>Aktionen</th></tr>
+                    </thead>
+                    <tbody id="guestListBody"></tbody>
+                </table>
+            </div>
+            <div id="emptyGuestPlaceholder" class="text-center text-muted mt-5 d-none">
+                <i class="fas fa-users fa-3x mb-3"></i><p>Keine Gäste eingetragen. Füge deinen ersten Gast hinzu!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal für Gast hinzufügen / bearbeiten -->
+    <div id="guestModal" class="modal">
+        <div class="modal-content">
+            <h3 id="guestModalTitle">Gast hinzufügen</h3>
+            <input type="hidden" id="guestId">
+            <label for="guestName">Name *</label>
+            <input type="text" id="guestName" placeholder="z. B. Anna Schmidt">
+            <label>Status</label>
+            <div class="status-buttons" id="statusButtonsModal"></div>
+            <input type="hidden" id="guestStatus" value="pending">
+            <label for="guestPlusOnes">Anzahl Begleitpersonen</label>
+            <input type="number" id="guestPlusOnes" min="0" value="0">
+            <label for="guestNote">Notiz (optional)</label>
+            <textarea id="guestNote" rows="2" placeholder="z. B. vegetarisches Menü"></textarea>
+            <div id="guestModalError" class="error-msg"></div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="closeGuestModalBtn">Abbrechen</button>
+                <button class="save-btn" id="saveGuestBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth-nav.js"></script>
+    <script src="navbar-loader.js"></script>
+    <script src="footer-loader.js"></script>
+    <script>
+        // ========== MOCK-DATEN ==========
+        let guests = [
+            { id: 1, name: "Anna Schmidt", status: "yes", plusOnes: 2, note: "Kommt mit Mann und Kind" },
+            { id: 2, name: "Max Mustermann", status: "pending", plusOnes: 0, note: "" },
+            { id: 3, name: "Julia Berger", status: "no", plusOnes: 0, note: "Anderer Termin" }
+        ];
+
+        function renderGuestTable() {
+            const tbody = document.getElementById("guestListBody");
+            const empty = document.getElementById("emptyGuestPlaceholder");
+            tbody.innerHTML = "";
+            if (guests.length === 0) { empty.classList.remove("d-none"); return; }
+            empty.classList.add("d-none");
+            guests.forEach(guest => {
+                const row = tbody.insertRow();
+                row.dataset.id = guest.id;
+                // Name
+                row.insertCell(0).innerText = guest.name;
+                // Status Dropdown (farbig)
+                const statusCell = row.insertCell(1);
+                const select = document.createElement("select");
+                select.className = "status-dropdown";
+                const bgClass = guest.status === "pending" ? "option-pending" : (guest.status === "yes" ? "option-yes" : "option-no");
+                select.classList.add(bgClass);
+                select.innerHTML = `
+                    <option value="pending" ${guest.status === "pending" ? "selected" : ""}>Offen</option>
+                    <option value="yes" ${guest.status === "yes" ? "selected" : ""}>Zugesagt</option>
+                    <option value="no" ${guest.status === "no" ? "selected" : ""}>Abgesagt</option>
+                `;
+                select.addEventListener("change", (e) => {
+                    guest.status = e.target.value;
+                    renderGuestTable();
+                });
+                statusCell.appendChild(select);
+                // Begleitpersonen
+                row.insertCell(2).innerText = guest.plusOnes;
+                // Notiz
+                row.insertCell(3).innerText = guest.note || "—";
+                // Aktionen
+                const actionsCell = row.insertCell(4);
+                actionsCell.className = "action-btns";
+                const editBtn = document.createElement("button");
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.title = "Bearbeiten";
+                editBtn.addEventListener("click", () => openGuestModal(guest.id));
+                const delBtn = document.createElement("button");
+                delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                delBtn.title = "Löschen";
+                delBtn.addEventListener("click", () => {
+                    if (confirm(`Möchten Sie "${guest.name}" wirklich löschen?`)) {
+                        guests = guests.filter(g => g.id !== guest.id);
+                        renderGuestTable();
+                    }
+                });
+                actionsCell.appendChild(editBtn);
+                actionsCell.appendChild(delBtn);
+            });
+        }
+
+        function renderStatusButtons(selectedStatus) {
+            const container = document.getElementById("statusButtonsModal");
+            if (!container) return;
+            container.innerHTML = '';
+            const statuses = [
+                { value: 'pending', label: 'Offen', dotClass: 'pending' },
+                { value: 'yes', label: 'Zugesagt', dotClass: 'yes' },
+                { value: 'no', label: 'Abgesagt', dotClass: 'no' }
+            ];
+            statuses.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'status-btn-modal';
+                if (s.value === selectedStatus) btn.classList.add('active');
+                btn.setAttribute('data-status', s.value);
+                btn.innerHTML = `<span class="status-dot ${s.dotClass}"></span> ${s.label}`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#statusButtonsModal .status-btn-modal').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('guestStatus').value = s.value;
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        let currentGuestId = null;
+        function openGuestModal(id = null) {
+            currentGuestId = id;
+            const modal = document.getElementById("guestModal");
+            const title = document.getElementById("guestModalTitle");
+            if (id !== null) {
+                const guest = guests.find(g => g.id === id);
+                title.innerText = "Gast bearbeiten";
+                document.getElementById("guestId").value = guest.id;
+                document.getElementById("guestName").value = guest.name;
+                document.getElementById("guestPlusOnes").value = guest.plusOnes;
+                document.getElementById("guestNote").value = guest.note || "";
+                renderStatusButtons(guest.status);
+                document.getElementById("guestStatus").value = guest.status;
+            } else {
+                title.innerText = "Gast hinzufügen";
+                document.getElementById("guestId").value = "";
+                document.getElementById("guestName").value = "";
+                document.getElementById("guestPlusOnes").value = "0";
+                document.getElementById("guestNote").value = "";
+                renderStatusButtons("pending");
+                document.getElementById("guestStatus").value = "pending";
+            }
+            document.getElementById("guestModalError").innerHTML = "";
+            modal.style.display = "flex";
+        }
+
+        function closeGuestModal() { document.getElementById("guestModal").style.display = "none"; currentGuestId = null; }
+        function saveGuest() {
+            const name = document.getElementById("guestName").value.trim();
+            const status = document.getElementById("guestStatus").value;
+            const plusOnes = parseInt(document.getElementById("guestPlusOnes").value) || 0;
+            const note = document.getElementById("guestNote").value.trim();
+            if (!name) { document.getElementById("guestModalError").innerHTML = "Bitte gib einen Namen ein."; return; }
+            if (currentGuestId !== null) {
+                const idx = guests.findIndex(g => g.id === currentGuestId);
+                if (idx !== -1) guests[idx] = { ...guests[idx], name, status, plusOnes, note };
+            } else {
+                guests.push({ id: Date.now(), name, status, plusOnes, note });
+            }
+            closeGuestModal();
+            renderGuestTable();
+        }
+
+        document.getElementById("addGuestBtn").addEventListener("click", () => openGuestModal(null));
+        document.getElementById("closeGuestModalBtn").addEventListener("click", closeGuestModal);
+        document.getElementById("saveGuestBtn").addEventListener("click", saveGuest);
+        window.addEventListener("click", (e) => { if (e.target === document.getElementById("guestModal")) closeGuestModal(); });
+        renderGuestTable();
+    </script>
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+    </style>
+</body>
+</html>

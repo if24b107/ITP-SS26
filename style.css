@@ -1881,3 +1881,121 @@ h1, h2, h3, .category-title {
 .priority-dot.low { background-color: #2e7d32; }
 .priority-dot.medium { background-color: #b76e0e; }
 .priority-dot.high { background-color: #c62828; }
+
+/* ===== GÄSTELISTE ===== */
+.guestlist-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.guest-table {
+    width: 100%;
+    background: var(--weiß);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(212,165,165,0.1);
+}
+.guest-table th, .guest-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--rosé-hell);
+    vertical-align: middle;
+}
+.guest-table th {
+    background: var(--rosé-hell);
+    color: var(--braun-warm);
+    font-weight: 600;
+}
+.guest-table tr:hover {
+    background: #fef9f7;
+}
+/* Dropdown für Status (farbig) */
+.status-dropdown {
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #f8f0f0;
+    appearance: none;
+    text-align: center;
+}
+.status-dropdown.option-pending { background-color: #fff3cd; color: #856404; }
+.status-dropdown.option-yes { background-color: #d4edda; color: #155724; }
+.status-dropdown.option-no { background-color: #f8d7da; color: #721c24; }
+/* Buttons in der Aktion-Spalte */
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+.action-btns button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--braun-hell);
+    transition: color 0.2s;
+}
+.action-btns button:hover {
+    color: var(--rosé-mittel);
+}
+/* Status-Buttons im Modal (wie bei Priorität) */
+.status-buttons {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.status-btn-modal {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--rosé-hell);
+    border-radius: 2rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+}
+.status-btn-modal.active {
+    border-width: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.status-btn-modal[data-status="pending"].active {
+    background-color: #fff3cd;
+    border-color: #856404;
+}
+.status-btn-modal[data-status="yes"].active {
+    background-color: #d4edda;
+    border-color: #155724;
+}
+.status-btn-modal[data-status="no"].active {
+    background-color: #f8d7da;
+    border-color: #721c24;
+}
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.status-dot.pending { background-color: #856404; }
+.status-dot.yes { background-color: #155724; }
+.status-dot.no { background-color: #721c24; }
+
+@media (max-width: 768px) {
+    .guest-table th, .guest-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    .status-dropdown {
+        font-size: 0.7rem;
+        padding: 0.1rem 0.3rem;
+    }
+    .action-btns {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+}
