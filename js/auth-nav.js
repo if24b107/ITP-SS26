@@ -31,7 +31,7 @@ window.initAuthNav = async function () {
             // Normale Menüpunkte für eingeloggte Benutzer
             dynamicLinks.innerHTML = `
                 <li class="nav-item"><a class="nav-link" href="personalDashboard.html">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender</a></li>
+                <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender & Termine</a></li>
                 <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
             `;
             authContainer.innerHTML = `
