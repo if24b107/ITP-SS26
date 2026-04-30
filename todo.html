@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <title>To-Do-Liste - JAMMM Together</title>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+        <div class="todo-container">
+            <!-- Kopfbereich -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h1 class="todo-headline">📋 Meine Aufgaben</h1>
+                <button id="newTaskBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Neue Aufgabe
+                </button>
+            </div>
+
+            <!-- Aufgabenliste -->
+            <div id="tasksList" class="tasks-list">
+                <!-- Wird dynamisch mit JavaScript befüllt -->
+            </div>
+
+            <!-- Platzhalter, falls keine Aufgaben -->
+            <div id="emptyPlaceholder" class="text-center text-muted mt-5 d-none">
+                <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                <p>Keine Aufgaben vorhanden. Erstelle deine erste Aufgabe!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal für neue / bearbeitete Aufgabe -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Neue Aufgabe erstellen</h3>
+            <input type="hidden" id="taskId">
+            <label for="taskTitle">Titel *</label>
+            <input type="text" id="taskTitle" placeholder="z. B. DJ buchen">
+
+            <label>Priorität</label>
+            <div class="priority-buttons">
+                <button type="button" class="priority-btn" data-priority="low">
+                    <span class="priority-dot low"></span> Niedrig
+                </button>
+                <button type="button" class="priority-btn" data-priority="medium">
+                    <span class="priority-dot medium"></span> Mittel
+                </button>
+                <button type="button" class="priority-btn" data-priority="high">
+                    <span class="priority-dot high"></span> Hoch
+                </button>
+            </div>
+            <input type="hidden" id="taskPriority" value="medium">
+
+            <label for="taskDueDate">Fälligkeitsdatum (optional)</label>
+            <input type="date" id="taskDueDate">
+            <label for="taskDescription">Beschreibung (optional)</label>
+            <textarea id="taskDescription" rows="3" placeholder="Weitere Details..."></textarea>
+            <div id="modalError" class="error-msg"></div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="closeModalBtn">Abbrechen</button>
+                <button class="save-btn" id="saveTaskBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // ========== MOCK-DATEN ==========
+        let tasks = [
+            { id: 1, title: "Location besichtigen - Test", completed: false, priority: "high", dueDate: "2026-06-15", description: "Gutshaus am See" },
+            { id: 2, title: "Catering Verkostung - Test", completed: false, priority: "medium", dueDate: "2026-06-22", description: "Feinkost Schmidt" },
+            { id: 3, title: "Fotograf buchen - Test", completed: true, priority: "low", dueDate: "", description: "Angebot einholen" }
+        ];
+
+        let currentPriority = "medium";
+
+        function renderTasks() {
+            const container = document.getElementById("tasksList");
+            const emptyPlaceholder = document.getElementById("emptyPlaceholder");
+            container.innerHTML = "";
+            if (tasks.length === 0) {
+                emptyPlaceholder.classList.remove("d-none");
+                return;
+            }
+            emptyPlaceholder.classList.add("d-none");
+            tasks.forEach(task => {
+                const taskDiv = document.createElement("div");
+                taskDiv.className = "task-item";
+                taskDiv.dataset.id = task.id;
+
+                // Checkbox
+                const checkDiv = document.createElement("div");
+                checkDiv.className = "task-check";
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "task-complete";
+                checkbox.checked = task.completed;
+                checkbox.addEventListener("change", () => {
+                    task.completed = checkbox.checked;
+                    renderTasks();
+                });
+                checkDiv.appendChild(checkbox);
+
+                // Inhalt
+                const contentDiv = document.createElement("div");
+                contentDiv.className = "task-content";
+                const titleSpan = document.createElement("span");
+                titleSpan.className = "task-title";
+                titleSpan.innerText = task.title;
+                if (task.completed) titleSpan.style.textDecoration = "line-through";
+
+                const metaDiv = document.createElement("div");
+                metaDiv.className = "task-meta";
+
+                let priorityClass = "priority-low";
+                let priorityText = "Niedrig";
+                if (task.priority === "medium") { priorityClass = "priority-medium"; priorityText = "Mittel"; }
+                if (task.priority === "high") { priorityClass = "priority-high"; priorityText = "Hoch"; }
+                const prioritySpan = document.createElement("span");
+                prioritySpan.className = `priority-badge ${priorityClass}`;
+                prioritySpan.innerText = priorityText;
+                metaDiv.appendChild(prioritySpan);
+
+                if (task.dueDate) {
+                    const dueSpan = document.createElement("span");
+                    dueSpan.className = "task-due";
+                    dueSpan.innerText = `Fällig: ${task.dueDate}`;
+                    metaDiv.appendChild(dueSpan);
+                }
+
+                contentDiv.appendChild(titleSpan);
+                contentDiv.appendChild(metaDiv);
+
+                // Aktionen
+                const actionsDiv = document.createElement("div");
+                actionsDiv.className = "task-actions";
+                const editBtn = document.createElement("button");
+                editBtn.className = "btn-icon edit-task";
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.addEventListener("click", () => openEditModal(task.id));
+                const deleteBtn = document.createElement("button");
+                deleteBtn.className = "btn-icon delete-task";
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.addEventListener("click", () => {
+                    if (confirm("Aufgabe wirklich löschen?")) {
+                        tasks = tasks.filter(t => t.id !== task.id);
+                        renderTasks();
+                    }
+                });
+                actionsDiv.appendChild(editBtn);
+                actionsDiv.appendChild(deleteBtn);
+
+                taskDiv.appendChild(checkDiv);
+                taskDiv.appendChild(contentDiv);
+                taskDiv.appendChild(actionsDiv);
+                container.appendChild(taskDiv);
+            });
+        }
+
+        function updatePriorityButtons(priority) {
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                if (btn.dataset.priority === priority) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            document.getElementById("taskPriority").value = priority;
+            currentPriority = priority;
+        }
+
+        let currentEditId = null;
+
+        function openEditModal(id = null) {
+            currentEditId = id;
+            const modal = document.getElementById("taskModal");
+            const modalTitle = document.getElementById("modalTitle");
+            if (id !== null) {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    modalTitle.innerText = "Aufgabe bearbeiten";
+                    document.getElementById("taskId").value = task.id;
+                    document.getElementById("taskTitle").value = task.title;
+                    document.getElementById("taskDueDate").value = task.dueDate || "";
+                    document.getElementById("taskDescription").value = task.description || "";
+                    updatePriorityButtons(task.priority);
+                }
+            } else {
+                modalTitle.innerText = "Neue Aufgabe erstellen";
+                document.getElementById("taskId").value = "";
+                document.getElementById("taskTitle").value = "";
+                document.getElementById("taskDueDate").value = "";
+                document.getElementById("taskDescription").value = "";
+                updatePriorityButtons("medium");
+            }
+            document.getElementById("modalError").innerHTML = "";
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("taskModal").style.display = "none";
+            currentEditId = null;
+        }
+
+        function saveTask() {
+            const title = document.getElementById("taskTitle").value.trim();
+            const priority = currentPriority;
+            const dueDate = document.getElementById("taskDueDate").value;
+            const description = document.getElementById("taskDescription").value;
+            if (!title) {
+                document.getElementById("modalError").innerHTML = "Bitte gib einen Titel ein.";
+                return;
+            }
+            if (currentEditId !== null) {
+                const index = tasks.findIndex(t => t.id === currentEditId);
+                if (index !== -1) {
+                    tasks[index] = { ...tasks[index], title, priority, dueDate, description };
+                }
+            } else {
+                const newId = Date.now();
+                tasks.push({
+                    id: newId,
+                    title,
+                    completed: false,
+                    priority,
+                    dueDate,
+                    description
+                });
+            }
+            closeModal();
+            renderTasks();
+        }
+
+        document.getElementById("newTaskBtn").addEventListener("click", () => openEditModal(null));
+        document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+        document.getElementById("saveTaskBtn").addEventListener("click", saveTask);
+        window.addEventListener("click", (e) => {
+            if (e.target === document.getElementById("taskModal")) closeModal();
+        });
+
+        // Priority-Buttons Event-Listener
+        document.querySelectorAll('.priority-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updatePriorityButtons(btn.dataset.priority);
+            });
+        });
+
+        renderTasks();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="navbar-loader.js"></script>
+    <script src="footer-loader.js"></script>
+
+    <!-- Footer-Styling (damit der Footer unten bleibt) - wird noch geändert  -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+    </style>
+</body>
+</html>

@@ -1736,3 +1736,148 @@ h1, h2, h3, .category-title {
     margin-right: 0.5rem;
     color: var(--rosé-mittel);
 }
+
+/* ===== TO-DO LISTE ===== */
+.todo-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.todo-headline {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--braun-warm);
+}
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+.task-item {
+    background: var(--weiß);
+    border: 1px solid var(--rosé-hell);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.2s;
+}
+.task-item:hover {
+    border-color: var(--rosé-mittel);
+    box-shadow: 0 5px 15px rgba(212,165,165,0.1);
+}
+.task-check {
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+.task-check input {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+.task-content {
+    flex: 1;
+}
+.task-title {
+    font-weight: 600;
+    color: var(--braun-warm);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+.task-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+}
+.priority-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background-color: #f5f0e8;
+}
+.priority-low { color: #2e7d32; background: #e8f5e9; }
+.priority-medium { color: #b76e0e; background: #fff8e1; }
+.priority-high { color: #c62828; background: #ffebee; }
+.task-due {
+    color: var(--braun-hell);
+}
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--braun-hell);
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+.btn-icon:hover {
+    background: var(--rosé-hell);
+    color: var(--rosé-mittel);
+}
+@media (max-width: 576px) {
+    .task-item {
+        flex-wrap: wrap;
+    }
+    .task-actions {
+        margin-left: auto;
+    }
+}
+
+/* ===== TO-DO LISTE (PRIORITÄTS-BUTTONS) ===== */
+.priority-buttons {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.priority-btn {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--rosé-hell);
+    border-radius: 2rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-weight: 500;
+}
+.priority-btn.active {
+    border-width: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.priority-btn[data-priority="low"].active {
+    background-color: #e8f5e9;
+    border-color: #2e7d32;
+}
+.priority-btn[data-priority="medium"].active {
+    background-color: #fff8e1;
+    border-color: #b76e0e;
+}
+.priority-btn[data-priority="high"].active {
+    background-color: #ffebee;
+    border-color: #c62828;
+}
+.priority-btn:hover {
+    background-color: var(--rosé-hell);
+    transform: translateY(-1px);
+}
+.priority-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.priority-dot.low { background-color: #2e7d32; }
+.priority-dot.medium { background-color: #b76e0e; }
+.priority-dot.high { background-color: #c62828; }
