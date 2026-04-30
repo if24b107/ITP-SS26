@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
     <title>Kalender & Terminplanung - JAMMM Together</title>
+    <style>
+        /* zusätzlicher Style für die Mock-Kalender-Elemente */
+        .event-item {
+            display: inline-block;
+            background-color: var(--rosé-mittel);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
@@ -32,7 +56,87 @@
             </p>
         </div>
 
-        <!-- Detailblöcke -->
+        <!-- Erklärender Text für den Mock-Kalender -->
+        <div class="text-center mb-4">
+            <p class="text-muted">
+                <i class="fas fa-info-circle"></i> Hier sehen Sie ein Beispiel unseres Kalenders, den Sie nach der Anmeldung bearbeiten können.
+            </p>
+        </div>
+
+        <!-- statischer Mock-Kalender (keine Interaktion, nur visuelle Darstellung) -->
+        <div class="calendar-container" style="max-width: 900px; margin: 0 auto 2rem auto;">
+            <div class="calendar-header" style="justify-content: center;">
+                <div class="month-year">Monat 2026</div>
+            </div>
+
+            <div class="weekdays">
+                <div class="weekday">Mo</div>
+                <div class="weekday">Di</div>
+                <div class="weekday">Mi</div>
+                <div class="weekday">Do</div>
+                <div class="weekday">Fr</div>
+                <div class="weekday">Sa</div>
+                <div class="weekday">So</div>
+            </div>
+
+            <div class="calendar-grid">
+                <!-- Zeile 1 -->
+                <div class="calendar-day"><div class="day-number">1</div></div>
+                <div class="calendar-day"><div class="day-number">2</div></div>
+                <div class="calendar-day"><div class="day-number">3</div></div>
+                <div class="calendar-day"><div class="day-number">4</div></div>
+                <div class="calendar-day"><div class="day-number">5</div><div class="event-item">Catering Verkostung</div></div>
+                <div class="calendar-day"><div class="day-number">6</div></div>
+                <div class="calendar-day"><div class="day-number">7</div></div>
+
+                <!-- Zeile 2 -->
+                <div class="calendar-day"><div class="day-number">8</div></div>
+                <div class="calendar-day"><div class="day-number">9</div></div>
+                <div class="calendar-day"><div class="day-number">10</div><div class="event-item">DJ buchen</div></div>
+                <div class="calendar-day"><div class="day-number">11</div></div>
+                <div class="calendar-day"><div class="day-number">12</div></div>
+                <div class="calendar-day"><div class="day-number">13</div><div class="event-item">Fotograf</div></div>
+                <div class="calendar-day"><div class="day-number">14</div></div>
+
+                <!-- Zeile 3 -->
+                <div class="calendar-day"><div class="day-number">15</div><div class="event-item">Location Besichtigung</div></div>
+                <div class="calendar-day"><div class="day-number">16</div></div>
+                <div class="calendar-day"><div class="day-number">17</div><div class="event-item">Trauringe kaufen</div></div>
+                <div class="calendar-day"><div class="day-number">18</div></div>
+                <div class="calendar-day"><div class="day-number">19</div></div>
+                <div class="calendar-day"><div class="day-number">20</div><div class="event-item">Musikwünsche</div></div>
+                <div class="calendar-day"><div class="day-number">21</div></div>
+
+                <!-- Zeile 4 -->
+                <div class="calendar-day"><div class="day-number">22</div><div class="event-item">Make-up Probe</div></div>
+                <div class="calendar-day"><div class="day-number">23</div></div>
+                <div class="calendar-day"><div class="day-number">24</div></div>
+                <div class="calendar-day"><div class="day-number">25</div><div class="event-item">Einladungen verschicken</div></div>
+                <div class="calendar-day"><div class="day-number">26</div></div>
+                <div class="calendar-day"><div class="day-number">27</div><div class="event-item">Menü Besprechung</div></div>
+                <div class="calendar-day"><div class="day-number">28</div></div>
+
+                <!-- Zeile 5 -->
+                <div class="calendar-day"><div class="day-number">29</div><div class="event-item">Dekoration abstimmen</div></div>
+                <div class="calendar-day"><div class="day-number">30</div></div>
+                <div class="calendar-day"><div class="day-number">31</div></div>
+                <div class="calendar-day other-month"><div class="day-number">1</div></div>
+                <div class="calendar-day other-month"><div class="day-number">2</div></div>
+                <div class="calendar-day other-month"><div class="day-number">3</div></div>
+                <div class="calendar-day other-month"><div class="day-number">4</div></div>
+
+                <!-- Zeile 6 -->
+                <div class="calendar-day other-month"><div class="day-number">5</div></div>
+                <div class="calendar-day other-month"><div class="day-number">6</div></div>
+                <div class="calendar-day other-month"><div class="day-number">7</div></div>
+                <div class="calendar-day other-month"></div>
+                <div class="calendar-day other-month"></div>
+                <div class="calendar-day other-month"></div>
+                <div class="calendar-day other-month"></div>
+            </div>
+        </div>
+
+        <!-- Detailblöcke (Funktionsbeschreibungen) -->
         <div class="planning-details">
             <div class="planning-block">
                 <h2 class="planning-block-title"><i class="fas fa-plus-circle"></i> Termine ganz einfach anlegen</h2>
