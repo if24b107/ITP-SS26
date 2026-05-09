@@ -13,12 +13,6 @@ const path = require("path");
 
 app.use(express.static(path.join(__dirname, "..")));
 
-/*
-//neu: flexibler CORS
-app.use(cors({
-  origin: true, //"http://127.0.0.1:5500",  //before: true
-  credentials: true
-})); */
 
 app.use(express.json());
 
