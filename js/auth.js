@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          window.location.href = "personalDashboard.html"; //oder tempPersonalDashboard.html/personalDashboard.html
+          window.location.href = "tempPersonalDashboard.html"; //veraltet Verwendung: personalDashboard.html
         } else {
           alert(data.message);
         }

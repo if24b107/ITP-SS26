@@ -1999,3 +1999,105 @@ h1, h2, h3, .category-title {
         gap: 0.2rem;
     }
 }
+
+/* =========================================
+   FAVORITEN / HERZ ICONS
+========================================= */
+
+/* Positionierung Herz absolut: */
+.catering-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Herz-Button */
+.favorite-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+    z-index: 20;
+}
+
+/* Hover Effekt */
+.favorite-btn:hover {
+    transform: scale(1.08);
+
+    background: white;
+
+    box-shadow: 0 8px 18px rgba(212, 165, 165, 0.25);
+}
+
+/* Herz */
+.favorite-btn i {
+    font-size: 1.2rem;
+
+    color: #d8a0a0;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+/* Aktiver Favorit */
+.favorite-btn.active i {
+    color: #ff4d6d;
+    transform: scale(1.12);
+}
+
+/* Klick Animation */
+.favorite-btn.active {
+    animation: favoritePop 0.28s ease;
+}
+
+/* Animation */
+@keyframes favoritePop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.22);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Mobile Optimierung */
+@media (max-width: 768px) {
+
+    .favorite-btn {
+        width: 40px;
+        height: 40px;
+
+        top: 12px;
+        right: 12px;
+    }
+
+    .favorite-btn i {
+        font-size: 1.05rem;
+    }
+}
