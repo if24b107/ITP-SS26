@@ -20,7 +20,7 @@
             <h1 class="planning-title">📅 Meine Termine</h1>
             <p class="planning-subtitle">Alle Termine immer im Blick – gemeinsam mit deinem Partner planen.</p>
         </div>
-        
+
         <div class="calendar-container">
 
             <!-- Buttons -->
@@ -482,7 +482,13 @@
     </script>
     <div id="footer-placeholder"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/auth-nav.js"></script> 
+    <script src="js/auth-guard.js"></script>
+    <script>
+        checkAuth({
+            requireAuth: true
+        });
+    </script>
+    <script src="js/auth-nav.js"></script>
     <script src="navbar-loader.js"></script>
     <script src="footer-loader.js"></script>
 </body>
