@@ -198,6 +198,72 @@ app.post("/logout", (req, res) => {
   });
 });
 
+/* =========================
+   GAST HINZUFÜGEN
+========================= */
+app.post("/guests", async (req, res) => {
+  try {
+    const { guest_name, rsvp_status, num_guests, notes } = req.body;
+
+    if (!guest_name || !rsvp_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Name und Status erforderlich"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("guests")
+      .insert([
+        {
+          guest_name,
+          rsvp_status,
+          num_guests: num_guests || 1,
+          notes: notes || null
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Hinzufügen des Gastes"
+    });
+  }
+});
+
+/* =========================
+   GÄSTE ABRUFEN
+========================= */
+app.get("/guests", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data || []
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Abrufen der Gäste"
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });  
