@@ -338,8 +338,7 @@ app.get("/guests", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("guests")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select("*");
 
     if (error) throw error;
 
@@ -352,6 +351,41 @@ app.get("/guests", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Fehler beim Abrufen der Gäste"
+    });
+  }
+});
+
+/* =========================
+   GAST LÖSCHEN
+========================= */
+app.delete("/guests/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("guests")
+      .delete()
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Gast nicht gefunden"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Gast erfolgreich gelöscht"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Löschen des Gastes"
     });
   }
 });
