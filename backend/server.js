@@ -190,7 +190,7 @@ app.post("/register", async (req, res) => {
 });
 
 /*=========================
-   LOGOUT 
+   LOGOUT
 ========================= */
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {       //neu
@@ -198,6 +198,119 @@ app.post("/logout", (req, res) => {
   });
 });
 
+/* =========================
+   FAVORITES
+========================= */
+
+// Middleware: prüft, ob der User eingeloggt ist
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+  next();
+}
+
+// Erlaubte item_type-Werte (vermeidet, dass irgendein Frontend-Bug zufaellige Strings reinschreibt)
+const ALLOWED_ITEM_TYPES = ["location", "catering"];
+
+// GET /favorites - alle eigenen Favoriten (Catering + Locations) laden
+app.get("/favorites", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    const { data, error } = await supabase
+      .from("favorites")
+      .select("id, item_type, item_id, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, favorites: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// POST /favorites - neuen Favoriten anlegen
+app.post("/favorites", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { item_type, item_id } = req.body;
+
+    if (!item_type || !ALLOWED_ITEM_TYPES.includes(item_type)) {
+      return res.status(400).json({
+        success: false,
+        message: "Ungueltiger item_type (erlaubt: location, catering)"
+      });
+    }
+    if (item_id === undefined || item_id === null || item_id === "") {
+      return res.status(400).json({ success: false, message: "item_id erforderlich" });
+    }
+
+    const { data, error } = await supabase
+      .from("favorites")
+      .insert([{ user_id: userId, item_type, item_id }])
+      .select()
+      .single();
+
+    if (error) {
+      // 23505 = unique_violation -> Favorit existiert bereits
+      if (error.code === "23505") {
+        return res.status(409).json({ success: false, message: "Favorit existiert bereits" });
+      }
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.status(201).json({ success: true, favorite: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /favorites/:type/:id - eigenen Favoriten loeschen
+app.delete("/favorites/:type/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { type, id } = req.params;
+
+    if (!ALLOWED_ITEM_TYPES.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: "Ungueltiger item_type (erlaubt: location, catering)"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("favorites")
+      .delete()
+      .eq("user_id", userId)       // wichtig: nur eigene Favoriten loeschbar
+      .eq("item_type", type)
+      .eq("item_id", id)
+      .select();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Loeschen" });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ success: false, message: "Favorit nicht gefunden" });
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
-});  
+});
