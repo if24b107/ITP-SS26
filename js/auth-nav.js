@@ -30,7 +30,7 @@ window.initAuthNav = async function () {
         if (data.loggedIn) {
             // Normale Menüpunkte für eingeloggte Benutzer
             dynamicLinks.innerHTML = `
-                <li class="nav-item"><a class="nav-link" href="personalDashboard.html">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="tempPersonalDashboard.html">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender & Termine</a></li>
                 <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
                 <li class="nav-item"><a class="nav-link" href="guestlist.html">Gästeliste</a></li>
@@ -43,7 +43,7 @@ window.initAuthNav = async function () {
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="personalDashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="tempPersonalDashboard.html">Dashboard</a></li>
                         <li><a class="dropdown-item" href="calendarOverview.html">Kalender</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
