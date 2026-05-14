@@ -25,6 +25,11 @@
                 <button id="addGuestBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Gast
                     hinzufügen</button>
             </div>
+            <div class="mb-3 d-flex gap-2 flex-wrap">
+                <button id="filterAllBtn" class="btn btn-sm btn-primary" type="button">Alle</button>
+                <button id="filterAcceptedBtn" class="btn btn-sm btn-outline-secondary" type="button">Zugesagt</button>
+                <button id="filterNotAcceptedBtn" class="btn btn-sm btn-outline-secondary" type="button">Nicht zugesagt/abgesagt</button>
+            </div>
             <div class="text-muted small mb-3">
                 <i class="fas fa-info-circle"></i>
                 Einfache Änderung des Status: Klicken Sie auf das farbige Feld und wählen Sie den neuen Status.
@@ -86,20 +91,43 @@
     <script src="navbar-loader.js"></script>
     <script src="footer-loader.js"></script>
     <script>
-        // ========== MOCK-DATEN ==========
-        let guests = [
-            { id: 1, name: "Anna Schmidt", status: "yes", plusOnes: 2, note: "Kommt mit Mann und Kind" },
-            { id: 2, name: "Max Mustermann", status: "pending", plusOnes: 0, note: "" },
-            { id: 3, name: "Julia Berger", status: "no", plusOnes: 0, note: "Anderer Termin" }
-        ];
+        // ========== GÄSTE AUS DB ==========
+        let guests = [];
+        let currentGuestFilter = "all";
+
+        async function loadGuests() {
+            const response = await fetch("/guests");
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                return;
+            }
+
+            const statusMap = { offen: "pending", zugesagt: "yes", abgesagt: "no" };
+            guests = (result.data || []).map(g => ({
+                id: g.id,
+                name: g.guest_name,
+                status: statusMap[g.rsvp_status] || "pending",
+                plusOnes: Number.isFinite(Number(g.num_guests)) ? Number(g.num_guests) : 0,
+                note: g.notes || ""
+            }));
+
+            renderGuestTable();
+        }
 
         function renderGuestTable() {
             const tbody = document.getElementById("guestListBody");
             const empty = document.getElementById("emptyGuestPlaceholder");
             tbody.innerHTML = "";
-            if (guests.length === 0) { empty.classList.remove("d-none"); return; }
+            const filteredGuests = guests.filter(guest => {
+                if (currentGuestFilter === "accepted") return guest.status === "yes";
+                if (currentGuestFilter === "notAccepted") return guest.status !== "yes";
+                return true;
+            });
+
+            if (filteredGuests.length === 0) { empty.classList.remove("d-none"); return; }
             empty.classList.add("d-none");
-            guests.forEach(guest => {
+            filteredGuests.forEach(guest => {
                 const row = tbody.insertRow();
                 row.dataset.id = guest.id;
                 // Name
@@ -134,8 +162,11 @@
                 const delBtn = document.createElement("button");
                 delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
                 delBtn.title = "Löschen";
-                delBtn.addEventListener("click", () => {
+                delBtn.addEventListener("click", async () => {
                     if (confirm(`Möchten Sie "${guest.name}" wirklich löschen?`)) {
+                        const response = await fetch(`/guests/${guest.id}`, { method: "DELETE" });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) return;
                         guests = guests.filter(g => g.id !== guest.id);
                         renderGuestTable();
                     }
@@ -143,6 +174,20 @@
                 actionsCell.appendChild(editBtn);
                 actionsCell.appendChild(delBtn);
             });
+        }
+
+        function setGuestFilter(filter) {
+            currentGuestFilter = filter;
+
+            const allBtn = document.getElementById("filterAllBtn");
+            const acceptedBtn = document.getElementById("filterAcceptedBtn");
+            const notAcceptedBtn = document.getElementById("filterNotAcceptedBtn");
+
+            allBtn.className = `btn btn-sm ${filter === "all" ? "btn-primary" : "btn-outline-secondary"}`;
+            acceptedBtn.className = `btn btn-sm ${filter === "accepted" ? "btn-primary" : "btn-outline-secondary"}`;
+            notAcceptedBtn.className = `btn btn-sm ${filter === "notAccepted" ? "btn-primary" : "btn-outline-secondary"}`;
+
+            renderGuestTable();
         }
 
         function renderStatusButtons(selectedStatus) {
@@ -198,27 +243,65 @@
         }
 
         function closeGuestModal() { document.getElementById("guestModal").style.display = "none"; currentGuestId = null; }
-        function saveGuest() {
+        async function saveGuest() {
             const name = document.getElementById("guestName").value.trim();
             const status = document.getElementById("guestStatus").value;
             const plusOnes = parseInt(document.getElementById("guestPlusOnes").value) || 0;
             const note = document.getElementById("guestNote").value.trim();
             if (!name) { document.getElementById("guestModalError").innerHTML = "Bitte gib einen Namen ein."; return; }
+            const statusMap = { pending: "offen", yes: "zugesagt", no: "abgesagt" };
             if (currentGuestId !== null) {
+                const response = await fetch(`/guests/${currentGuestId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        guest_name: name,
+                        rsvp_status: statusMap[status] || "offen",
+                        num_guests: plusOnes,
+                        notes: note || null
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    document.getElementById("guestModalError").innerHTML = result.message || "Fehler beim Aktualisieren";
+                    return;
+                }
+
                 const idx = guests.findIndex(g => g.id === currentGuestId);
                 if (idx !== -1) guests[idx] = { ...guests[idx], name, status, plusOnes, note };
             } else {
-                guests.push({ id: Date.now(), name, status, plusOnes, note });
+                const response = await fetch("/guests", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        guest_name: name,
+                        rsvp_status: statusMap[status] || "offen",
+                        num_guests: plusOnes,
+                        notes: note || null
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    document.getElementById("guestModalError").innerHTML = result.message || "Fehler beim Speichern";
+                    return;
+                }
+
+                guests.push({ id: result.data.id, name, status, plusOnes, note });
             }
             closeGuestModal();
             renderGuestTable();
         }
 
         document.getElementById("addGuestBtn").addEventListener("click", () => openGuestModal(null));
+        document.getElementById("filterAllBtn").addEventListener("click", () => setGuestFilter("all"));
+        document.getElementById("filterAcceptedBtn").addEventListener("click", () => setGuestFilter("accepted"));
+        document.getElementById("filterNotAcceptedBtn").addEventListener("click", () => setGuestFilter("notAccepted"));
         document.getElementById("closeGuestModalBtn").addEventListener("click", closeGuestModal);
         document.getElementById("saveGuestBtn").addEventListener("click", saveGuest);
         window.addEventListener("click", (e) => { if (e.target === document.getElementById("guestModal")) closeGuestModal(); });
-        renderGuestTable();
+        loadGuests();
     </script>
     <style>
         body {

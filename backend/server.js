@@ -198,6 +198,198 @@ app.post("/logout", (req, res) => {
   });
 });
 
+/* =========================
+   GAST HINZUFÜGEN
+========================= */
+app.post("/guests", async (req, res) => {
+  try {
+    const { guest_name, rsvp_status, num_guests, notes } = req.body;
+    const trimmedName = typeof guest_name === "string" ? guest_name.trim() : "";
+    const parsedNumGuests = Number(num_guests);
+
+    if (!trimmedName || !rsvp_status) {
+      return res.status(400).json({
+        success: false,
+        message: "Name und Status erforderlich"
+      });
+    }
+
+    if (!Number.isFinite(parsedNumGuests)) {
+      return res.status(400).json({
+        success: false,
+        message: "Begleitpersonen muss eine gueltige Zahl sein"
+      });
+    }
+
+    const rsvpDate = (rsvp_status === "zugesagt" || rsvp_status === "abgesagt")
+      ? new Date().toISOString()
+      : null;
+
+    const { data, error } = await supabase
+      .from("guests")
+      .insert([
+        {
+          guest_name: trimmedName,
+          rsvp_status,
+          num_guests: parsedNumGuests,
+          rsvp_date: rsvpDate,
+          notes: notes || null
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Hinzufügen des Gastes"
+    });
+  }
+});
+
+/* =========================
+   GAST AKTUALISIEREN
+========================= */
+app.put("/guests/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { guest_name, rsvp_status, num_guests, notes } = req.body;
+
+    const updates = {};
+
+    if (guest_name !== undefined) {
+      const trimmedName = typeof guest_name === "string" ? guest_name.trim() : "";
+      if (!trimmedName) {
+        return res.status(400).json({
+          success: false,
+          message: "Name darf nicht leer sein"
+        });
+      }
+      updates.guest_name = trimmedName;
+    }
+
+    if (rsvp_status !== undefined) {
+      updates.rsvp_status = rsvp_status;
+      updates.rsvp_date = (rsvp_status === "zugesagt" || rsvp_status === "abgesagt")
+        ? new Date().toISOString()
+        : null;
+    }
+
+    if (num_guests !== undefined) {
+      const parsedNumGuests = Number(num_guests);
+      if (!Number.isFinite(parsedNumGuests)) {
+        return res.status(400).json({
+          success: false,
+          message: "Begleitpersonen muss eine gueltige Zahl sein"
+        });
+      }
+      updates.num_guests = parsedNumGuests;
+    }
+
+    if (notes !== undefined) {
+      updates.notes = notes || null;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Keine gueltigen Felder zum Aktualisieren uebergeben"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("guests")
+      .update(updates)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Gast nicht gefunden"
+      });
+    }
+
+    res.json({
+      success: true,
+      data: data[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Aktualisieren des Gastes"
+    });
+  }
+});
+
+/* =========================
+   GÄSTE ABRUFEN
+========================= */
+app.get("/guests", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("*");
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data || []
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Abrufen der Gäste"
+    });
+  }
+});
+
+/* =========================
+   GAST LÖSCHEN
+========================= */
+app.delete("/guests/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("guests")
+      .delete()
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Gast nicht gefunden"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Gast erfolgreich gelöscht"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Fehler beim Löschen des Gastes"
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });  
