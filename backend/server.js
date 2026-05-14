@@ -198,6 +198,152 @@ app.post("/logout", (req, res) => {
   });
 });
 
+/*=========================
+   TERMIN ANLEGEN
+   Tabelle: calendar (id, user_id, title, date, time, description)
+=========================*/
+app.post("/appointments", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Nicht eingeloggt"
+    });
+  }
+
+  try {
+    const { title, date, time, description } = req.body;
+
+    // Pflichtfelder
+    if (!title || !date) {
+      return res.status(400).json({
+        success: false,
+        message: "Titel und Datum sind erforderlich"
+      });
+    }
+
+    // Datumsformat (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+      return res.status(400).json({
+        success: false,
+        message: "Ungültiges Datumsformat (erwartet: YYYY-MM-DD)"
+      });
+    }
+
+    // Zeitformat (HH:MM) – optional
+    if (time) {
+      const timeRegex = /^\d{2}:\d{2}$/;
+      if (!timeRegex.test(time)) {
+        return res.status(400).json({
+          success: false,
+          message: "Ungültiges Zeitformat (erwartet: HH:MM)"
+        });
+      }
+    }
+
+    const { data, error } = await supabase
+      .from("calendar")
+      .insert([
+        {
+          user_id: req.session.user.id,
+          title: title.trim(),
+          date: date,
+          time: time || null,
+          description: description ? description.trim() : null
+        }
+      ])
+      .select();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Fehler beim Speichern"
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Termin angelegt",
+      appointment: data[0]
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Serverfehler3"
+    });
+  }
+});
+
+//Termine laden
+app.get("/appointments", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("calendar")
+    .select("*")
+    .eq("user_id", req.session.user.id)
+    .order("date", { ascending: true });
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, appointments: data });
+});
+
+//Termin bearbeiten
+app.put("/appointments/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { title, date, description } = req.body;
+  if (!title || !date) return res.status(400).json({ success: false, message: "Titel und Datum erforderlich" });
+  const { data, error } = await supabase
+    .from("calendar")
+    .update({ title: title.trim(), date, description: description || null })
+    .eq("id", req.params.id)
+    .eq("user_id", req.session.user.id)
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+  return res.json({ success: true, appointment: data[0] });
+});
+
+//Termin löschen
+app.delete("/appointments/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { error } = await supabase
+    .from("calendar")
+    .delete()
+    .eq("id", req.params.id)
+    .eq("user_id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  return res.json({ success: true });
+});
+
+//POST /wedding-date – Datum speichern
+app.post("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { wedding_date } = req.body;
+  if (!wedding_date) return res.status(400).json({ success: false, message: "Datum fehlt" });
+  const { error } = await supabase
+    .from("users")
+    .update({ wedding_date })
+    .eq("id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  return res.json({ success: true });
+});
+// GET /wedding-date – Datum laden
+app.get("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("users")
+    .select("wedding_date")
+    .eq("id", req.session.user.id)
+    .single();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, wedding_date: data.wedding_date });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
+});
+
 /* =========================
    GAST HINZUFÜGEN
 ========================= */
@@ -389,7 +535,3 @@ app.delete("/guests/:id", async (req, res) => {
     });
   }
 });
-
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});  
