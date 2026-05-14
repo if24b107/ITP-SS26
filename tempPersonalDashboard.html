@@ -127,31 +127,23 @@
 
 
 
-    <!-- Änderungen notwendig: hier noch localstorage, noch keine session zusammenarbeit-->
-    <script>
+     <script>
         // ===== LOAD WEDDING DATE =====
-        /* function getWeddingDate() {
-             const user = JSON.parse(localStorage.getItem("user")).email;
- 
-             /* obere zeile durch______ ersetzen ?
-             const res = await fetch("http://localhost:3000/me", {
-                 credentials: "include"
-             });
-             const data = await res.json();
-             const user = data.user.email;
-             
-            
-             const saved = localStorage.getItem("weddingDate_" + user);
- 
-             if (!saved) return null;
- 
-             return JSON.parse(saved).date;
-         }
-         */
+        async function getWeddingDate() {
+            //const user = JSON.parse(localStorage.getItem("user")).email;
+
+            const res = await fetch("http://localhost:3000/wedding-date", {
+                credentials: "include"
+            });
+            const data = await res.json();
+            if(!data.success || !data.wedding_date) return null;
+
+            return data.wedding_date;
+        }
 
         // ===== COUNTDOWN LOGIC =====
-        function updateCountdown() {
-            const targetDate = getWeddingDate();
+        async function updateCountdown() {
+            const targetDate = await getWeddingDate();
 
             const countdownEl = document.getElementById("countdown");
 
@@ -180,83 +172,6 @@
         // ===== INIT =====
         updateCountdown();
         setInterval(updateCountdown, 60000); // jede Minute refresh
-    </script>
-
-
-    <script>
-        // Benutzername laden (Session-basiert)
-        /*    async function loadUsername() {
-            try {
-                const response = await fetch('/me', {
-                credentials: 'include'  // wichtig für Session-Cookie
-                });
-                const data = await response.json();
-    
-                if (data.loggedIn && data.user && data.user.username) {
-                document.getElementById('username-placeholder').innerText = data.user.username;
-                } else {
-                // Nicht eingeloggt → zur Login-Seite
-                window.location.href = './login.html';
-                }
-            } catch (error) {
-                console.error('Fehler beim Laden des Benutzers:', error);
-                window.location.href = './login.html';
-            }
-            }
-    
-            loadUsername(); */
-    </script>
-
-    <script>
-        /*alt:
-        async function initUserSession() {
-            try {
-                const res = await fetch("/me", {
-                    credentials: "include"
-                });
-
-                const data = await res.json();
-
-                if (!data.loggedIn) {
-                    window.location.replace("login.html");
-                    return;
-                }
-
-                // Username anzeigen
-                const el = document.getElementById("username-placeholder");
-                if (el) {
-                    el.innerText = data.user.username;
-                }
-
-            } catch (err) {
-                console.error("Session error:", err);
-                window.location.replace("login.html");
-            }
-        }
-
-        initUserSession(); */
-
-        //neu (Session login überprüfung im auth-guard)
-        async function initUserSession() {
-            try {
-                const res = await fetch("/me", {
-                    credentials: "include"
-                });
-
-                const data = await res.json();
-
-                const el = document.getElementById("username-placeholder");
-
-                if (el && data.user) {
-                    el.innerText = data.user.username;
-                }
-
-            } catch (err) {
-                console.error("Session error:", err);
-            }
-        }
-
-        initUserSession();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
