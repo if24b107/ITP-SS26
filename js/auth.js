@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const response = await fetch("/login", { //"http://localhost:3000/login"
           method: "POST",
-          credentials: "include",               
+          credentials: "include",               //neu für sessions
           headers: {
             "Content-Type": "application/json"
           },
@@ -22,8 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          //window.location.href = "tempPersonalDashboard.html"; //veraltet Verwendung: personalDashboard.html
-          window.location.replace("tempPersonalDashboard.html");
+          window.location.href = "personalDashboard.html";
         } else {
           alert(data.message);
         }

@@ -87,8 +87,6 @@
         if (!user) {
             window.location.href = "login.html";
         }*/
-
-        /* auth-guard stattdessen eingefügt unten
         (async () => {
             const meRes = await fetch("http://localhost:3000/me", { credentials: "include" });
             const meData = await meRes.json();
@@ -96,9 +94,6 @@
                 window.location.href = "login.html";
             }
         })();
-        */ //auth-guard stattdessen eingefügt unten
-
-
         // ===== STATE (später ggf. Backend ersetzen) =====
         let weddingDate = null;
 
@@ -226,14 +221,8 @@
         renderWeddingDate();
     </script>
 
-    <script src="js/auth-guard.js"></script>
-    <script>
-        checkAuth({
-            requireAuth: true
-        });
-    </script>
-    <script src="js/auth-nav.js"></script>
     <script src="navbar-loader.js"></script>
+    <script src="js/auth-nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

@@ -6,18 +6,18 @@
     </a>
 
     <!-- Hamburger-Button für mobile Ansicht -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Navigation umschalten">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Navigation umschalten">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-auto">
+
+
         <!-- Dropdown-Menü -->
         <li class="nav-item dropdown">
-          <!-- Allgemeine Service Seite gestalen oder leer lassen? -->
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
+            <!-- Allgemeine Service Seite gestalen oder leer lassen? -->
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Service
           </a>
           <ul class="dropdown-menu dropdown-menu-rose" aria-labelledby="navbarDropdown">
@@ -25,10 +25,12 @@
             <li><a class="dropdown-item" href="./location.html">Location</a></li> <!-- Links einfügen -->
           </ul>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="./calendar.html">Kalender</a>
+        </li>
       </ul>
 
-       <!-- Dynamische Links (nur eingeloggte Benutzer) -->
-      <ul class="navbar-nav me-auto" id="dynamic-nav-links"></ul>
 
       <div id="auth-nav-item" class="d-flex align-items-center"></div>
     </div>

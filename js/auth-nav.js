@@ -1,95 +1,32 @@
-// WAIT FOR NAVBAR 
-function waitForAuthNavContainers() {
-    return new Promise((resolve) => {
-        const check = setInterval(() => {
-            const dynamicLinks = document.getElementById("dynamic-nav-links");
-            const authContainer = document.getElementById("auth-nav-item");
-            if (dynamicLinks && authContainer) {
-                clearInterval(check);
-                resolve({ dynamicLinks, authContainer });
-            }
-        }, 50);
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const nav = document.getElementById("auth-nav-item");
+    if (!nav) return;
+
+    const res = await fetch("http://localhost:3000/me", {
+        credentials: "include"
     });
-}
 
-// MAIN AUTH NAV FUNCTION
-window.initAuthNav = async function () {
+    const data = await res.json();
 
-    const { dynamicLinks, authContainer } = await waitForAuthNavContainers();
-    if (!dynamicLinks || !authContainer) return;
+    if (data.loggedIn) {
+        nav.innerHTML = `
+      <a href="personaldashboard.html" class="btn btn-outline-light me-2">Dashboard</a>
+      <button onclick="logout()" class="btn btn-danger">Logout</button>
+    `;
+    } else {
+        nav.innerHTML = `
+      <a href="login.html" class="btn btn-outline-light">Login</a>
+    `;
+    }
 
-    try {
-        const res = await fetch("/me", {
+    window.logout = async function () {
+        await fetch("http://localhost:3000/logout", {
+            method: "POST",
             credentials: "include"
         });
 
-        const data = await res.json();
+        window.location.href = "login.html";
+    };
 
-        
-        // LOGGED IN STATE
-        if (data.loggedIn) {
-            // Normale Menüpunkte für eingeloggte Benutzer
-            dynamicLinks.innerHTML = `
-                <li class="nav-item"><a class="nav-link" href="tempPersonalDashboard.html">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender & Termine</a></li>
-                <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
-                <li class="nav-item"><a class="nav-link" href="guestlist.html">Gästeliste</a></li>
-            `;
-            authContainer.innerHTML = `
-                <div class="dropdown">
-                    <button class="btn btn-link dropdown-toggle profile-icon-btn"
-                        type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle fa-2x"></i>
-                    </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="tempPersonalDashboard.html">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="calendarOverview.html">Kalender</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
-                    </ul>
-                </div>
-            `;
-
-            
-            const logoutBtn = document.getElementById("logout-btn");
-
-            if (logoutBtn) {
-                logoutBtn.addEventListener("click", async (e) => {
-                    e.preventDefault();
-
-                    await fetch("/logout", {
-                        method: "POST",
-                        credentials: "include"
-                    });
-
-                    // redirect 
-                    window.location.replace("index.html");
-                });
-            }
-        }
-
-        // LOGGED OUT STATE
-        else {
-            dynamicLinks.innerHTML = "";
-            authContainer.innerHTML = `
-                <a href="login.html" class="btn login-btn">Login</a>
-            `;
-        }
-
-    } catch (err) {
-        console.error("Auth Nav Fehler:", err);
-
-        dynamicLinks.innerHTML = "";
-
-        // Fallback UI
-        authContainer.innerHTML = `
-            <a href="login.html" class="btn login-btn">Login</a>
-        `;
-    }
-};
-
-// AUTO INIT 
-document.addEventListener("DOMContentLoaded", () => {
-    initAuthNav();
 });

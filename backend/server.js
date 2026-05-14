@@ -4,36 +4,100 @@ const bcrypt = require("bcrypt");
 
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session"); //neu MP
+const session = require("express-session");
 
 const app = express();
 const PORT = 3000;
 
 const path = require("path");
 
-app.use(express.static(path.join(__dirname, "..")));
-
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 app.use(express.json());
 
-//Session Config
 app.use(session({
-  secret: process.env.SESSION_SECRET || "devsecret", //fallback
+  secret: process.env.SESSION_SECRET || "devsecret",
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: false,
     httpOnly: true,
-    sameSite: "lax" //before: none
+    sameSite: "lax"
   }
 }));
+
+app.use(express.static(path.join(__dirname, "..")));
+
+// =========================
+//   TO-DO ENDPOINTS
+// =========================
+
+// To-dos abrufen (nur eigene)
+app.get("/todos", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("todo")
+    .select("*")
+    .eq("user_id", req.session.user.id)
+    .order("created_at", { ascending: false });
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, todos: data });
+});
+
+// To-do anlegen
+app.post("/todos", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { title, priority } = req.body;
+  if (!title) return res.status(400).json({ success: false, message: "Titel erforderlich" });
+  const { data, error } = await supabase
+    .from("todo")
+    .insert([{ user_id: req.session.user.id, title, priority: priority || 0 }])
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  return res.status(201).json({ success: true, todo: data[0] });
+});
+
+// To-do aktualisieren (z.B. Titel, completed, priority)
+app.put("/todos/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const todoId = Number(req.params.id);
+  const { title, completed, priority } = req.body;
+  const updateObj = {};
+  if (title !== undefined) updateObj.title = title;
+  if (completed !== undefined) updateObj.completed = completed;
+  if (priority !== undefined) updateObj.priority = priority;
+  updateObj.updated_at = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("todo")
+    .update(updateObj)
+    .eq("id", todoId)
+    .eq("user_id", req.session.user.id)
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+  return res.json({ success: true, todo: data[0] });
+});
+
+// To-do löschen
+app.delete("/todos/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const todoId = Number(req.params.id);
+  const { error } = await supabase
+    .from("todo")
+    .delete()
+    .eq("id", todoId)
+    .eq("user_id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  return res.json({ success: true, message: "To-do gelöscht" });
+});
 
 /* =========================
    LOGIN
 ========================= */
 app.post("/login", async (req, res) => {
   try {
-    console.log("SESSION BEFORE LOGIN:", req.session);
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -43,20 +107,11 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    const { data: users, error } = await supabase
+    const { data: users } = await supabase
       .from("users")
       .select("*")
       .eq("email", email)
       .limit(1);
-
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: "Datenbankfehler"
-      });
-    }
 
     if (!users || users.length === 0) {
       return res.status(401).json({
@@ -66,28 +121,20 @@ app.post("/login", async (req, res) => {
     }
 
     const user = users[0];
-    console.log("INPUT:", password);
-    console.log("HASH:", user.password_hash);
-
     const isValid = await bcrypt.compare(password, user.password_hash);
-    console.log("PASSWORD VALID:", isValid);
 
     if (!isValid) {
       return res.status(401).json({
         success: false,
-        message: "Falsche Eingaben"  //zuvor: "falsches passwort"
+        message: "Falsche Eingaben"
       });
     }
 
-    //neu: Session setzen
     req.session.user = {
       id: user.id,
       email: user.email,
       username: user.username
     };
-
-    console.log("SESSION AFTER LOGIN:", req.session);
-    console.log("SESSION USER:", req.session.user);
 
     return res.json({
       success: true,
@@ -97,12 +144,11 @@ app.post("/login", async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Serverfehler"
+      message: "Serverfehler1"
     });
   }
 });
 
-//neu
 /* =========================
    SESSION CHECK
 ========================= */
@@ -114,7 +160,6 @@ app.get("/me", (req, res) => {
   }
 });
 
-
 /* =========================
    REGISTRIERUNG
 ========================= */
@@ -122,7 +167,6 @@ app.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // 1. Validierung
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -137,7 +181,6 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    // 2. prüfen ob User existiert
     const { data: existingUser } = await supabase
       .from("users")
       .select("*")
@@ -151,19 +194,11 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    // 3. Passwort hashen
     const password_hash = await bcrypt.hash(password, 10);
 
-    // 4. speichern
     const { data, error } = await supabase
       .from("users")
-      .insert([
-        {
-          username,
-          email,
-          password_hash
-        }
-      ])
+      .insert([{ username, email, password_hash }])
       .select();
 
     if (error) {
@@ -184,212 +219,162 @@ app.post("/register", async (req, res) => {
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Serverfehler"
+      message: "Serverfehler2"
     });
   }
 });
 
-/*=========================
-   LOGOUT 
+/* =========================
+   LOGOUT
 ========================= */
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {       //neu
+  req.session.destroy(() => {
     res.json({ success: true });
   });
 });
 
-/* =========================
-   GAST HINZUFÜGEN
-========================= */
-app.post("/guests", async (req, res) => {
+/*=========================
+   TERMIN ANLEGEN
+   Tabelle: calendar (id, user_id, title, date, time, description)
+=========================*/
+app.post("/appointments", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Nicht eingeloggt"
+    });
+  }
+
   try {
-    const { guest_name, rsvp_status, num_guests, notes } = req.body;
-    const trimmedName = typeof guest_name === "string" ? guest_name.trim() : "";
-    const parsedNumGuests = Number(num_guests);
+    const { title, date, time, description } = req.body;
 
-    if (!trimmedName || !rsvp_status) {
+    // Pflichtfelder
+    if (!title || !date) {
       return res.status(400).json({
         success: false,
-        message: "Name und Status erforderlich"
+        message: "Titel und Datum sind erforderlich"
       });
     }
 
-    if (!Number.isFinite(parsedNumGuests)) {
+    // Datumsformat (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
       return res.status(400).json({
         success: false,
-        message: "Begleitpersonen muss eine gueltige Zahl sein"
+        message: "Ungültiges Datumsformat (erwartet: YYYY-MM-DD)"
       });
     }
 
-    const rsvpDate = (rsvp_status === "zugesagt" || rsvp_status === "abgesagt")
-      ? new Date().toISOString()
-      : null;
+    // Zeitformat (HH:MM) – optional
+    if (time) {
+      const timeRegex = /^\d{2}:\d{2}$/;
+      if (!timeRegex.test(time)) {
+        return res.status(400).json({
+          success: false,
+          message: "Ungültiges Zeitformat (erwartet: HH:MM)"
+        });
+      }
+    }
 
     const { data, error } = await supabase
-      .from("guests")
+      .from("calendar")
       .insert([
         {
-          guest_name: trimmedName,
-          rsvp_status,
-          num_guests: parsedNumGuests,
-          rsvp_date: rsvpDate,
-          notes: notes || null
+          user_id: req.session.user.id,
+          title: title.trim(),
+          date: date,
+          time: time || null,
+          description: description ? description.trim() : null
         }
       ])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Fehler beim Speichern"
+      });
+    }
 
-    res.json({
+    return res.status(201).json({
       success: true,
-      data: data[0]
+      message: "Termin angelegt",
+      appointment: data[0]
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Fehler beim Hinzufügen des Gastes"
+      message: "Serverfehler3"
     });
   }
 });
 
-/* =========================
-   GAST AKTUALISIEREN
-========================= */
-app.put("/guests/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { guest_name, rsvp_status, num_guests, notes } = req.body;
-
-    const updates = {};
-
-    if (guest_name !== undefined) {
-      const trimmedName = typeof guest_name === "string" ? guest_name.trim() : "";
-      if (!trimmedName) {
-        return res.status(400).json({
-          success: false,
-          message: "Name darf nicht leer sein"
-        });
-      }
-      updates.guest_name = trimmedName;
-    }
-
-    if (rsvp_status !== undefined) {
-      updates.rsvp_status = rsvp_status;
-      updates.rsvp_date = (rsvp_status === "zugesagt" || rsvp_status === "abgesagt")
-        ? new Date().toISOString()
-        : null;
-    }
-
-    if (num_guests !== undefined) {
-      const parsedNumGuests = Number(num_guests);
-      if (!Number.isFinite(parsedNumGuests)) {
-        return res.status(400).json({
-          success: false,
-          message: "Begleitpersonen muss eine gueltige Zahl sein"
-        });
-      }
-      updates.num_guests = parsedNumGuests;
-    }
-
-    if (notes !== undefined) {
-      updates.notes = notes || null;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Keine gueltigen Felder zum Aktualisieren uebergeben"
-      });
-    }
-
-    const { data, error } = await supabase
-      .from("guests")
-      .update(updates)
-      .eq("id", id)
-      .select();
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Gast nicht gefunden"
-      });
-    }
-
-    res.json({
-      success: true,
-      data: data[0]
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      message: "Fehler beim Aktualisieren des Gastes"
-    });
-  }
+//Termine laden
+app.get("/appointments", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("calendar")
+    .select("*")
+    .eq("user_id", req.session.user.id)
+    .order("date", { ascending: true });
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, appointments: data });
 });
 
-/* =========================
-   GÄSTE ABRUFEN
-========================= */
-app.get("/guests", async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("*");
-
-    if (error) throw error;
-
-    res.json({
-      success: true,
-      data: data || []
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      message: "Fehler beim Abrufen der Gäste"
-    });
-  }
+//Termin bearbeiten
+app.put("/appointments/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { title, date, description } = req.body;
+  if (!title || !date) return res.status(400).json({ success: false, message: "Titel und Datum erforderlich" });
+  const { data, error } = await supabase
+    .from("calendar")
+    .update({ title: title.trim(), date, description: description || null })
+    .eq("id", req.params.id)
+    .eq("user_id", req.session.user.id)
+    .select();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+  return res.json({ success: true, appointment: data[0] });
 });
 
-/* =========================
-   GAST LÖSCHEN
-========================= */
-app.delete("/guests/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
+//Termin löschen
+app.delete("/appointments/:id", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { error } = await supabase
+    .from("calendar")
+    .delete()
+    .eq("id", req.params.id)
+    .eq("user_id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  return res.json({ success: true });
+});
 
-    const { data, error } = await supabase
-      .from("guests")
-      .delete()
-      .eq("id", id)
-      .select();
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Gast nicht gefunden"
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "Gast erfolgreich gelöscht"
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      message: "Fehler beim Löschen des Gastes"
-    });
-  }
+//POST /wedding-date – Datum speichern
+app.post("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { wedding_date } = req.body;
+  if (!wedding_date) return res.status(400).json({ success: false, message: "Datum fehlt" });
+  const { error } = await supabase
+    .from("users")
+    .update({ wedding_date })
+    .eq("id", req.session.user.id);
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  return res.json({ success: true });
+});
+// GET /wedding-date – Datum laden
+app.get("/wedding-date", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  const { data, error } = await supabase
+    .from("users")
+    .select("wedding_date")
+    .eq("id", req.session.user.id)
+    .single();
+  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  return res.json({ success: true, wedding_date: data.wedding_date });
 });
 
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
-});  
+});
