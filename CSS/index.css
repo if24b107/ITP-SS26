@@ -1,0 +1,93 @@
+/* ===== WILLKOMMENSBEREICH ===== */
+.welcome-section {
+  padding: 3rem 0;
+}
+.welcome-title {
+  font-size: 5.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--braun-warm);
+  margin-bottom: 1rem;
+  font-family: 'Cormorant Garamond', serif;
+}
+.welcome-subtitle {
+  font-size: 1.8rem;
+  color: var(--rosé-dunkel);
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+.welcome-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--grau-text);
+  margin-bottom: 2rem;
+}
+/* Willkommens-Button */
+.welcome-btn {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  color: white;
+  font-size: 1.3rem;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  border-width: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(212, 165, 165, 0.3);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-block;
+  text-decoration: none;
+}
+.welcome-btn:hover {
+  background-color: var(--rosé-dunkel);
+  border-color: var(--rosé-dunkel);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(212, 165, 165, 0.5);
+}
+/* Call-to-Action Button */
+.bg-light .btn-primary {
+  background-color: var(--rosé-mittel);
+  border-color: var(--rosé-mittel);
+  color: white;
+  border-radius: 50px;
+  padding: 0.8rem 2.5rem;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+.bg-light .btn-primary:hover {
+  background-color: var(--rosé-dunkel);
+  border-color: var(--rosé-dunkel);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
+}
+/* Responsive Anpassungen für Index */
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: 3.5rem;
+  }
+  .welcome-subtitle {
+    font-size: 1.4rem;
+  }
+  .welcome-btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+  }
+  .service-card {
+    padding: 1.5rem;
+  }
+  .section-title {
+    font-size: 2.2rem;
+  }
+}
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+  .welcome-btn {
+    padding: 0.7rem 1.5rem;
+  }
+}

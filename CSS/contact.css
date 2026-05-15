@@ -1,0 +1,50 @@
+/* ===== KONTAKT SEITE ===== */
+.contact-card {
+    background: var(--weiß);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.15);
+    border: 1px solid var(--rosé-hell);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+}
+.contact-card:hover {
+    transform: translateY(-5px);
+}
+.contact-icon {
+    width: 90px;
+    height: 90px;
+    background: var(--rosé-hell);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+.contact-icon i {
+    font-size: 2.8rem;
+    color: var(--rosé-mittel);
+}
+.contact-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+.contact-detail {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--rosé-dunkel);
+    margin-bottom: 0.5rem;
+}
+.contact-hint {
+    font-size: 0.9rem;
+    color: var(--braun-hell);
+}
+.contact-message {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--rosé-hell);
+    border-radius: 2rem;
+}
