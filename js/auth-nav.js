@@ -42,7 +42,7 @@ window.initAuthNav = async function () {
                         <i class="fas fa-user-circle fa-2x"></i>
                     </button>
 
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end" id="profile-dropdown-menu">
                         <li><a class="dropdown-item" href="tempPersonalDashboard.html">Dashboard</a></li>
                         <li><a class="dropdown-item" href="calendarOverview.html">Kalender</a></li>
                         <li><hr class="dropdown-divider"></li>
