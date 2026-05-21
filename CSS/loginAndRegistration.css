@@ -37,3 +37,6 @@
   color: var(--rosé-mittel);
   text-decoration: underline;
 }
+section.container {
+  padding-top: 2rem;
+}
