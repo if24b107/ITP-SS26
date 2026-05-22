@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="CSS/global.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+
+    <title>Budget Planer</title>
+</head>
+
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+
+        <div class="text-center mb-5">
+            <h1>💰 Budget Planer</h1>
+            <p class="text-muted">
+                Behaltet euer Hochzeitsbudget übersichtlich im Blick.
+            </p>
+        </div>
+
+        <!-- Budget Übersicht -->
+        <section class="row g-4 justify-content-center">
+
+            <!-- API/BACKEND: später Werte aus Backend einsetzen -->
+            <!-- TEMP: feste Beispielwerte nur zum Testen -->
+
+            <!-- Gesamtbudget -->
+            <div class="col-md-4">
+                <div class="service-card text-center p-4">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3>Gesamtbudget</h3>
+                    <p id="total-budget" class="display-6 fw-bold">15.000 €</p>
+                </div>
+            </div>
+
+            <!-- Bereits ausgegeben -->
+            <div class="col-md-4">
+                <div class="service-card text-center p-4">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <h3>Bereits ausgegeben</h3>
+                    <p id="spent-budget" class="display-6 fw-bold">4.200 €</p>
+                </div>
+            </div>
+
+            <!-- Verbleibendes Budget -->
+            <div class="col-md-4">
+                <div class="service-card text-center p-4">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <h3>Verbleibendes Budget</h3>
+                    <p id="remaining-budget" class="display-6 fw-bold">10.800 €</p>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="text-center mt-4">
+            <!-- API/BACKEND: später Daten neu vom Backend laden -->
+            <button class="btn btn-primary" onclick="reloadBudgetView()">
+                Daten neu laden
+            </button>
+        </div>
+
+        <!-- Kosten hinzufügen -->
+        <section class="container my-5">
+            <div class="service-card p-4">
+                <div class="text-center mb-4">
+                    <h2>Kosten hinzufügen</h2>
+                    <p class="text-muted">
+                        Trage neue Ausgaben ein, damit sie in deiner Kostenübersicht erscheinen.
+                    </p>
+                </div>
+
+                <!-- API/BACKEND: später Formular per POST speichern -->
+                <form id="cost-form" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="cost-title" class="form-label">Titel</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="cost-title"
+                            placeholder="z. B. Location Anzahlung"
+                            required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="cost-amount" class="form-label">Betrag</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="cost-amount"
+                            placeholder="z. B. 1200"
+                            min="0"
+                            step="0.01"
+                            required>
+                    </div>
+
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            Kosten speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Kostenliste -->
+        <section class="container my-5">
+            <div class="service-card p-4">
+                <div class="text-center mb-4">
+                    <h2>Kostenübersicht</h2>
+                    <p class="text-muted">
+                        Alle gespeicherten Kosten werden hier angezeigt.
+                    </p>
+                </div>
+
+                <!-- API/BACKEND: später Kostenliste aus Backend anzeigen -->
+                <!-- TEMP: Liste wird aktuell aus localStorage gerendert -->
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Titel</th>
+                                <th class="text-end">Betrag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cost-list">
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">
+                                    Noch keine Kosten eingetragen.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        /*
+          TEMP: localStorage nur zum Testen
+          API/BACKEND: später durch echte API-Calls ersetzen
+        */
+
+        const STORAGE_KEY = "budgetPlannerCosts";
+
+        function reloadBudgetView() {
+            console.log("Budget-Anzeige neu geladen.");
+
+            // API/BACKEND: später Budget Summary + Kostenliste neu laden
+            // TEMP: aktuell nur lokale Kostenliste neu rendern
+            renderCostList();
+        }
+
+        function formatEuro(value) {
+            const amount = Number(value) || 0;
+
+            return new Intl.NumberFormat("de-AT", {
+                style: "currency",
+                currency: "EUR"
+            }).format(amount);
+        }
+
+        function getStoredCosts() {
+            // TEMP: Kosten aus localStorage lesen
+            // API/BACKEND: später GET Request
+
+            const savedCosts = localStorage.getItem(STORAGE_KEY);
+
+            if (!savedCosts) {
+                return [];
+            }
+
+            try {
+                return JSON.parse(savedCosts);
+            } catch (err) {
+                console.error("Kosten konnten nicht gelesen werden:", err);
+                return [];
+            }
+        }
+
+        function saveStoredCosts(costs) {
+            // TEMP: Kosten in localStorage speichern
+            // API/BACKEND: später POST Request
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(costs));
+        }
+
+        function renderCostList() {
+            // TEMP: rendert lokale Testdaten
+            // API/BACKEND: später Backend-Daten rendern
+
+            const costList = document.getElementById("cost-list");
+            const costs = getStoredCosts();
+
+            costList.innerHTML = "";
+
+            if (costs.length === 0) {
+                costList.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">
+                            Noch keine Kosten eingetragen.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            costs.forEach((cost) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${cost.title}</td>
+                    <td class="text-end">${formatEuro(cost.amount)}</td>
+                `;
+
+                costList.appendChild(row);
+            });
+        }
+
+        function addCost(event) {
+            event.preventDefault();
+
+            const titleInput = document.getElementById("cost-title");
+            const amountInput = document.getElementById("cost-amount");
+
+            const title = titleInput.value.trim();
+            const amount = Number(amountInput.value);
+
+            if (!title || !Number.isFinite(amount)) {
+                alert("Bitte Titel und gültigen Betrag eingeben.");
+                return;
+            }
+
+            // TEMP: lokal speichern
+            // API/BACKEND: später POST Request ans Backend
+            const costs = getStoredCosts();
+
+            costs.push({
+                title,
+                amount
+            });
+
+            saveStoredCosts(costs);
+
+            titleInput.value = "";
+            amountInput.value = "";
+
+            reloadBudgetView();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const costForm = document.getElementById("cost-form");
+
+            if (costForm) {
+                costForm.addEventListener("submit", addCost);
+            }
+
+            reloadBudgetView();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/auth-guard.js"></script>
+    <script>
+        checkAuth({
+            requireAuth: true
+        });
+    </script>
+
+    <script src="js/auth-nav.js"></script>
+    <script src="navbar-loader.js"></script>
+    <script src="footer-loader.js"></script>
+</body>
+
+</html>
