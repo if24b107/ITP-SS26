@@ -80,7 +80,7 @@
                         <i class="fas fa-check-square"></i>
                     </div>
                     <h3>To‑Do‑Liste</h3>
-                    <p>Erledigt? Abhaken! Bald verfügbar – dann verpasst ihr keine Aufgabe mehr.</p>
+                    <p>Erledigt? Abhaken! Dann verpasst ihr keine Aufgabe mehr!</p>
                     <a href="./todo.html" class="btn btn-outline-primary">Zur Liste →</a>
                 </div>
             </div>
@@ -127,7 +127,20 @@
 
 
 
-     <script>
+    <script>
+
+        // ===== LOAD USERNAME =====
+        async function loadUsername() {
+            const res = await fetch("/me", {
+                credentials: "include"
+            });
+
+            const data = await res.json();
+
+            if (data.loggedIn && data.user && data.user.username) {
+                document.getElementById("username-placeholder").innerText = data.user.username;
+            }
+        }
         // ===== LOAD WEDDING DATE =====
         async function getWeddingDate() {
             //const user = JSON.parse(localStorage.getItem("user")).email;
@@ -136,7 +149,7 @@
                 credentials: "include"
             });
             const data = await res.json();
-            if(!data.success || !data.wedding_date) return null;
+            if (!data.success || !data.wedding_date) return null;
 
             return data.wedding_date;
         }
@@ -170,6 +183,7 @@
         }
 
         // ===== INIT =====
+        loadUsername();
         updateCountdown();
         setInterval(updateCountdown, 60000); // jede Minute refresh
     </script>

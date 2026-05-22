@@ -13,7 +13,6 @@ const path = require("path");
 
 app.use(express.static(path.join(__dirname, "..")));
 
-
 app.use(express.json());
 
 //Session Config
@@ -48,7 +47,6 @@ app.post("/login", async (req, res) => {
       .select("*")
       .eq("email", email)
       .limit(1);
-
 
     if (error) {
       console.error(error);
@@ -113,7 +111,6 @@ app.get("/me", (req, res) => {
     return res.json({ loggedIn: false });
   }
 });
-
 
 /* =========================
    REGISTRIERUNG
@@ -198,9 +195,6 @@ app.post("/logout", (req, res) => {
   });
 });
 
-/* =========================
-   FAVORITES
-
 // Middleware: prüft, ob der User eingeloggt ist
 function requireLogin(req, res, next) {
   if (!req.session.user) {
@@ -209,7 +203,11 @@ function requireLogin(req, res, next) {
   next();
 }
 
-// Erlaubte item_type-Werte (vermeidet, dass irgendein Frontend-Bug zufaellige Strings reinschreibt)
+/* =========================
+   FAVORITES
+========================= */
+
+// Erlaubte item_type-Werte
 const ALLOWED_ITEM_TYPES = ["location", "catering"];
 
 // GET /favorites - alle eigenen Favoriten (Catering + Locations) laden
@@ -247,6 +245,7 @@ app.post("/favorites", requireLogin, async (req, res) => {
         message: "Ungueltiger item_type (erlaubt: location, catering)"
       });
     }
+
     if (item_id === undefined || item_id === null || item_id === "") {
       return res.status(400).json({ success: false, message: "item_id erforderlich" });
     }
@@ -262,6 +261,7 @@ app.post("/favorites", requireLogin, async (req, res) => {
       if (error.code === "23505") {
         return res.status(409).json({ success: false, message: "Favorit existiert bereits" });
       }
+
       console.error(error);
       return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
     }
@@ -308,9 +308,12 @@ app.delete("/favorites/:type/:id", requireLogin, async (req, res) => {
     console.error(err);
     return res.status(500).json({ success: false, message: "Serverfehler" });
   }
+});
+
 /*=========================
    TERMIN ANLEGEN
    Tabelle: calendar (id, user_id, title, date, time, description)
+=========================*/
 app.post("/appointments", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({
@@ -386,75 +389,116 @@ app.post("/appointments", async (req, res) => {
   }
 });
 
-//Termine laden
+// Termine laden
 app.get("/appointments", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+
   const { data, error } = await supabase
     .from("calendar")
     .select("*")
     .eq("user_id", req.session.user.id)
     .order("date", { ascending: true });
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+
+  if (error) {
+    return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  }
+
   return res.json({ success: true, appointments: data });
 });
 
-//Termin bearbeiten
+// Termin bearbeiten
 app.put("/appointments/:id", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+
   const { title, date, description } = req.body;
-  if (!title || !date) return res.status(400).json({ success: false, message: "Titel und Datum erforderlich" });
+
+  if (!title || !date) {
+    return res.status(400).json({ success: false, message: "Titel und Datum erforderlich" });
+  }
+
   const { data, error } = await supabase
     .from("calendar")
     .update({ title: title.trim(), date, description: description || null })
     .eq("id", req.params.id)
     .eq("user_id", req.session.user.id)
     .select();
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+
+  if (error) {
+    return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+  }
+
   return res.json({ success: true, appointment: data[0] });
 });
 
-//Termin löschen
+// Termin löschen
 app.delete("/appointments/:id", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+
   const { error } = await supabase
     .from("calendar")
     .delete()
     .eq("id", req.params.id)
     .eq("user_id", req.session.user.id);
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+
+  if (error) {
+    return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+  }
+
   return res.json({ success: true });
 });
 
-//POST /wedding-date – Datum speichern
+// POST /wedding-date – Datum speichern
 app.post("/wedding-date", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+
   const { wedding_date } = req.body;
-  if (!wedding_date) return res.status(400).json({ success: false, message: "Datum fehlt" });
+
+  if (!wedding_date) {
+    return res.status(400).json({ success: false, message: "Datum fehlt" });
+  }
+
   const { error } = await supabase
     .from("users")
     .update({ wedding_date })
     .eq("id", req.session.user.id);
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+
+  if (error) {
+    return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+  }
+
   return res.json({ success: true });
 });
+
 // GET /wedding-date – Datum laden
 app.get("/wedding-date", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
+  }
+
   const { data, error } = await supabase
     .from("users")
     .select("wedding_date")
     .eq("id", req.session.user.id)
     .single();
-  if (error) return res.status(500).json({ success: false, message: "Fehler beim Laden" });
-  return res.json({ success: true, wedding_date: data.wedding_date });
-});
 
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
+  if (error) {
+    return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+  }
+
+  return res.json({ success: true, wedding_date: data.wedding_date });
 });
 
 /* =========================
    GAST HINZUFÜGEN
+========================= */
 app.post("/guests", async (req, res) => {
   try {
     const { guest_name, rsvp_status, num_guests, notes } = req.body;
@@ -509,6 +553,7 @@ app.post("/guests", async (req, res) => {
 
 /* =========================
    GAST AKTUALISIEREN
+========================= */
 app.put("/guests/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -586,6 +631,7 @@ app.put("/guests/:id", async (req, res) => {
 
 /* =========================
    GÄSTE ABRUFEN
+========================= */
 app.get("/guests", async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -609,6 +655,7 @@ app.get("/guests", async (req, res) => {
 
 /* =========================
    GAST LÖSCHEN
+========================= */
 app.delete("/guests/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -643,14 +690,7 @@ app.delete("/guests/:id", async (req, res) => {
 
 /* =========================
    TODOS
-
-// Middleware: prüft, ob der User eingeloggt ist
-function requireLogin(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
-  }
-  next();
-}
+========================= */
 
 // priority wird im Frontend als String ("low"/"medium"/"high") verwendet,
 // in der DB aber als int4 (1/2/3) gespeichert. Hier wird hin und her gemappt.
@@ -789,4 +829,8 @@ app.delete("/todos/:id", requireLogin, async (req, res) => {
     console.error(err);
     return res.status(500).json({ success: false, message: "Serverfehler" });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
 });
