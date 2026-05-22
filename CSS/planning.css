@@ -1,0 +1,61 @@
+/* ===== HOCHZEITSPLANUNG & SERVICE-TEXTSEITEN ===== */
+.planning-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--braun-warm);
+    margin-bottom: 1rem;
+}
+.planning-subtitle {
+    font-size: 1.2rem;
+    color: var(--braun-hell);
+    max-width: 700px;
+    margin: 0 auto;
+}
+.planning-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--grau-text);
+    margin-bottom: 1rem;
+}
+.planning-details {
+    margin-top: 2rem;
+}
+.planning-block {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rosé-hell);
+}
+.planning-block-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 0.5rem;
+}
+.planning-block-title i {
+    color: var(--rosé-mittel);
+    margin-right: 0.5rem;
+    width: 2rem;
+}
+.planning-block-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--grau-text);
+}
+.planning-outro-text {
+    font-size: 1.2rem;
+    background-color: var(--rosé-hell);
+    padding: 1.5rem;
+    border-radius: 2rem;
+    color: var(--braun-warm);
+}
+.planning-link {
+    color: var(--rosé-dunkel);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid var(--rosé-mittel);
+}
+.planning-link:hover {
+    color: var(--rosé-mittel);
+}

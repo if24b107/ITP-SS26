@@ -1,0 +1,309 @@
+/* ===== KALENDER SEITE ===== */
+
+/* Kalender Container */
+.calendar-container {
+    background: var(--weiß);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.15);
+    border: 1px solid var(--rosé-hell);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Kalender Kopf */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.month-year {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    font-family: 'Cormorant Garamond', serif;
+}
+
+/* Kalender Navigation Buttons */
+.calendar-nav-btn {
+    background-color: var(--rosé-mittel);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.calendar-nav-btn:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 165, 165, 0.4);
+}
+
+/* Wochentage */
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.weekday {
+    text-align: center;
+    padding: 1rem;
+    font-weight: 600;
+    background: var(--rosé-hell);
+    border-radius: 1rem;
+    color: var(--braun-warm);
+}
+
+/* Kalender Raster */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.8rem;
+}
+
+.calendar-day {
+    background: var(--weiß);
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    min-height: 100px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid var(--rosé-hell);
+}
+
+.calendar-day:hover {
+    background: var(--rosé-hell);
+    transform: translateY(-3px);
+    border-color: var(--rosé-mittel);
+    box-shadow: 0 5px 15px rgba(212, 165, 165, 0.2);
+}
+
+.day-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--braun-warm);
+    margin-bottom: 0.5rem;
+}
+
+/* Tage aus anderen Monaten */
+.other-month {
+    background: #fef9f7;
+    opacity: 0.6;
+}
+
+.other-month .day-number {
+    color: var(--braun-hell);
+}
+
+/* Tage mit Terminen */
+.has-event {
+    background: #fef6f2;
+    border-left: 4px solid var(--rosé-mittel);
+}
+
+.event-marker {
+    font-size: 0.7rem;
+    background: var(--rosé-mittel);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    display: inline-block;
+    margin-top: 0.3rem;
+}
+
+/* Highlight für den heutigen Tag */
+.calendar-day.today-highlight {
+    background: var(--rosé-hell);
+    border: 2px solid var(--rosé-mittel);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 165, 165, 0.3);
+}
+
+.calendar-day.today-highlight .day-number {
+    color: var(--rosé-dunkel);
+    font-weight: bold;
+}
+
+/* Container für Termine nebeneinander */
+.calendar-day .events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+/* Einzelner Termin-Button */
+.event-item {
+    display: inline-block;
+    background-color: var(--rosé-mittel);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.calendar-day .events-container .event-item {
+    flex: 1 1 auto;
+    min-width: 40px;
+}
+
+.event-item:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(212, 165, 165, 0.4);
+}
+
+/* Wenn nur ein Termin an einem Tag – etwas größer */
+.calendar-day .events-container:has(.event-item:only-child) .event-item {
+    padding: 4px 12px;
+}
+
+/* ===== RESPONSIVE KALENDER ===== */
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 70px;
+        padding: 0.5rem 0.2rem;
+    }
+    .day-number {
+        font-size: 0.9rem;
+    }
+    .month-year {
+        font-size: 1.5rem;
+    }
+    .calendar-nav-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+    .weekday {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+    .event-marker {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.4rem;
+    }
+    .event-item {
+        font-size: 0.6rem;
+        padding: 2px 5px;
+    }
+    .calendar-day .events-container {
+        gap: 2px;
+    }
+}
+
+@media (max-width: 576px) {
+    .calendar-header {
+        flex-direction: column;
+    }
+    .calendar-day {
+        min-height: 55px;
+    }
+    .calendar-container {
+        padding: 1rem;
+    }
+}
+
+/* ===== BEARBEITEN-MODAL BUTTONS (nur im Kalender verwendet) ===== */
+.edit-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.edit-modal-buttons-right {
+    display: flex;
+    gap: 0.8rem;
+}
+.edit-modal-buttons button,
+.edit-modal-buttons-right button {
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+}
+.edit-modal-buttons .cancel-btn {
+    background: #e0d5c8;
+    color: var(--braun-warm);
+}
+.edit-modal-buttons .cancel-btn:hover {
+    background: #d4c4b8;
+    transform: translateY(-2px);
+}
+.edit-modal-buttons-right .delete-btn {
+    background: #dc3545;
+    color: white;
+}
+.edit-modal-buttons-right .delete-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+.edit-modal-buttons-right .save-btn {
+    background: var(--rosé-mittel);
+    color: white;
+}
+.edit-modal-buttons-right .save-btn:hover {
+    background: var(--rosé-dunkel);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 165, 165, 0.3);
+}
+
+/* ===== DELETE MODAL BUTTONS (Lösch-Modal) ===== */
+.delete-modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.delete-modal-buttons .cancel-btn {
+    background: #e0d5c8;
+    color: var(--braun-warm);
+}
+.delete-modal-buttons .cancel-btn:hover {
+    background: #d4c4b8;
+}
+.delete-modal-buttons .delete-btn {
+    background: #dc3545;
+    color: white;
+}
+.delete-modal-buttons .delete-btn:hover {
+    background: #c82333;
+}
+
+/* Mobile Anpassungen für Modals */
+@media (max-width: 480px) {
+    .edit-modal-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    .edit-modal-buttons-right {
+        width: 100%;
+        justify-content: center;
+    }
+    .edit-modal-buttons .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

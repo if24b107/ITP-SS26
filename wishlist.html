@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="CSS/global.css">
+    <link rel="stylesheet" href="CSS/wishlist.css">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <title>Wunschliste - JAMMM Together</title>
+    <style>
+        /* zusätzlicher Style für Footer-Korrektur */
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+        <div class="text-center mb-4">
+            <h1 class="planning-title">🎁 Meine Wunschliste</h1>
+            <p class="planning-subtitle">Verwalte alle Geschenkwünsche, Preise und Reservierungen.</p>
+        </div>
+
+        <div class="wishlist-container">
+            <div class="mb-2">
+                <button id="addWishBtn" class="btn btn-primary"><i class="fas fa-gift"></i> Neues Geschenk hinzufügen</button>
+            </div>
+            <div class="text-muted small mb-3">
+                <i class="fas fa-info-circle"></i>
+                Hier kannst du deine Wunschliste verwalten. 
+            </div>
+
+            <div class="table-responsive">
+                <table class="wishlist-table" id="wishTable">
+                    <thead>
+                        <tr>
+                            <th>Geschenk</th>
+                            <th>Beschreibung</th>
+                            <th>Preis (€)</th>
+                            <th>Link</th>
+                            <th>Status</th>
+                            <th>Reserviert von</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wishlistBody">
+                        <!-- Wird dynamisch befüllt -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyWishPlaceholder" class="text-center text-muted mt-5 d-none">
+                <i class="fas fa-gift fa-3x mb-3"></i>
+                <p>Keine Geschenke eingetragen. Füge deinen ersten Wunsch hinzu!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal für neues / bearbeitetes Geschenk -->
+    <div id="wishModal" class="modal">
+        <div class="modal-content">
+            <h3 id="wishModalTitle">Geschenk hinzufügen</h3>
+            <input type="hidden" id="wishId">
+            <label for="wishName">Name *</label>
+            <input type="text" id="wishName" placeholder="z. B. Kochkurs">
+            <label for="wishDescription">Beschreibung (optional)</label>
+            <textarea id="wishDescription" rows="2" placeholder="Details zum Geschenk..."></textarea>
+            <label for="wishPrice">Preis (€, optional)</label>
+            <input type="number" id="wishPrice" step="0.01" placeholder="0.00">
+            <label for="wishLink">Link (optional)</label>
+            <input type="url" id="wishLink" placeholder="https://...">
+            <!-- Status-Auswahl mit Buttons -->
+            <label>Status</label>
+            <div class="status-buttons" id="statusButtonsModal"></div>
+            <input type="hidden" id="wishStatus" value="free">
+            <label for="wishReservedBy">Reserviert von (optional, nur bei Status „Reserviert“)</label>
+            <input type="text" id="wishReservedBy" placeholder="Name der Person">
+            <div id="wishModalError" class="error-msg"></div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="closeWishModalBtn">Abbrechen</button>
+                <button class="save-btn" id="saveWishBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <script> checkAuth({ requireAuth: true }); </script>
+    <script src="js/auth-nav.js"></script>
+    <script src="navbar-loader.js"></script>
+    <script src="footer-loader.js"></script>
+    <script>
+        // ========== MOCK-DATEN (später durch Backend ersetzen) ==========
+        let wishes = [
+            { id: 1, name: "Kochkurs für zwei", description: "Gemeinsamer Kochkurs in Wien", price: "120.00", link: "#", status: "free", reservedBy: "" },
+            { id: 2, name: "Hochzeitsalbum", description: "Professionelles Fotobuch", price: "89.00", link: "#", status: "reserved", reservedBy: "Anna" }
+        ];
+
+        function renderWishTable() {
+            const tbody = document.getElementById("wishlistBody");
+            const empty = document.getElementById("emptyWishPlaceholder");
+            tbody.innerHTML = "";
+            if (wishes.length === 0) {
+                empty.classList.remove("d-none");
+                return;
+            }
+            empty.classList.add("d-none");
+            wishes.forEach(wish => {
+                const row = tbody.insertRow();
+                row.dataset.id = wish.id;
+                // Name
+                row.insertCell(0).innerText = wish.name;
+                // Beschreibung
+                row.insertCell(1).innerText = wish.description || "—";
+                // Preis
+                row.insertCell(2).innerText = wish.price ? `${wish.price} €` : "—";
+                // Link
+                const linkCell = row.insertCell(3);
+                if (wish.link && wish.link !== "#") {
+                    const a = document.createElement("a");
+                    a.href = wish.link;
+                    a.target = "_blank";
+                    a.innerText = "Link";
+                    a.className = "wishlist-link";
+                    linkCell.appendChild(a);
+                } else {
+                    linkCell.innerText = "—";
+                }
+                // Status (farbiger Badge)
+                const statusCell = row.insertCell(4);
+                const badge = document.createElement("span");
+                badge.className = `status-badge ${wish.status === "free" ? "status-free" : "status-reserved"}`;
+                badge.innerText = wish.status === "free" ? "Frei" : "Reserviert";
+                statusCell.appendChild(badge);
+                // Reserviert von
+                row.insertCell(5).innerText = wish.reservedBy || "—";
+                // Aktionen
+                const actionsCell = row.insertCell(6);
+                actionsCell.className = "action-btns";
+                const editBtn = document.createElement("button");
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.title = "Bearbeiten";
+                editBtn.addEventListener("click", () => openWishModal(wish.id));
+                const delBtn = document.createElement("button");
+                delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                delBtn.title = "Löschen";
+                delBtn.addEventListener("click", () => {
+                    if (confirm(`Möchten Sie "${wish.name}" wirklich löschen?`)) {
+                        wishes = wishes.filter(w => w.id !== wish.id);
+                        renderWishTable();
+                    }
+                });
+                actionsCell.appendChild(editBtn);
+                actionsCell.appendChild(delBtn);
+            });
+        }
+
+        // ========== STATUS-BUTTONS IM MODAL ==========
+        function renderStatusButtons(selectedStatus) {
+            const container = document.getElementById("statusButtonsModal");
+            if (!container) return;
+            container.innerHTML = '';
+            const statuses = [
+                { value: 'free', label: 'Frei', dotClass: 'free' },
+                { value: 'reserved', label: 'Reserviert', dotClass: 'reserved' }
+            ];
+            statuses.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'status-btn-modal';
+                if (s.value === selectedStatus) btn.classList.add('active');
+                btn.setAttribute('data-status', s.value);
+                btn.innerHTML = `<span class="status-dot ${s.dotClass}"></span> ${s.label}`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#statusButtonsModal .status-btn-modal').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('wishStatus').value = s.value;
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        let currentWishId = null;
+        function openWishModal(id = null) {
+            currentWishId = id;
+            const modal = document.getElementById("wishModal");
+            const title = document.getElementById("wishModalTitle");
+            if (id !== null) {
+                const wish = wishes.find(w => w.id === id);
+                title.innerText = "Geschenk bearbeiten";
+                document.getElementById("wishId").value = wish.id;
+                document.getElementById("wishName").value = wish.name;
+                document.getElementById("wishDescription").value = wish.description || "";
+                document.getElementById("wishPrice").value = wish.price || "";
+                document.getElementById("wishLink").value = wish.link || "";
+                renderStatusButtons(wish.status);
+                document.getElementById("wishStatus").value = wish.status;
+                document.getElementById("wishReservedBy").value = wish.reservedBy || "";
+            } else {
+                title.innerText = "Geschenk hinzufügen";
+                document.getElementById("wishId").value = "";
+                document.getElementById("wishName").value = "";
+                document.getElementById("wishDescription").value = "";
+                document.getElementById("wishPrice").value = "";
+                document.getElementById("wishLink").value = "";
+                renderStatusButtons("free");
+                document.getElementById("wishStatus").value = "free";
+                document.getElementById("wishReservedBy").value = "";
+            }
+            document.getElementById("wishModalError").innerHTML = "";
+            modal.style.display = "flex";
+        }
+
+        function closeWishModal() {
+            document.getElementById("wishModal").style.display = "none";
+            currentWishId = null;
+        }
+
+        function saveWish() {
+            const name = document.getElementById("wishName").value.trim();
+            const description = document.getElementById("wishDescription").value.trim();
+            const price = document.getElementById("wishPrice").value;
+            const link = document.getElementById("wishLink").value.trim();
+            const status = document.getElementById("wishStatus").value;
+            const reservedBy = document.getElementById("wishReservedBy").value.trim();
+
+            if (!name) {
+                document.getElementById("wishModalError").innerHTML = "Bitte gib einen Namen für das Geschenk ein.";
+                return;
+            }
+
+            if (currentWishId !== null) {
+                const idx = wishes.findIndex(w => w.id === currentWishId);
+                if (idx !== -1) {
+                    wishes[idx] = { ...wishes[idx], name, description, price, link, status, reservedBy };
+                }
+            } else {
+                const newId = Date.now();
+                wishes.push({ id: newId, name, description, price, link, status, reservedBy });
+            }
+            closeWishModal();
+            renderWishTable();
+        }
+
+        document.getElementById("addWishBtn").addEventListener("click", () => openWishModal(null));
+        document.getElementById("closeWishModalBtn").addEventListener("click", closeWishModal);
+        document.getElementById("saveWishBtn").addEventListener("click", saveWish);
+        window.addEventListener("click", (e) => {
+            if (e.target === document.getElementById("wishModal")) closeWishModal();
+        });
+        renderWishTable();
+    </script>
+</body>
+</html>

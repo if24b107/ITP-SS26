@@ -1,0 +1,123 @@
+/* ===== WUNSCHLISTE ===== */
+.wishlist-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.wishlist-headline {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--braun-warm);
+    font-size: 2.2rem;
+}
+.wishlist-table {
+    width: 100%;
+    background: var(--weiß);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(212,165,165,0.1);
+}
+.wishlist-table th,
+.wishlist-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--rosé-hell);
+    vertical-align: middle;
+}
+.wishlist-table th {
+    background: var(--rosé-hell);
+    color: var(--braun-warm);
+    font-weight: 600;
+}
+.wishlist-table tr:hover {
+    background: #fef9f7;
+}
+.wishlist-link {
+    color: var(--rosé-dunkel);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--rosé-mittel);
+}
+.wishlist-link:hover {
+    color: var(--rosé-mittel);
+}
+/* Status-Badges  */
+.status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.status-free {
+    background-color: #d4edda;
+    color: #155724;
+}
+.status-reserved {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+.action-btns button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--braun-hell);
+    transition: color 0.2s;
+}
+.action-btns button:hover {
+    color: var(--rosé-mittel);
+}
+/* ===== STATUS-BUTTONS IM MODAL  ===== */
+.status-buttons {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.status-btn-modal {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--rosé-hell);
+    border-radius: 2rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+}
+.status-btn-modal.active {
+    border-width: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.status-btn-modal[data-status="free"].active {
+    background-color: #d4edda;
+    border-color: #155724;
+}
+.status-btn-modal[data-status="reserved"].active {
+    background-color: #fff3cd;
+    border-color: #856404;
+}
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.status-dot.free { background-color: #155724; }
+.status-dot.reserved { background-color: #856404; }
+
+@media (max-width: 768px) {
+    .wishlist-table th,
+    .wishlist-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    .action-btns {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+}
