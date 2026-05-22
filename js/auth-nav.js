@@ -34,6 +34,8 @@ window.initAuthNav = async function () {
                 <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender & Termine</a></li>
                 <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
                 <li class="nav-item"><a class="nav-link" href="guestlist.html">Gästeliste</a></li>
+                <li class="nav-item"><a class="nav-link" href="budgetplanner.html">Budget-Planer</a></li>
+                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wunschliste</a></li>
             `;
             authContainer.innerHTML = `
                 <div class="dropdown">
