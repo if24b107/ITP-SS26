@@ -30,12 +30,12 @@ window.initAuthNav = async function () {
         if (data.loggedIn) {
             // Normale Menüpunkte für eingeloggte Benutzer
             dynamicLinks.innerHTML = `
-                <li class="nav-item"><a class="nav-link" href="tempPersonalDashboard.html">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="calendarOverview.html">Kalender & Termine</a></li>
-                <li class="nav-item"><a class="nav-link" href="todo.html">To‑Do‑Liste</a></li>
-                <li class="nav-item"><a class="nav-link" href="guestlist.html">Gästeliste</a></li>
-                <li class="nav-item"><a class="nav-link" href="budgetplanner.html">Budget-Planer</a></li>
-                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wunschliste</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/dashboard/tempPersonalDashboard.html">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/calendarOverview.html">Kalender & Termine</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/todo.html">To‑Do‑Liste</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/guestlist.html">Gästeliste</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/budgetplanner.html">Budget-Planer</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/wishlist.html">Wunschliste</a></li>
             `;
             authContainer.innerHTML = `
                 <div class="dropdown">
@@ -45,8 +45,8 @@ window.initAuthNav = async function () {
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="tempPersonalDashboard.html">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="calendarOverview.html">Kalender</a></li>
+                        <li><a class="dropdown-item" href="/pages/dashboard/tempPersonalDashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/pages/planning/calendarOverview.html">Kalender</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
                     </ul>
@@ -66,7 +66,7 @@ window.initAuthNav = async function () {
                     });
 
                     // redirect 
-                    window.location.replace("index.html");
+                    window.location.replace("/index.html");
                 });
             }
         }
@@ -75,7 +75,7 @@ window.initAuthNav = async function () {
         else {
             dynamicLinks.innerHTML = "";
             authContainer.innerHTML = `
-                <a href="login.html" class="btn login-btn">Login</a>
+                <a href="/pages/auth/login.html" class="btn login-btn">Login</a>
             `;
         }
 
@@ -86,7 +86,7 @@ window.initAuthNav = async function () {
 
         // Fallback UI
         authContainer.innerHTML = `
-            <a href="login.html" class="btn login-btn">Login</a>
+            <a href="/pages/auth/login.html" class="btn login-btn">Login</a>
         `;
     }
 };

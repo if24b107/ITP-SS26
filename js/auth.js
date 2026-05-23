@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          //window.location.href = "tempPersonalDashboard.html"; //veraltet Verwendung: personalDashboard.html
-          window.location.replace("tempPersonalDashboard.html");
+          //window.location.href = "/pages/dashboard/tempPersonalDashboard.html"; //veraltet Verwendung: personalDashboard.html
+          window.location.replace("/pages/dashboard/tempPersonalDashboard.html");
         } else {
           alert(data.message);
         }
@@ -68,7 +68,7 @@ async function register(event) {
 
   if (data.success) {
     alert("Registrierung erfolgreich");
-    window.location.href = "login.html";
+    window.location.href = "/pages/auth/login.html";
   } else {
     alert(data.message);
   }
