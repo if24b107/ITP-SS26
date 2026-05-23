@@ -36,6 +36,7 @@ window.initAuthNav = async function () {
                 <li class="nav-item"><a class="nav-link" href="/pages/planning/guestlist.html">Gästeliste</a></li>
                 <li class="nav-item"><a class="nav-link" href="/pages/planning/budgetplanner.html">Budget-Planer</a></li>
                 <li class="nav-item"><a class="nav-link" href="/pages/planning/wishlist.html">Wunschliste</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/planning/favoritesOverview.html">Favoriten</a></li>
             `;
             authContainer.innerHTML = `
                 <div class="dropdown">

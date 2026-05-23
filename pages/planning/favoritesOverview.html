@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="/CSS/global.css">
+    <link rel="stylesheet" href="/CSS/cateringAndLocation.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon/favicon.ico">
+
+    <title>Meine Favoriten - JAMMM Together</title>
+</head>
+
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main class="container my-5">
+        <div class="catering-container">
+
+            <div class="text-center mb-5">
+                <h1 class="catering-title">❤️ Meine Favoriten</h1>
+                <p class="catering-subtitle">
+                    Hier findest du deine gespeicherten Favoriten aus Catering und Locations.
+                </p>
+            </div>
+
+            <div class="text-center mb-4">
+                <button class="btn btn-primary" onclick="loadFavorites()">
+                    Favoriten neu laden
+                </button>
+            </div>
+
+            <div id="favorites-error" class="alert alert-danger d-none text-center"></div>
+
+            <!-- Location Favoriten -->
+            <section class="my-5">
+                <div class="service-card p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h2 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Location-Favoriten
+                        </h2>
+                        <span id="location-count" class="badge bg-secondary">0</span>
+                    </div>
+
+                    <div id="location-favorites" class="catering-grid">
+                        <p class="text-muted mb-0">Lade Location-Favoriten...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Catering Favoriten -->
+            <section class="my-5">
+                <div class="service-card p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h2 class="mb-0">
+                            <i class="fas fa-utensils me-2"></i>
+                            Catering-Favoriten
+                        </h2>
+                        <span id="catering-count" class="badge bg-secondary">0</span>
+                    </div>
+
+                    <div id="catering-favorites" class="catering-grid">
+                        <p class="text-muted mb-0">Lade Catering-Favoriten...</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        /*
+          Favoriten Overview
+
+          Backend:
+          - GET /favorites liefert item_type und item_id
+
+          Mapping:
+          - item_type "location" + item_id wird mit locationData verbunden
+          - item_type "catering" + item_id wird mit cateringData verbunden
+        */
+
+        const locationData = {
+            1: {
+                icon: "fa-landmark",
+                title: "Schloss Schönbrunn",
+                description: "Prunkvolle Hochzeiten im historischen Schloss.",
+                location: "Schönbrunner Schloßstraße 47, 1130 Wien",
+                image: "/assets/location/location_schloss_schoenbrunn.jpg",
+                link: "/pages/services/location.html"
+            },
+            2: {
+                icon: "fa-tree",
+                title: "Schloss Mirabell",
+                description: "Standesamtliche Trauungen im Marmorsaal.",
+                location: "Mirabellplatz 4, 5020 Salzburg",
+                image: "/assets/location/location_schloss_mirabell.jpg",
+                link: "/pages/services/location.html"
+            },
+            3: {
+                icon: "fa-water",
+                title: "Schloss Ort",
+                description: "Romantische Hochzeiten direkt am Wasser.",
+                location: "Ort 1, 4810 Gmunden",
+                image: "/assets/location/location_schlossort_gmunden.jpg",
+                link: "/pages/services/location.html"
+            },
+            4: {
+                icon: "fa-chess-rook",
+                title: "Burg Hohenwerfen",
+                description: "Mittelalterliche Burg für einzigartige Hochzeiten.",
+                location: "Burgstraße 2, 5450 Werfen",
+                image: "/assets/location/location_burg_hohenwerfen.jpg",
+                link: "/pages/services/location.html"
+            },
+            5: {
+                icon: "fa-wine-glass-alt",
+                title: "Weingut Neusiedlersee",
+                description: "Hochzeit in den Weinbergen.",
+                location: "Region Neusiedler See, Burgenland",
+                image: "/assets/location/location_weingut.jpg",
+                link: "/pages/services/location.html"
+            },
+            6: {
+                icon: "fa-landmark",
+                title: "Schloss Belvedere",
+                description: "Barocke Prunksäle und Gärten.",
+                location: "Prinz Eugen-Straße 27, 1030 Wien",
+                image: "/assets/location/location_schloss_belvedere.jpg",
+                link: "/pages/services/location.html"
+            }
+        };
+
+        const cateringData = {
+            1: {
+                icon: "fa-utensils",
+                title: "Wiener Schmankerl",
+                description: "Traditionelle Wiener Küche vom Feinsten.",
+                location: "Wien / Niederösterreich",
+                image: "/assets/catering/catering_WienerSchmankerl.jpg",
+                link: "/pages/services/catering.html"
+            },
+            2: {
+                icon: "fa-mountain",
+                title: "Alpen Genuss",
+                description: "Tiroler Spezialitäten mit Alpenblick.",
+                location: "Innsbruck / Tirol",
+                image: "/assets/catering/catering_AlpenGenuss.jpg",
+                link: "/pages/services/catering.html"
+            },
+            3: {
+                icon: "fa-apple-alt",
+                title: "Steirer Kulinarik",
+                description: "Steirische Genüsse mit Kürbiskernöl.",
+                location: "Graz / Steiermark",
+                image: "/assets/catering/catering_SteirerKulinarik_zuschnitt.jpg",
+                link: "/pages/services/catering.html"
+            },
+            4: {
+                icon: "fa-fish",
+                title: "Salzkammergut Feinkost",
+                description: "Frische Fischspezialitäten aus den Seen der Region.",
+                location: "Salzkammergut / Oberösterreich",
+                image: "/assets/catering/catering_SalzkammergutFeinkost.jpg",
+                link: "/pages/services/catering.html"
+            },
+            5: {
+                icon: "fa-cheese",
+                title: "Kärntner Kas & Speck",
+                description: "Kärntner Brettljause, Kasnudeln und Reindling.",
+                location: "Klagenfurt / Kärnten",
+                image: "/assets/catering/catering_KärtnerKas&Speck_zuschnitt.jpg",
+                link: "/pages/services/catering.html"
+            },
+            6: {
+                icon: "fa-wine-bottle",
+                title: "Burgenland Weinkultur",
+                description: "Weinbegleitete Menüs mit erlesenen Weinen.",
+                location: "Eisenstadt / Burgenland",
+                image: "/assets/catering/catering_BurgenlandWeinkultur.jpg",
+                link: "/pages/services/catering.html"
+            },
+            7: {
+                icon: "fa-mountain",
+                title: "Vorarlberg Alpenküche",
+                description: "Käsefondue, Raclette und bodenständige Alpenküche.",
+                location: "Bregenz / Vorarlberg",
+                image: "/assets/catering/catering_VoralbergAlpenküche.jpg",
+                link: "/pages/services/catering.html"
+            },
+            8: {
+                icon: "fa-cake-candles",
+                title: "Wiener Zuckerbäckerei",
+                description: "Hochzeitstorten, Sachertorten und Dessert-Buffets.",
+                location: "Wien / NÖ",
+                image: "/assets/catering/catering_WienerZuckerbäckerei_zuschnitt.jpg",
+                link: "/pages/services/catering.html"
+            },
+            9: {
+                icon: "fa-fish",
+                title: "Donau Genuss",
+                description: "Regionale Spezialitäten aus dem Donautal.",
+                location: "Linz / Oberösterreich",
+                image: "/assets/catering/catering_DonauGenuss_zuschnitt.jpg",
+                link: "/pages/services/catering.html"
+            },
+            10: {
+                icon: "fa-utensil-spoon",
+                title: "Tiroler Kreativküche",
+                description: "Moderne Interpretationen von Tiroler Klassikern.",
+                location: "Kitzbühel / Tirol",
+                image: "/assets/catering/catering_TirolerKreativküche_zuschnitt.jpg",
+                link: "/pages/services/catering.html"
+            }
+        };
+
+        async function loadFavorites() {
+            const locationContainer = document.getElementById("location-favorites");
+            const cateringContainer = document.getElementById("catering-favorites");
+            const locationCount = document.getElementById("location-count");
+            const cateringCount = document.getElementById("catering-count");
+            const errorBox = document.getElementById("favorites-error");
+
+            errorBox.classList.add("d-none");
+            errorBox.innerText = "";
+
+            locationContainer.innerHTML = `<p class="text-muted mb-0">Lade Location-Favoriten...</p>`;
+            cateringContainer.innerHTML = `<p class="text-muted mb-0">Lade Catering-Favoriten...</p>`;
+
+            try {
+                const res = await fetch("/favorites", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Favoriten konnten nicht geladen werden");
+                }
+
+                const favorites = data.favorites || [];
+
+                const locationFavorites = favorites.filter(fav => fav.item_type === "location");
+                const cateringFavorites = favorites.filter(fav => fav.item_type === "catering");
+
+                locationCount.innerText = locationFavorites.length;
+                cateringCount.innerText = cateringFavorites.length;
+
+                renderFavorites(locationContainer, locationFavorites, "location");
+                renderFavorites(cateringContainer, cateringFavorites, "catering");
+
+            } catch (err) {
+                console.error("Fehler beim Laden der Favoriten:", err);
+
+                locationContainer.innerHTML = "";
+                cateringContainer.innerHTML = "";
+
+                errorBox.innerText = "Favoriten konnten nicht geladen werden.";
+                errorBox.classList.remove("d-none");
+            }
+        }
+
+        function renderFavorites(container, favorites, type) {
+            container.innerHTML = "";
+
+            if (favorites.length === 0) {
+                const emptyText = type === "location"
+                    ? "Du hast noch keine Location-Favoriten gespeichert."
+                    : "Du hast noch keine Catering-Favoriten gespeichert.";
+
+                container.innerHTML = `
+                    <p class="text-muted mb-0">${emptyText}</p>
+                `;
+                return;
+            }
+
+            favorites.forEach((favorite) => {
+                const itemId = String(favorite.item_id);
+                const itemData = type === "location"
+                    ? locationData[itemId]
+                    : cateringData[itemId];
+
+                if (!itemData) {
+                    return;
+                }
+
+                const card = document.createElement("div");
+                card.className = "catering-card";
+
+                card.innerHTML = `
+                    <button class="favorite-btn active" data-type="${type}" data-item-id="${itemId}">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+
+                    <div class="catering-card-icon">
+                        <i class="fas ${itemData.icon}"></i>
+                    </div>
+
+                    <h3 class="catering-card-title">${itemData.title}</h3>
+
+                    <p class="catering-card-description">
+                        ${itemData.description}
+                    </p>
+
+                    <div class="catering-card-details">
+                        <p>
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${itemData.location}
+                        </p>
+                    </div>
+
+                    <p class="small text-muted">
+                        Gespeichert am: ${formatDate(favorite.created_at)}
+                    </p>
+
+                    <a href="${itemData.link}" class="catering-card-btn">
+                        Zur Übersicht
+                    </a>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return "-";
+
+            const date = new Date(dateString);
+
+            return new Intl.DateTimeFormat("de-AT", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }).format(date);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadFavorites();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/js/auth-guard.js"></script>
+    <script>
+        checkAuth({
+            requireAuth: true
+        });
+    </script>
+
+    <script src="/js/auth-nav.js"></script>
+    <script src="/js/navbar-loader.js"></script>
+    <script src="/js/footer-loader.js"></script>
+</body>
+
+</html>
