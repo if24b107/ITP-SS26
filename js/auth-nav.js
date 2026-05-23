@@ -47,6 +47,7 @@ window.initAuthNav = async function () {
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="/pages/dashboard/tempPersonalDashboard.html">Dashboard</a></li>
                         <li><a class="dropdown-item" href="/pages/planning/calendarOverview.html">Kalender</a></li>
+                        <li><a class="dropdown-item" href="/pages/auth/editProfile.html">Profil bearbeiten</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
                     </ul>
