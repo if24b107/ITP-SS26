@@ -15,13 +15,13 @@ async function checkAuth(options = {}) {
 
         // ===== Geschützte Seite =====
         if (requireAuth && !data.loggedIn) {
-            window.location.replace("login.html");
+            window.location.replace("/pages/auth/login.html");
             return null;
         }
 
         // ===== Login/Register Seite =====
         if (redirectIfLoggedIn && data.loggedIn) {
-            window.location.replace("tempPersonalDashboard.html");
+            window.location.replace("/pages/dashboard/tempPersonalDashboard.html");
             return data.user;
         }
 
@@ -31,7 +31,7 @@ async function checkAuth(options = {}) {
         console.error("Auth Guard Fehler:", err);
 
         if (requireAuth) {
-            window.location.replace("login.html");
+            window.location.replace("/pages/auth/login.html");
         }
 
         return null;
