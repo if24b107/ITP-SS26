@@ -72,9 +72,17 @@
   .welcome-subtitle {
     font-size: 1.4rem;
   }
+  .welcome-text{
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
   .welcome-btn {
     font-size: 1.1rem;
     padding: 0.8rem 2rem;
+  }
+  #welcome-image{
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
   .service-card {
     padding: 1.5rem;

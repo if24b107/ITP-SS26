@@ -446,6 +446,24 @@ h1, h2, h3, .category-title {
   .col-md-6:first-child {
     margin-bottom: 2rem;
   }
+  #auth-nav-item .dropdown-menu {
+    position:static;
+    left: auto !important;
+    right: 0 !important;
+    transform: translate3d(0, 40px, 0) !important;
+    min-width: 180px;
+  }
+  #auth-nav-item {
+    display: block !important;
+    text-align: center !important;
+    margin: 1.5rem 0;
+  }
+  .profile-icon-btn {
+    display: inline-flex !important;
+    margin: 0 auto;
+
+  }
+  
 }
 @media (max-width: 480px) {
   /* keine globalen Spezifikationen */
