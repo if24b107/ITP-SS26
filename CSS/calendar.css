@@ -178,47 +178,89 @@
 }
 
 /* ===== RESPONSIVE KALENDER ===== */
-@media (max-width: 768px) {
-    .calendar-day {
+@media (max-width: 992px) {
+    .calendar-container .calendar-day {
         min-height: 70px;
         padding: 0.5rem 0.2rem;
     }
-    .day-number {
+    .calendar-container .day-number {
         font-size: 0.9rem;
     }
-    .month-year {
-        font-size: 1.5rem;
-    }
-    .calendar-nav-btn {
+    .calendar-container .calendar-nav-btn {
         padding: 0.4rem 1rem;
         font-size: 0.9rem;
     }
-    .weekday {
+    .calendar-container .weekday {
         padding: 0.6rem;
         font-size: 0.8rem;
     }
-    .event-marker {
-        font-size: 0.6rem;
-        padding: 0.1rem 0.4rem;
-    }
-    .event-item {
-        font-size: 0.6rem;
+    .calendar-container .event-item {
+        font-size: 0.65rem;
         padding: 2px 5px;
-    }
-    .calendar-day .events-container {
-        gap: 2px;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+    .calendar-container .calendar-grid {
+        gap: 0.5rem;
+    }
+    .calendar-container .calendar-day {
+        min-height: 55px;
+        padding: 0.3rem 0.1rem;
+    }
+    .calendar-container .day-number {
+        font-size: 0.8rem;
+    }
+    .calendar-container .month-year {
+        font-size: 1.3rem;
+    }
+    .calendar-container .calendar-nav-btn {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+    }
+    .calendar-container .weekday {
+        font-size: 0.7rem;
+        padding: 0.4rem;
+    }
+    .calendar-container .event-item {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
     .calendar-header {
         flex-direction: column;
+        gap: 0.5rem;
     }
-    .calendar-day {
-        min-height: 55px;
-    }
+}
+
+
+@media (max-width: 576px) {
     .calendar-container {
-        padding: 1rem;
+        padding: 0.5rem;
+        overflow-x: auto; 
+    }
+    .calendar-container .calendar-grid {
+        gap: 0.3rem;
+    }
+    .calendar-container .calendar-day {
+        min-height: 45px;
+        padding: 0.2rem 0.05rem;
+    }
+    .calendar-container .day-number {
+        font-size: 0.7rem;
+    }
+    .calendar-container .event-item {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+        white-space: normal; 
+        line-height: 1.2;
+    }
+    .calendar-container .calendar-nav-btn {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    .calendar-container .weekday {
+        font-size: 0.65rem;
+        padding: 0.3rem;
     }
 }
 
