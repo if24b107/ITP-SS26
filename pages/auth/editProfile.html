@@ -43,6 +43,49 @@
     <script src="/js/auth-nav.js"></script>
     <script src="/js/navbar-loader.js"></script>
     <script src="/js/footer-loader.js"></script>
-    
+    <script>
+        // Eigene Daten beim Laden befüllen
+        async function loadUserData() {
+            try {
+                const res = await fetch("/user");
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById("username").value = json.user.username || "";
+                    document.getElementById("email").value = json.user.email || "";
+                }
+            } catch (err) {
+                console.error("Fehler beim Laden:", err);
+            }
+        }
+
+        // Eigene Daten speichern
+        document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const msg = document.getElementById("editProfileMessage");
+
+            try {
+                const res = await fetch("/user", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    msg.style.color = "green";
+                    msg.innerText = "Profil erfolgreich gespeichert.";
+                } else {
+                    msg.style.color = "red";
+                    msg.innerText = json.message || "Fehler beim Speichern.";
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "Serverfehler.";
+            }
+        });
+
+        loadUserData();
+    </script>
 </body>
 </html>
