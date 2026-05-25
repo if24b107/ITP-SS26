@@ -831,6 +831,332 @@ app.delete("/todos/:id", requireLogin, async (req, res) => {
   }
 });
 
+/* =========================
+   BUDGET PLANER
+   Tabellen: budgets  (id, user_id, name, amount, created_at)
+             expenses (id, user_id, budget_id, title, amount, date, created_at)
+========================= */
+
+// GET /budget – eigenes Budget laden
+app.get("/budget", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    const { data, error } = await supabase
+      .from("budgets")
+      .select("id, name, amount, created_at")
+      .eq("user_id", userId)
+      .limit(1)
+      .single();
+
+    // PGRST116 = kein Eintrag vorhanden → noch kein Budget angelegt
+    if (error && error.code !== "PGRST116") {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden des Budgets" });
+    }
+
+    return res.json({ success: true, budget: data || null });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// POST /budget – neues Budget anlegen
+app.post("/budget", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { name, amount } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name erforderlich" });
+    }
+
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+      return res.status(400).json({ success: false, message: "Ungültiger Betrag" });
+    }
+
+    // Prüfen ob bereits ein Budget existiert
+    const { data: existing } = await supabase
+      .from("budgets")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1)
+      .single();
+
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Budget existiert bereits – bitte aktualisieren statt neu anlegen"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("budgets")
+      .insert([{ user_id: userId, name: name.trim(), amount: parsedAmount }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase insert error (budgets):", JSON.stringify(error));
+      return res.status(500).json({ success: false, message: error.message || "Fehler beim Speichern" });
+    }
+
+    return res.status(201).json({ success: true, budget: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /budget/:id – bestehendes Budget aktualisieren
+app.put("/budget/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const budgetId = req.params.id;
+    const { name, amount } = req.body;
+
+    const updates = {};
+
+    if (name !== undefined) {
+      if (!name.trim()) {
+        return res.status(400).json({ success: false, message: "Name darf nicht leer sein" });
+      }
+      updates.name = name.trim();
+    }
+
+    if (amount !== undefined) {
+      const parsedAmount = Number(amount);
+      if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+        return res.status(400).json({ success: false, message: "Ungültiger Betrag" });
+      }
+      updates.amount = parsedAmount;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ success: false, message: "Keine Felder zum Aktualisieren übergeben" });
+    }
+
+    const { data, error } = await supabase
+      .from("budgets")
+      .update(updates)
+      .eq("id", budgetId)
+      .eq("user_id", userId)   // Sicherheit: nur eigenes Budget änderbar
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+    }
+
+    if (!data) {
+      return res.status(404).json({ success: false, message: "Budget nicht gefunden" });
+    }
+
+    return res.json({ success: true, budget: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /budget/costs/:id – Ausgabe löschen (nur eigene)
+app.delete("/budget/costs/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const expenseId = req.params.id;
+
+    // Budget-IDs des Users ermitteln, damit nur eigene Expenses gelöscht werden können
+    const { data: budgets, error: budgetError } = await supabase
+      .from("budgets")
+      .select("id")
+      .eq("user_id", userId);
+
+    if (budgetError) {
+      console.error(budgetError);
+      return res.status(500).json({ success: false, message: "Fehler beim Prüfen der Budgets" });
+    }
+
+    const budgetIds = (budgets || []).map(b => b.id);
+
+    if (budgetIds.length === 0) {
+      return res.status(404).json({ success: false, message: "Keine Budgets gefunden" });
+    }
+
+    const { data, error } = await supabase
+      .from("expenses")
+      .delete()
+      .eq("id", expenseId)
+      .in("budget_id", budgetIds)   // Sicherheit: nur Expenses aus eigenen Budgets löschbar
+      .select();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ success: false, message: "Ausgabe nicht gefunden" });
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// GET /budget/summary – vollständige Budgetübersicht:
+// maximales Budget, Gesamtausgaben, verbleibendes Budget + Liste aller Expenses
+app.get("/budget/summary", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    // Alle Budgets des Users laden
+    const { data: budgets, error: budgetError } = await supabase
+      .from("budgets")
+      .select("id, amount")
+      .eq("user_id", userId);
+
+    if (budgetError) {
+      console.error(budgetError);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden des Budgets" });
+    }
+
+    const totalBudget = (budgets || []).reduce((sum, b) => sum + Number(b.amount), 0);
+    const budgetIds = (budgets || []).map(b => b.id);
+
+    // Expenses laden: Summe berechnen + vollständige Liste zurückgeben
+    let spent = 0;
+    let expenses = [];
+
+    if (budgetIds.length > 0) {
+      const { data: expensesData, error: expensesError } = await supabase
+        .from("expenses")
+        .select("id, title, amount, date, created_at")
+        .in("budget_id", budgetIds)
+        .order("created_at", { ascending: false });
+
+      if (expensesError) {
+        console.error(expensesError);
+        return res.status(500).json({ success: false, message: "Fehler beim Laden der Ausgaben" });
+      }
+
+      expenses = expensesData || [];
+      spent = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    }
+
+    return res.json({
+      success: true,
+      summary: {
+        total_budget: totalBudget,
+        spent,
+        available: totalBudget - spent,
+        expenses
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// GET /budget/costs – Ausgabenliste laden
+app.get("/budget/costs", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    // Budget-IDs des Users ermitteln
+    const { data: budgets, error: budgetError } = await supabase
+      .from("budgets")
+      .select("id")
+      .eq("user_id", userId);
+
+    if (budgetError) {
+      console.error(budgetError);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden der Budgets" });
+    }
+
+    const budgetIds = (budgets || []).map(b => b.id);
+
+    if (budgetIds.length === 0) {
+      return res.json({ success: true, costs: [] });
+    }
+
+    const { data: expenses, error } = await supabase
+      .from("expenses")
+      .select("id, title, amount, date, created_at")
+      .in("budget_id", budgetIds)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden der Ausgaben" });
+    }
+
+    return res.json({ success: true, costs: expenses || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// POST /budget/costs – neue Ausgabe speichern (wird dem ersten Budget des Users zugeordnet)
+app.post("/budget/costs", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { title, amount } = req.body;
+
+    if (!title || !title.trim()) {
+      return res.status(400).json({ success: false, message: "Titel erforderlich" });
+    }
+
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+      return res.status(400).json({ success: false, message: "Ungültiger Betrag" });
+    }
+
+    // Erstes Budget des Users als Ziel verwenden
+    const { data: budget, error: budgetError } = await supabase
+      .from("budgets")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1)
+      .single();
+
+    if (budgetError || !budget) {
+      return res.status(400).json({
+        success: false,
+        message: "Kein Budget gefunden – bitte zuerst ein Budget anlegen"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("expenses")
+      .insert([{
+        user_id: userId,
+        budget_id: budget.id,
+        title: title.trim(),
+        amount: parsedAmount,
+        date: new Date().toISOString().split("T")[0]  // heutiges Datum als YYYY-MM-DD
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.status(201).json({ success: true, cost: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });

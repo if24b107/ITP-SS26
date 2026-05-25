@@ -29,9 +29,6 @@
         <!-- Budget Übersicht -->
         <section class="row g-4 justify-content-center">
 
-            <!-- API/BACKEND: später Werte aus Backend einsetzen -->
-            <!-- TEMP: feste Beispielwerte nur zum Testen -->
-
             <!-- Gesamtbudget -->
             <div class="col-md-4">
                 <div class="service-card text-center p-4">
@@ -39,7 +36,7 @@
                         <i class="fas fa-wallet"></i>
                     </div>
                     <h3>Gesamtbudget</h3>
-                    <p id="total-budget" class="display-6 fw-bold">15.000 €</p>
+                    <p id="total-budget" class="display-6 fw-bold">–</p>
                 </div>
             </div>
 
@@ -50,7 +47,7 @@
                         <i class="fas fa-receipt"></i>
                     </div>
                     <h3>Bereits ausgegeben</h3>
-                    <p id="spent-budget" class="display-6 fw-bold">4.200 €</p>
+                    <p id="spent-budget" class="display-6 fw-bold">–</p>
                 </div>
             </div>
 
@@ -61,18 +58,59 @@
                         <i class="fas fa-piggy-bank"></i>
                     </div>
                     <h3>Verbleibendes Budget</h3>
-                    <p id="remaining-budget" class="display-6 fw-bold">10.800 €</p>
+                    <p id="remaining-budget" class="display-6 fw-bold">–</p>
                 </div>
             </div>
 
         </section>
 
         <div class="text-center mt-4">
-            <!-- API/BACKEND: später Daten neu vom Backend laden -->
             <button class="btn btn-primary" onclick="reloadBudgetView()">
                 Daten neu laden
             </button>
         </div>
+
+        <!-- Budget festlegen -->
+        <section class="container my-5">
+            <div class="service-card p-4">
+                <div class="text-center mb-4">
+                    <h2>Budget festlegen</h2>
+                    <p class="text-muted">
+                        Legt euer maximales Hochzeitsbudget fest. Ein bestehendes Budget kann jederzeit aktualisiert werden.
+                    </p>
+                </div>
+
+                <form id="budget-form" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="budget-name" class="form-label">Bezeichnung</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="budget-name"
+                            placeholder="z. B. Hochzeitsbudget 2025"
+                            required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="budget-amount" class="form-label">Maximales Budget (€)</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="budget-amount"
+                            placeholder="z. B. 15000"
+                            min="0"
+                            step="0.01"
+                            required>
+                    </div>
+
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-primary" id="budget-submit-btn">
+                            Budget speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
 
         <!-- Kosten hinzufügen -->
         <section class="container my-5">
@@ -84,7 +122,6 @@
                     </p>
                 </div>
 
-                <!-- API/BACKEND: später Formular per POST speichern -->
                 <form id="cost-form" class="row g-3">
                     <div class="col-md-6">
                         <label for="cost-title" class="form-label">Titel</label>
@@ -127,14 +164,14 @@
                     </p>
                 </div>
 
-                <!-- API/BACKEND: später Kostenliste aus Backend anzeigen -->
-                <!-- TEMP: Liste wird aktuell aus localStorage gerendert -->
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
                                 <th>Titel</th>
+                                <th>Datum</th>
                                 <th class="text-end">Betrag</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="cost-list">
@@ -154,88 +191,160 @@
     <div id="footer-placeholder"></div>
 
     <script>
-        /*
-          TEMP: localStorage nur zum Testen
-          API/BACKEND: später durch echte API-Calls ersetzen
-        */
-
-        const STORAGE_KEY = "budgetPlannerCosts";
-
-        function reloadBudgetView() {
-            console.log("Budget-Anzeige neu geladen.");
-
-            // API/BACKEND: später Budget Summary + Kostenliste neu laden
-            // TEMP: aktuell nur lokale Kostenliste neu rendern
-            renderCostList();
-        }
-
         function formatEuro(value) {
             const amount = Number(value) || 0;
-
             return new Intl.NumberFormat("de-AT", {
                 style: "currency",
                 currency: "EUR"
             }).format(amount);
         }
 
-        function getStoredCosts() {
-            // TEMP: Kosten aus localStorage lesen
-            // API/BACKEND: später GET Request
+        // Aktuell geladene Budget-ID (wird für PUT benötigt)
+        let currentBudgetId = null;
 
-            const savedCosts = localStorage.getItem(STORAGE_KEY);
-
-            if (!savedCosts) {
-                return [];
-            }
-
+        async function loadBudget() {
             try {
-                return JSON.parse(savedCosts);
+                const res = await fetch("/budget", { credentials: "include" });
+                const data = await res.json();
+
+                if (!data.success) {
+                    console.error("Fehler beim Laden des Budgets:", data.message);
+                    return;
+                }
+
+                const submitBtn = document.getElementById("budget-submit-btn");
+
+                if (data.budget) {
+                    // Budget existiert → Formular vorausfüllen und Button auf "Aktualisieren" setzen
+                    currentBudgetId = data.budget.id;
+                    document.getElementById("budget-name").value = data.budget.name;
+                    document.getElementById("budget-amount").value = data.budget.amount;
+                    submitBtn.textContent = "Budget aktualisieren";
+                } else {
+                    // Kein Budget vorhanden
+                    currentBudgetId = null;
+                    submitBtn.textContent = "Budget speichern";
+                }
             } catch (err) {
-                console.error("Kosten konnten nicht gelesen werden:", err);
-                return [];
+                console.error("Netzwerkfehler (Budget laden):", err);
             }
         }
 
-        function saveStoredCosts(costs) {
-            // TEMP: Kosten in localStorage speichern
-            // API/BACKEND: später POST Request
+        async function saveBudget(event) {
+            event.preventDefault();
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(costs));
-        }
+            const name = document.getElementById("budget-name").value.trim();
+            const amount = Number(document.getElementById("budget-amount").value);
 
-        function renderCostList() {
-            // TEMP: rendert lokale Testdaten
-            // API/BACKEND: später Backend-Daten rendern
-
-            const costList = document.getElementById("cost-list");
-            const costs = getStoredCosts();
-
-            costList.innerHTML = "";
-
-            if (costs.length === 0) {
-                costList.innerHTML = `
-                    <tr>
-                        <td colspan="2" class="text-center text-muted">
-                            Noch keine Kosten eingetragen.
-                        </td>
-                    </tr>
-                `;
+            if (!name || !Number.isFinite(amount) || amount < 0) {
+                alert("Bitte Bezeichnung und gültigen Betrag eingeben.");
                 return;
             }
 
-            costs.forEach((cost) => {
-                const row = document.createElement("tr");
+            try {
+                let res;
 
-                row.innerHTML = `
-                    <td>${cost.title}</td>
-                    <td class="text-end">${formatEuro(cost.amount)}</td>
-                `;
+                if (currentBudgetId) {
+                    // Budget existiert → aktualisieren
+                    res = await fetch(`/budget/${currentBudgetId}`, {
+                        method: "PUT",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, amount })
+                    });
+                } else {
+                    // Kein Budget vorhanden → neu anlegen
+                    res = await fetch("/budget", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, amount })
+                    });
+                }
 
-                costList.appendChild(row);
-            });
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert("Fehler: " + data.message);
+                    return;
+                }
+
+                // ID merken und Button-Text auf "Aktualisieren" setzen
+                currentBudgetId = data.budget.id;
+                document.getElementById("budget-submit-btn").textContent = "Budget aktualisieren";
+
+                // Budget-Übersicht neu laden
+                await reloadBudgetView();
+            } catch (err) {
+                console.error("Netzwerkfehler (Budget speichern):", err);
+                alert("Netzwerkfehler – bitte erneut versuchen.");
+            }
         }
 
-        function addCost(event) {
+        async function reloadBudgetView() {
+            const costList = document.getElementById("cost-list");
+            try {
+                const res = await fetch("/budget/summary", { credentials: "include" });
+                const data = await res.json();
+
+                if (!data.success) {
+                    console.error("Fehler beim Laden der Budgetübersicht:", data.message);
+                    return;
+                }
+
+                const { total_budget, spent, available, expenses } = data.summary;
+
+                // Summary-Karten befüllen
+                document.getElementById("total-budget").textContent = formatEuro(total_budget);
+                document.getElementById("spent-budget").textContent = formatEuro(spent);
+                document.getElementById("remaining-budget").textContent = formatEuro(available);
+
+                // Kostenliste rendern
+                costList.innerHTML = "";
+
+                if (!expenses || expenses.length === 0) {
+                    costList.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Noch keine Kosten eingetragen.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                expenses.forEach((cost) => {
+                    const row = document.createElement("tr");
+                    const dateFormatted = cost.date
+                        ? new Date(cost.date).toLocaleDateString("de-AT")
+                        : "–";
+                    row.innerHTML = `
+                        <td>${cost.title}</td>
+                        <td>${dateFormatted}</td>
+                        <td class="text-end">${formatEuro(cost.amount)}</td>
+                        <td class="text-end">
+                            <button
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="deleteCost('${cost.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    costList.appendChild(row);
+                });
+            } catch (err) {
+                console.error("Netzwerkfehler (Budgetübersicht):", err);
+                costList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-danger">
+                            Daten konnten nicht geladen werden.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function addCost(event) {
             event.preventDefault();
 
             const titleInput = document.getElementById("cost-title");
@@ -249,30 +358,43 @@
                 return;
             }
 
-            // TEMP: lokal speichern
-            // API/BACKEND: später POST Request ans Backend
-            const costs = getStoredCosts();
+            try {
+                const res = await fetch("/budget/costs", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, amount })
+                });
 
-            costs.push({
-                title,
-                amount
-            });
+                const data = await res.json();
 
-            saveStoredCosts(costs);
+                if (!data.success) {
+                    alert("Fehler beim Speichern: " + data.message);
+                    return;
+                }
 
-            titleInput.value = "";
-            amountInput.value = "";
+                titleInput.value = "";
+                amountInput.value = "";
 
-            reloadBudgetView();
+                await reloadBudgetView();
+            } catch (err) {
+                console.error("Netzwerkfehler (Kosten speichern):", err);
+                alert("Netzwerkfehler – bitte erneut versuchen.");
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const costForm = document.getElementById("cost-form");
+            const budgetForm = document.getElementById("budget-form");
+            if (budgetForm) {
+                budgetForm.addEventListener("submit", saveBudget);
+            }
 
+            const costForm = document.getElementById("cost-form");
             if (costForm) {
                 costForm.addEventListener("submit", addCost);
             }
 
+            loadBudget();
             reloadBudgetView();
         });
     </script>
