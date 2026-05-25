@@ -344,6 +344,29 @@
             }
         }
 
+        async function deleteCost(id) {
+            if (!confirm("Ausgabe wirklich löschen?")) return;
+
+            try {
+                const res = await fetch(`/budget/costs/${id}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert("Fehler beim Löschen: " + data.message);
+                    return;
+                }
+
+                await reloadBudgetView();
+            } catch (err) {
+                console.error("Netzwerkfehler (Löschen):", err);
+                alert("Netzwerkfehler – bitte erneut versuchen.");
+            }
+        }
+
         async function addCost(event) {
             event.preventDefault();
 
