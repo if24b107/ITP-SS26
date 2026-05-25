@@ -163,9 +163,42 @@
                         deleteWish(wish.id);
                     }
                 });
+                const toggleBtn = document.createElement("button");
+                toggleBtn.innerHTML = wish.is_reserved
+                    ? '<i class="fas fa-lock-open"></i>'
+                    : '<i class="fas fa-lock"></i>';
+                toggleBtn.title = wish.is_reserved ? "Freigeben" : "Reservieren";
+                toggleBtn.addEventListener("click", () => toggleReserved(wish.id));
+                actionsCell.appendChild(toggleBtn);
                 actionsCell.appendChild(editBtn);
                 actionsCell.appendChild(delBtn);
             });
+        }
+
+        async function toggleReserved(id) {
+            const wish = wishes.find(w => w.id === id);
+            if (!wish) return;
+            const updated = { ...wish, is_reserved: !wish.is_reserved };
+            try {
+                const res = await fetch(`/wishlist/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: updated.name,
+                        description: updated.description,
+                        price: updated.price,
+                        link: updated.link,
+                        is_reserved: updated.is_reserved,
+                        reserved_by: updated.reserved_by
+                    })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    await loadWishes();
+                }
+            } catch (err) {
+                console.error("Fehler beim Umschalten:", err);
+            }
         }
 
         async function deleteWish(id) {
@@ -253,6 +286,16 @@
 
             if (!name) {
                 document.getElementById("wishModalError").innerHTML = "Bitte gib einen Namen für das Geschenk ein.";
+                return;
+            }
+
+            if (price !== "" && (isNaN(parseFloat(price)) || parseFloat(price) < 0)) {
+                document.getElementById("wishModalError").innerHTML = "Bitte gib einen gültigen Preis ein (z. B. 19.99).";
+                return;
+            }
+
+            if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+                document.getElementById("wishModalError").innerHTML = "Bitte gib eine gültige Webadresse ein (z. B. https://beispiel.at).";
                 return;
             }
 
