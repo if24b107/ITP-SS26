@@ -499,7 +499,7 @@ app.get("/wedding-date", async (req, res) => {
 /* =========================
    GAST HINZUFÜGEN
 ========================= */
-app.post("/guests", async (req, res) => {
+app.post("/guests", requireLogin, async (req, res) => {
   try {
     const { guest_name, rsvp_status, num_guests, notes } = req.body;
     const trimmedName = typeof guest_name === "string" ? guest_name.trim() : "";
@@ -527,6 +527,7 @@ app.post("/guests", async (req, res) => {
       .from("guests")
       .insert([
         {
+          user_id: req.session.user.id,
           guest_name: trimmedName,
           rsvp_status,
           num_guests: parsedNumGuests,
@@ -554,7 +555,7 @@ app.post("/guests", async (req, res) => {
 /* =========================
    GAST AKTUALISIEREN
 ========================= */
-app.put("/guests/:id", async (req, res) => {
+app.put("/guests/:id", requireLogin, async (req, res) => {
   try {
     const { id } = req.params;
     const { guest_name, rsvp_status, num_guests, notes } = req.body;
@@ -605,6 +606,7 @@ app.put("/guests/:id", async (req, res) => {
       .from("guests")
       .update(updates)
       .eq("id", id)
+      .eq("user_id", req.session.user.id)
       .select();
 
     if (error) throw error;
@@ -632,11 +634,13 @@ app.put("/guests/:id", async (req, res) => {
 /* =========================
    GÄSTE ABRUFEN
 ========================= */
-app.get("/guests", async (req, res) => {
+app.get("/guests", requireLogin, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("guests")
-      .select("*");
+      .select("*")
+      .eq("user_id", req.session.user.id)
+      .order("guest_name", { ascending: true });
 
     if (error) throw error;
 
@@ -656,7 +660,7 @@ app.get("/guests", async (req, res) => {
 /* =========================
    GAST LÖSCHEN
 ========================= */
-app.delete("/guests/:id", async (req, res) => {
+app.delete("/guests/:id", requireLogin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -664,6 +668,7 @@ app.delete("/guests/:id", async (req, res) => {
       .from("guests")
       .delete()
       .eq("id", id)
+      .eq("user_id", req.session.user.id)
       .select();
 
     if (error) throw error;
