@@ -26,10 +26,38 @@
                 <button id="addGuestBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Gast
                     hinzufügen</button>
             </div>
+
+
+            <!-- Gästestatistik -->
+            <div class="row g-3 my-4" id="guestStats">
+                <div class="col-md-4">
+                    <div class="service-card text-center p-3">
+                        <h5>Zugesagt</h5>
+                        <p id="acceptedCount" class="display-6 fw-bold mb-0">0</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="service-card text-center p-3">
+                        <h5>Abgesagt</h5>
+                        <p id="declinedCount" class="display-6 fw-bold mb-0">0</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="service-card text-center p-3">
+                        <h5>Offen</h5>
+                        <p id="pendingCount" class="display-6 fw-bold mb-0">0</p>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="mb-3 d-flex gap-2 flex-wrap">
                 <button id="filterAllBtn" class="btn btn-sm btn-primary" type="button">Alle</button>
                 <button id="filterAcceptedBtn" class="btn btn-sm btn-outline-secondary" type="button">Zugesagt</button>
-                <button id="filterNotAcceptedBtn" class="btn btn-sm btn-outline-secondary" type="button">Nicht zugesagt/abgesagt</button>
+                <button id="filterNotAcceptedBtn" class="btn btn-sm btn-outline-secondary" type="button">Nicht
+                    zugesagt/abgesagt</button>
             </div>
             <div class="text-muted small mb-3">
                 <i class="fas fa-info-circle"></i>
@@ -95,9 +123,20 @@
         // ========== GÄSTE AUS DB ==========
         let guests = [];
         let currentGuestFilter = "all";
+        function updateGuestStats() {
+            const accepted = guests.filter(g => g.status === "yes").length;
+            const declined = guests.filter(g => g.status === "no").length;
+            const pending = guests.filter(g => g.status === "pending").length;
+
+            document.getElementById("acceptedCount").innerText = accepted;
+            document.getElementById("declinedCount").innerText = declined;
+            document.getElementById("pendingCount").innerText = pending;
+        }
 
         async function loadGuests() {
-            const response = await fetch("/guests");
+            const response = await fetch("/guests", {
+                credentials: "include"
+            });
             const result = await response.json();
 
             if (!response.ok || !result.success) {
@@ -117,6 +156,8 @@
         }
 
         function renderGuestTable() {
+            updateGuestStats();
+
             const tbody = document.getElementById("guestListBody");
             const empty = document.getElementById("emptyGuestPlaceholder");
             tbody.innerHTML = "";
@@ -144,10 +185,33 @@
                     <option value="yes" ${guest.status === "yes" ? "selected" : ""}>Zugesagt</option>
                     <option value="no" ${guest.status === "no" ? "selected" : ""}>Abgesagt</option>
                 `;
-                select.addEventListener("change", (e) => {
-                    guest.status = e.target.value;
+
+                //geändert sprint 5 (Me):
+                select.addEventListener("change", async (e) => {
+                    const newStatus = e.target.value;
+                    const statusMapReverse = { pending: "offen", yes: "zugesagt", no: "abgesagt" };
+
+                    const response = await fetch(`/guests/${guest.id}`, {
+                        method: "PUT",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            rsvp_status: statusMapReverse[newStatus]
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        alert(result.message || "Status konnte nicht gespeichert werden.");
+                        renderGuestTable();
+                        return;
+                    }
+
+                    guest.status = newStatus;
                     renderGuestTable();
-                });
+                }); //Änderung sprint 5 ende (Me)
+
                 statusCell.appendChild(select);
                 // Begleitpersonen
                 row.insertCell(2).innerText = guest.plusOnes;
@@ -165,7 +229,10 @@
                 delBtn.title = "Löschen";
                 delBtn.addEventListener("click", async () => {
                     if (confirm(`Möchten Sie "${guest.name}" wirklich löschen?`)) {
-                        const response = await fetch(`/guests/${guest.id}`, { method: "DELETE" });
+                        const response = await fetch(`/guests/${guest.id}`, { 
+                            method: "DELETE",
+                            credentials: "include"
+                        });
                         const result = await response.json();
                         if (!response.ok || !result.success) return;
                         guests = guests.filter(g => g.id !== guest.id);
@@ -254,6 +321,7 @@
             if (currentGuestId !== null) {
                 const response = await fetch(`/guests/${currentGuestId}`, {
                     method: "PUT",
+                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         guest_name: name,
@@ -274,6 +342,7 @@
             } else {
                 const response = await fetch("/guests", {
                     method: "POST",
+                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         guest_name: name,
