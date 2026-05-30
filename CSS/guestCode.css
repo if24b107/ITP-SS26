@@ -121,3 +121,28 @@
         font-size: 1.5rem;
     }
 }
+
+/* ===== GAST-DASHBOARD STYLES ===== */
+.guest-dashboard-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--braun-warm);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logout-btn-guest {
+    background-color: var(--rosé-mittel);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    cursor: pointer;
+}
+.logout-btn-guest:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-2px);
+}

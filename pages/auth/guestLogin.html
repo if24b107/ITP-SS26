@@ -69,7 +69,7 @@
 
         if (response.ok && data.success) {
           // Erfolg -> Weiterleitung zum Gast-Dashboard (noch ergänzen)
-          window.location.href = '';
+          window.location.href = '/pages/guestCode/guestDashboard.html';
         } else {
           errorDiv.textContent = data.message || 'Ungültiger Gast-Code. Bitte versuchen Sie es erneut.';
           errorDiv.style.display = 'block';
