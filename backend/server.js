@@ -1163,6 +1163,85 @@ app.post("/budget/costs", requireLogin, async (req, res) => {
 });
 
 /* =========================
+   BENUTZERPROFIL
+========================= */
+
+// GET /user – eigene Daten lesen
+app.get("/user", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, username, email")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, user: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /user – eigene Daten ändern (nur email und username)
+app.put("/user", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { username, email } = req.body;
+
+    // 1. Benutzername darf nicht leer sein
+    if (!username || !username.trim()) {
+      return res.status(400).json({ success: false, message: "Benutzername darf nicht leer sein" });
+    }
+
+    // 2. E-Mail-Format prüfen
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email.trim())) {
+      return res.status(400).json({ success: false, message: "Ungültiges E-Mail-Format" });
+    }
+
+    // 3. E-Mail bereits von anderem User vergeben?
+    const { data: existing } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email.trim())
+      .neq("id", userId)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      return res.status(409).json({ success: false, message: "Diese E-Mail-Adresse wird bereits verwendet" });
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ username: username.trim(), email: email.trim() })
+      .eq("id", userId)
+      .select("id, username, email")
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+    }
+
+    // Session aktualisieren
+    req.session.user.username = data.username;
+    req.session.user.email = data.email;
+
+    return res.json({ success: true, user: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
    WUNSCHLISTE
 ========================= */
 
