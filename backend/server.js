@@ -1162,6 +1162,134 @@ app.post("/budget/costs", requireLogin, async (req, res) => {
   }
 });
 
+/* =========================
+   WUNSCHLISTE
+========================= */
+
+// GET /wishlist – alle Wünsche des eingeloggten Users laden
+app.get("/wishlist", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { data, error } = await supabase
+      .from("wishlist")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, wishes: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// POST /wishlist – neuen Wunsch erstellen
+app.post("/wishlist", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { name, description, price, link, is_reserved, reserved_by } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name erforderlich" });
+    }
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .insert([{
+        user_id: userId,
+        name: name.trim(),
+        description: description || null,
+        price: price !== "" && price !== undefined && price !== null ? parseFloat(price) : null,
+        link: link || null,
+        is_reserved: is_reserved === true || is_reserved === "true",
+        reserved_by: reserved_by || null
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.status(201).json({ success: true, wish: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /wishlist/:id – Wunsch aktualisieren
+app.put("/wishlist/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const wishId = req.params.id;
+    const { name, description, price, link, is_reserved, reserved_by } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name erforderlich" });
+    }
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .update({
+        name: name.trim(),
+        description: description || null,
+        price: price !== "" && price !== undefined && price !== null ? parseFloat(price) : null,
+        link: link || null,
+        is_reserved: is_reserved === true || is_reserved === "true",
+        reserved_by: reserved_by || null
+      })
+      .eq("id", wishId)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+    }
+
+    if (!data) {
+      return res.status(404).json({ success: false, message: "Wunsch nicht gefunden" });
+    }
+
+    return res.json({ success: true, wish: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /wishlist/:id – Wunsch löschen
+app.delete("/wishlist/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const wishId = req.params.id;
+
+    const { error } = await supabase
+      .from("wishlist")
+      .delete()
+      .eq("id", wishId)
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });
