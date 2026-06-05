@@ -107,6 +107,7 @@
                         <button type="submit" class="btn btn-primary" id="budget-submit-btn">
                             Budget speichern
                         </button>
+                        <p id="budgetMessage" class="mt-2 mb-0"></p>
                     </div>
                 </form>
             </div>
@@ -149,6 +150,7 @@
                         <button type="submit" class="btn btn-primary">
                             Kosten speichern
                         </button>
+                        <p id="costMessage" class="mt-2 mb-0"></p>
                     </div>
                 </form>
             </div>
@@ -261,21 +263,30 @@
                 }
 
                 const data = await res.json();
+                const msg = document.getElementById("budgetMessage");
 
                 if (!data.success) {
-                    alert("Fehler: " + data.message);
+                    msg.style.color = "red";
+                    msg.innerText = data.message || "Fehler beim Speichern.";
+                    setTimeout(() => { msg.innerText = ""; }, 3000);
                     return;
                 }
 
                 // ID merken und Button-Text auf "Aktualisieren" setzen
                 currentBudgetId = data.budget.id;
                 document.getElementById("budget-submit-btn").textContent = "Budget aktualisieren";
+                msg.style.color = "green";
+                msg.innerText = "Budget erfolgreich gespeichert.";
+                setTimeout(() => { msg.innerText = ""; }, 3000);
 
                 // Budget-Übersicht neu laden
                 await reloadBudgetView();
             } catch (err) {
                 console.error("Netzwerkfehler (Budget speichern):", err);
-                alert("Netzwerkfehler – bitte erneut versuchen.");
+                const msg = document.getElementById("budgetMessage");
+                msg.style.color = "red";
+                msg.innerText = "Serverfehler – bitte erneut versuchen.";
+                setTimeout(() => { msg.innerText = ""; }, 3000);
             }
         }
 
@@ -388,19 +399,28 @@
                 });
 
                 const data = await res.json();
+                const msg = document.getElementById("costMessage");
 
                 if (!data.success) {
-                    alert("Fehler beim Speichern: " + data.message);
+                    msg.style.color = "red";
+                    msg.innerText = data.message || "Fehler beim Speichern.";
+                    setTimeout(() => { msg.innerText = ""; }, 3000);
                     return;
                 }
 
                 titleInput.value = "";
                 amountInput.value = "";
+                msg.style.color = "green";
+                msg.innerText = "Kosten erfolgreich gespeichert.";
+                setTimeout(() => { msg.innerText = ""; }, 3000);
 
                 await reloadBudgetView();
             } catch (err) {
                 console.error("Netzwerkfehler (Kosten speichern):", err);
-                alert("Netzwerkfehler – bitte erneut versuchen.");
+                const msg = document.getElementById("costMessage");
+                msg.style.color = "red";
+                msg.innerText = "Serverfehler – bitte erneut versuchen.";
+                setTimeout(() => { msg.innerText = ""; }, 3000);
             }
         }
 
