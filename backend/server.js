@@ -77,7 +77,7 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    //neu: Session setzen
+    //Session setzen
     req.session.user = {
       id: user.id,
       email: user.email,
@@ -100,7 +100,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-//neu
 /* =========================
    SESSION CHECK
 ========================= */
@@ -289,7 +288,7 @@ app.delete("/favorites/:type/:id", requireLogin, async (req, res) => {
     const { data, error } = await supabase
       .from("favorites")
       .delete()
-      .eq("user_id", userId)       // wichtig: nur eigene Favoriten loeschbar
+      .eq("user_id", userId)       
       .eq("item_type", type)
       .eq("item_id", id)
       .select();
@@ -342,7 +341,7 @@ app.post("/appointments", async (req, res) => {
       });
     }
 
-    // Zeitformat (HH:MM) – optional
+    // Zeitformat 
     if (time) {
       const timeRegex = /^\d{2}:\d{2}$/;
       if (!timeRegex.test(time)) {

@@ -136,11 +136,6 @@
         const todayMonth = currentDate.getMonth();
         const todayDay = currentDate.getDate();
 
-        /*let events = [
-            { id: 1, title: "Demo Termin", date: "2026-03-29", description: "Das ist ein Testtermin" },
-            { id: 2, title: "Catering Verkostung", date: "2026-03-20", description: "Feinkost Schmidt" },
-            { id: 3, title: "Location Besichtigung", date: "2026-03-15", description: "Gutshaus am See" }
-        ];*/
         let events = [];
 
         async function loadEvents() {
@@ -237,23 +232,6 @@
             });
         }
 
-        /*function confirmDeleteSelectedEvent() {
-            if (!currentlySelectedDeleteEventId) {
-                document.getElementById("deleteErrorMsg").innerHTML = "Bitte wählen Sie einen Termin aus.";
-                return;
-            }
-
-            const eventToDelete = events.find(e => e.id === currentlySelectedDeleteEventId);
-            if (eventToDelete && confirm(`Möchten Sie den Termin "${eventToDelete.title}" wirklich löschen?`)) {
-                const eventIndex = events.findIndex(e => e.id === currentlySelectedDeleteEventId);
-                if (eventIndex !== -1) {
-                    events.splice(eventIndex, 1);
-                }
-                closeDeleteSelectionModal();
-                renderCalendar();
-                alert("Termin wurde gelöscht");
-            }
-        }*/
         async function confirmDeleteSelectedEvent() {
             if (!currentlySelectedDeleteEventId) {
                 document.getElementById("deleteErrorMsg").innerHTML = "Bitte Termin auswählen.";
@@ -270,28 +248,6 @@
             }
         }
 
-        /*function updateEvent() {
-            const id = parseInt(document.getElementById("editEventId").value);
-            const title = document.getElementById("editEventTitle").value;
-            const date = document.getElementById("editEventDate").value;
-            const description = document.getElementById("editEventDescription").value;
-
-            if (title === "") {
-                document.getElementById("editErrorMsg").innerHTML = "Bitte geben Sie einen Titel ein.";
-                return;
-            }
-            if (date === "") {
-                document.getElementById("editErrorMsg").innerHTML = "Bitte wählen Sie ein Datum aus.";
-                return;
-            }
-
-            const eventIndex = events.findIndex(e => e.id === id);
-            if (eventIndex !== -1) events[eventIndex] = { id, title, date, description };
-
-            closeEditModal();
-            renderCalendar();
-            alert("Termin wurde aktualisiert");
-        }*/
         document.getElementById("updateEventBtn").addEventListener("click", async function () {
             const id = document.getElementById("editEventId").value;
             const title = document.getElementById("editEventTitle").value;
