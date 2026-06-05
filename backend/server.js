@@ -1241,6 +1241,86 @@ app.put("/user", requireLogin, async (req, res) => {
   }
 });
 
+// PATCH /user/password – eigenes Passwort ändern
+app.patch("/user/password", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { current_password, new_password, confirm_password } = req.body;
+
+    // 1. Pflichtfelder prüfen
+    if (!current_password || !new_password || !confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Alle drei Passwort-Felder sind erforderlich"
+      });
+    }
+
+    // 2. Neues Passwort und Bestätigung müssen übereinstimmen
+    if (new_password !== confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Neues Passwort und Bestätigung stimmen nicht überein"
+      });
+    }
+
+    // 3. Mindestlänge neues Passwort
+    if (new_password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Neues Passwort muss mindestens 6 Zeichen lang sein"
+      });
+    }
+
+    // 4. Aktuellen Hash aus der DB laden
+    const { data: userRow, error: fetchError } = await supabase
+      .from("users")
+      .select("password_hash")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError || !userRow) {
+      console.error(fetchError);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    // 5. Aktuelles Passwort verifizieren
+    const isValid = await bcrypt.compare(current_password, userRow.password_hash);
+    if (!isValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Aktuelles Passwort ist falsch"
+      });
+    }
+
+    // 6. Neues Passwort darf nicht identisch mit dem alten sein
+    const isSame = await bcrypt.compare(new_password, userRow.password_hash);
+    if (isSame) {
+      return res.status(400).json({
+        success: false,
+        message: "Das neue Passwort muss sich vom aktuellen unterscheiden"
+      });
+    }
+
+    // 7. Neues Passwort hashen und speichern
+    const new_hash = await bcrypt.hash(new_password, 10);
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ password_hash: new_hash })
+      .eq("id", userId);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern des neuen Passworts" });
+    }
+
+    return res.json({ success: true, message: "Passwort erfolgreich geändert" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
 /* =========================
    WUNSCHLISTE
 ========================= */
