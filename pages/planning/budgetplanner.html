@@ -199,7 +199,7 @@
             }).format(amount);
         }
 
-        // Aktuell geladene Budget-ID (wird für PUT benötigt)
+        // Aktuell geladene Budget-ID 
         let currentBudgetId = null;
 
         async function loadBudget() {
@@ -215,13 +215,11 @@
                 const submitBtn = document.getElementById("budget-submit-btn");
 
                 if (data.budget) {
-                    // Budget existiert → Formular vorausfüllen und Button auf "Aktualisieren" setzen
                     currentBudgetId = data.budget.id;
                     document.getElementById("budget-name").value = data.budget.name;
                     document.getElementById("budget-amount").value = data.budget.amount;
                     submitBtn.textContent = "Budget aktualisieren";
                 } else {
-                    // Kein Budget vorhanden
                     currentBudgetId = null;
                     submitBtn.textContent = "Budget speichern";
                 }

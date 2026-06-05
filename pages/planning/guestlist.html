@@ -174,7 +174,7 @@
                 row.dataset.id = guest.id;
                 // Name
                 row.insertCell(0).innerText = guest.name;
-                // Status Dropdown (farbig)
+                // Status Dropdown 
                 const statusCell = row.insertCell(1);
                 const select = document.createElement("select");
                 select.className = "status-dropdown";
@@ -186,7 +186,6 @@
                     <option value="no" ${guest.status === "no" ? "selected" : ""}>Abgesagt</option>
                 `;
 
-                //geändert sprint 5 (Me):
                 select.addEventListener("change", async (e) => {
                     const newStatus = e.target.value;
                     const statusMapReverse = { pending: "offen", yes: "zugesagt", no: "abgesagt" };
@@ -210,7 +209,7 @@
 
                     guest.status = newStatus;
                     renderGuestTable();
-                }); //Änderung sprint 5 ende (Me)
+                }); 
 
                 statusCell.appendChild(select);
                 // Begleitpersonen

@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // FAVORITEN AUS BACKEND LADEN
-    // Set mit Keys "type-id", damit O(1)-Lookup pro Button moeglich ist
     const favoriteSet = new Set();
     try {
         const res = await fetch("/favorites", { credentials: "include" });
@@ -63,7 +62,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (button.disabled) return;
         button.disabled = true;
 
-        // Optimistic UI: erst toggeln, bei Fehler revertieren
         setActive(button, !wasActive);
 
         try {
@@ -81,7 +79,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ item_type: itemType, item_id: itemId })
                 });
-                // 409 (existiert schon) ist okay -> trotzdem als aktiv halten
                 if (!res.ok && res.status !== 409) {
                     throw new Error("POST fehlgeschlagen (" + res.status + ")");
                 }
@@ -89,7 +86,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } catch (err) {
             console.error("Favorit-Toggle fehlgeschlagen:", err);
-            // Revert UI auf den vorherigen Zustand
             setActive(button, wasActive);
         } finally {
             button.disabled = false;

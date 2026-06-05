@@ -17,13 +17,13 @@ app.use(express.json());
 
 //Session Config
 app.use(session({
-  secret: process.env.SESSION_SECRET || "devsecret", //fallback
+  secret: process.env.SESSION_SECRET || "devsecret", 
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: false,
     httpOnly: true,
-    sameSite: "lax" //before: none
+    sameSite: "lax" 
   }
 }));
 
@@ -73,7 +73,7 @@ app.post("/login", async (req, res) => {
     if (!isValid) {
       return res.status(401).json({
         success: false,
-        message: "Falsche Eingaben"  //zuvor: "falsches passwort"
+        message: "Falsche Eingaben"  
       });
     }
 

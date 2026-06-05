@@ -397,26 +397,6 @@
         document.getElementById("newEventBtn").addEventListener("click", openModal);
         document.getElementById("closeModalBtn").addEventListener("click", closeModal);
 
-        /*document.getElementById("saveEventBtn").addEventListener("click", function () {
-            const title = document.getElementById("eventTitle").value;
-            const date = document.getElementById("eventDate").value;
-            const description = document.getElementById("eventDescription").value;
-
-            if (!title) {
-                document.getElementById("errorMsg").innerHTML = "Bitte geben Sie einen Titel ein.";
-                return;
-            }
-            if (!date) {
-                document.getElementById("errorMsg").innerHTML = "Bitte wählen Sie ein Datum aus.";
-                return;
-            }
-
-            const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
-            events.push({ id: newId, title, date, description });
-            closeModal();
-            renderCalendar();
-            alert("Termin wurde gespeichert");
-        });*/
         document.getElementById("saveEventBtn").addEventListener("click", async function () {
             const title = document.getElementById("eventTitle").value;
             const date = document.getElementById("eventDate").value;
@@ -450,7 +430,6 @@
         document.getElementById("deleteDate").addEventListener("change", loadEventsForDate);
 
         document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
-        //document.getElementById("updateEventBtn").addEventListener("click", updateEvent);
         document.getElementById("deleteFromEditBtn").addEventListener("click", deleteFromEdit);
 
         document.getElementById("prevMonthBtn").addEventListener("click", () => {
