@@ -16,11 +16,14 @@ ITP-SS26/
 │   ├── auth-guard.js
 │   ├── auth-nav.js
 │   ├── favorites.js
+│   ├── guest-auth.js
+│   ├── navbar-guest-loader.js
 │   ├── navbar-loader.js
 │   └── footer-loader.js
 ├── partials/
 │   ├── navbar.html
 │   └── footer.html
+│   ├── navbarGuest.html
 ├── pages/
 │   ├── auth/
 │   │   ├── login.html

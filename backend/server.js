@@ -4,7 +4,13 @@ const bcrypt = require("bcrypt");
 
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session"); //neu MP
+const session = require("express-session"); 
+const {
+  requireLogin,
+  requireGuest,
+  requireUserOrGuest,
+  denyGuestWrite
+} = require("./access-control");
 
 const app = express();
 const PORT = 3000;
@@ -64,12 +70,8 @@ app.post("/login", async (req, res) => {
     }
 
     const user = users[0];
-    console.log("INPUT:", password);
-    console.log("HASH:", user.password_hash);
-
     const isValid = await bcrypt.compare(password, user.password_hash);
-    console.log("PASSWORD VALID:", isValid);
-
+    
     if (!isValid) {
       return res.status(401).json({
         success: false,
@@ -109,6 +111,39 @@ app.get("/me", (req, res) => {
   } else {
     return res.json({ loggedIn: false });
   }
+});
+
+/* =========================
+   GAST SESSION CHECK
+========================= */
+
+app.get("/guest/me", (req, res) => {
+
+  if (!req.session.guest) {
+    return res.json({
+      guestLoggedIn: false
+    });
+  }
+
+  return res.json({
+    guestLoggedIn: true,
+    guest: req.session.guest
+  });
+
+});
+
+/* =========================
+   GAST LOGOUT
+========================= */
+
+app.post("/guest/logout", (req, res) => {
+
+  delete req.session.guest;
+
+  return res.json({
+    success: true
+  });
+
 });
 
 /* =========================
@@ -189,18 +224,11 @@ app.post("/register", async (req, res) => {
    LOGOUT
 ========================= */
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {       //neu
+  req.session.destroy(() => {       
     res.json({ success: true });
   });
 });
 
-// Middleware: prüft, ob der User eingeloggt ist
-function requireLogin(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
-  }
-  next();
-}
 
 /* =========================
    FAVORITES
