@@ -9,7 +9,8 @@ const {
   requireLogin,
   requireGuest,
   requireUserOrGuest,
-  denyGuestWrite
+  denyGuestWrite,
+  getOwnerUserId
 } = require("./access-control");
 
 const app = express();
@@ -169,6 +170,56 @@ app.post("/guest/login", async (req, res) => {
 /* =========================
    GAST LOGOUT
 ========================= */
+
+/* =========================
+   GAST-LESEZUGRIFF: TERMINE & WUNSCHLISTE
+========================= */
+
+// GET /guest/appointments – Termine des Brautpaares für Gäste
+app.get("/guest/appointments", requireGuest, async (req, res) => {
+  try {
+    const ownerUserId = getOwnerUserId(req);
+
+    const { data, error } = await supabase
+      .from("calendar")
+      .select("id, title, date, time, description")
+      .eq("user_id", ownerUserId)
+      .order("date", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+    }
+
+    return res.json({ success: true, appointments: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// GET /guest/wishlist – Wunschliste des Brautpaares für Gäste
+app.get("/guest/wishlist", requireGuest, async (req, res) => {
+  try {
+    const ownerUserId = getOwnerUserId(req);
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .select("id, name, description, price, link, is_reserved, reserved_by")
+      .eq("user_id", ownerUserId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+    }
+
+    return res.json({ success: true, wishes: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
 
 app.post("/guest/logout", (req, res) => {
 
