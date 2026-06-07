@@ -133,6 +133,40 @@ app.get("/guest/me", (req, res) => {
 });
 
 /* =========================
+   GAST LOGIN
+========================= */
+
+app.post("/guest/login", async (req, res) => {
+  try {
+    const { guest_access_code } = req.body;
+
+    if (!guest_access_code || !guest_access_code.trim()) {
+      return res.status(400).json({ success: false, message: "Zugangscode erforderlich" });
+    }
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, username")
+      .eq("guest_access_code", guest_access_code.trim())
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({ success: false, message: "Ungültiger Zugangscode" });
+    }
+
+    req.session.guest = {
+      ownerUserId: user.id,
+      role: "guest"
+    };
+
+    return res.json({ success: true, message: "Gast-Login erfolgreich" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
    GAST LOGOUT
 ========================= */
 
@@ -1342,6 +1376,85 @@ app.patch("/user/password", requireLogin, async (req, res) => {
     }
 
     return res.json({ success: true, message: "Passwort erfolgreich geändert" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
+   GAST-ZUGANGSCODE
+========================= */
+
+// GET /user/guest-code – eigenen Code laden
+app.get("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("guest_access_code")
+      .eq("id", req.session.user.id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, guest_access_code: data.guest_access_code || null });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /user/guest-code – Code setzen oder ändern
+app.put("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { guest_access_code } = req.body;
+
+    if (!guest_access_code || !guest_access_code.trim()) {
+      return res.status(400).json({ success: false, message: "Zugangscode darf nicht leer sein" });
+    }
+
+    const code = guest_access_code.trim();
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ guest_access_code: code })
+      .eq("id", req.session.user.id)
+      .select("guest_access_code")
+      .single();
+
+    if (error) {
+      // 23505 = unique_violation – Code bereits vergeben
+      if (error.code === "23505") {
+        return res.status(409).json({ success: false, message: "Dieser Code wird bereits verwendet" });
+      }
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.json({ success: true, guest_access_code: data.guest_access_code });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /user/guest-code – Code entfernen (Gastzugang sperren)
+app.delete("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from("users")
+      .update({ guest_access_code: null })
+      .eq("id", req.session.user.id);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Entfernen" });
+    }
+
+    return res.json({ success: true, message: "Zugangscode entfernt" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: "Serverfehler" });

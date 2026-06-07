@@ -50,5 +50,49 @@
   <script src="/js/auth-nav.js"></script>
   <script src="/js/navbar-loader.js"></script>
   <script src="/js/footer-loader.js"></script>
+  <script>
+    const form = document.getElementById("guestCodeForm");
+    const input = document.getElementById("guestCode");
+    const msg = document.getElementById("codeMessage");
+
+    function showMessage(text, success) {
+      msg.textContent = text;
+      msg.style.display = "block";
+      msg.style.color = success ? "green" : "red";
+    }
+
+    // Aktuellen Code beim Laden vorausfüllen
+    fetch("/user/guest-code")
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.guest_access_code) {
+          input.value = data.guest_access_code;
+        }
+      });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = input.value.trim();
+
+      // Leeres Feld = Code löschen
+      if (!code) {
+        const res = await fetch("/user/guest-code", { method: "DELETE" });
+        const data = await res.json();
+        showMessage(data.success ? "Gast-Zugang wurde deaktiviert." : data.message, data.success);
+        return;
+      }
+
+      const res = await fetch("/user/guest-code", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guest_access_code: code })
+      });
+      const data = await res.json();
+      showMessage(
+        data.success ? "Code erfolgreich gespeichert!" : data.message,
+        data.success
+      );
+    });
+  </script>
 </body>
 </html>
