@@ -72,7 +72,7 @@
 
         async function loadEvents() {
             try {
-                const res = await fetch("/appointments", { credentials: "include" });
+                const res = await fetch("/guest/appointments", { credentials: "include" });
                 const data = await res.json();
                 if (data.success) {
                     events = data.appointments;
