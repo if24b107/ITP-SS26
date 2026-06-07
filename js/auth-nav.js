@@ -25,7 +25,29 @@ window.initAuthNav = async function () {
 
         const data = await res.json();
 
-        
+        // GAST EINGELOGGT
+        if (!data.loggedIn) {
+            const guestRes = await fetch("/guest/me", { credentials: "include" });
+            const guestData = await guestRes.json();
+
+            if (guestData.guestLoggedIn) {
+                dynamicLinks.innerHTML = `
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestDashboard.html">Gast-Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestCalendar.html">Kalender</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestWishlist.html">Wunschliste</a></li>
+                `;
+                authContainer.innerHTML = `
+                    <a href="#" class="btn login-btn" id="guest-logout-btn">Abmelden</a>
+                `;
+                document.getElementById("guest-logout-btn").addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    await fetch("/guest/logout", { method: "POST", credentials: "include" });
+                    window.location.replace("/index.html");
+                });
+                return;
+            }
+        }
+
         // LOGGED IN STATE
         if (data.loggedIn) {
             // Normale Menüpunkte für eingeloggte Benutzer
