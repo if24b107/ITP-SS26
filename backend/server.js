@@ -167,9 +167,6 @@ app.post("/guest/login", async (req, res) => {
   }
 });
 
-/* =========================
-   GAST LOGOUT
-========================= */
 
 /* =========================
    GAST-LESEZUGRIFF: TERMINE & WUNSCHLISTE
@@ -223,14 +220,22 @@ app.get("/guest/wishlist", requireGuest, async (req, res) => {
 
 app.post("/guest/logout", (req, res) => {
 
-  delete req.session.guest;
+  req.session.destroy((err) => {
 
-  return res.json({
-    success: true
+    if (err) {
+      return res.status(500).json({
+        success: false
+      });
+    }
+
+    res.clearCookie("connect.sid");
+
+    return res.json({
+      success: true
+    });
   });
 
 });
-
 /* =========================
    REGISTRIERUNG
 ========================= */

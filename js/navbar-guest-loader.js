@@ -40,7 +40,7 @@ function markGuestActiveLink() {
 
 function initGuestLogout() {
 
-    const logoutBtn = document.getElementById("guestLogoutBtn");
+    const logoutBtn = document.getElementById("guest-logout-btn");
 
     if (!logoutBtn) return;
 
