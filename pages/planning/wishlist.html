@@ -41,7 +41,9 @@
                             <th>Beschreibung</th>
                             <th>Preis (€)</th>
                             <th>Link</th>
-                            <th>Status</th>
+                            <th id="statusSortHeader" style="cursor:pointer; user-select:none;" title="Nach Status sortieren">
+                                Status <span id="statusSortIcon">⇅</span>
+                            </th>
                             <th>Reserviert von</th>
                             <th>Aktionen</th>
                         </tr>
@@ -95,6 +97,10 @@
     <script src="/js/footer-loader.js"></script>
     <script>
         let wishes = [];
+        // null = unsortiert, "free-first" = Frei zuerst, "reserved-first" = Reserviert zuerst
+        let wishStatusSort = null;
+        const STATUS_SORT_CYCLE = [null, "free-first", "reserved-first"];
+        const STATUS_SORT_ICONS = { null: "⇅", "free-first": "↑", "reserved-first": "↓" };
 
         // ========== DATEN LADEN ==========
         async function loadWishes() {
@@ -119,7 +125,17 @@
                 return;
             }
             empty.classList.add("d-none");
-            wishes.forEach(wish => {
+            // Sortierung nach Status anwenden
+            let displayWishes = [...wishes];
+            if (wishStatusSort === "free-first") {
+                displayWishes.sort((a, b) => Number(a.is_reserved) - Number(b.is_reserved));
+            } else if (wishStatusSort === "reserved-first") {
+                displayWishes.sort((a, b) => Number(b.is_reserved) - Number(a.is_reserved));
+            }
+            // Icon aktualisieren
+            const icon = document.getElementById("statusSortIcon");
+            if (icon) icon.textContent = STATUS_SORT_ICONS[wishStatusSort] ?? "⇅";
+            displayWishes.forEach(wish => {
                 const row = tbody.insertRow();
                 row.dataset.id = wish.id;
                 // Name
@@ -335,6 +351,12 @@
                 document.getElementById("wishModalError").innerHTML = "Serverfehler.";
             }
         }
+
+        document.getElementById("statusSortHeader").addEventListener("click", () => {
+            const idx = STATUS_SORT_CYCLE.indexOf(wishStatusSort);
+            wishStatusSort = STATUS_SORT_CYCLE[(idx + 1) % STATUS_SORT_CYCLE.length];
+            renderWishTable();
+        });
 
         document.getElementById("addWishBtn").addEventListener("click", () => openWishModal(null));
         document.getElementById("closeWishModalBtn").addEventListener("click", closeWishModal);
