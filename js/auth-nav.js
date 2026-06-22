@@ -25,7 +25,29 @@ window.initAuthNav = async function () {
 
         const data = await res.json();
 
-        
+        // GAST EINGELOGGT
+        if (!data.loggedIn) {
+            const guestRes = await fetch("/guest/me", { credentials: "include" });
+            const guestData = await guestRes.json();
+
+            if (guestData.guestLoggedIn) {
+                dynamicLinks.innerHTML = `
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestDashboard.html">Gast-Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestCalendar.html">Kalender</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pages/guestCode/guestWishlist.html">Wunschliste</a></li>
+                `;
+                authContainer.innerHTML = `
+                    <a href="#" class="btn login-btn" id="guest-logout-btn">Abmelden</a>
+                `;
+                document.getElementById("guest-logout-btn").addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    await fetch("/guest/logout", { method: "POST", credentials: "include" });
+                    window.location.replace("/index.html");
+                });
+                return;
+            }
+        }
+
         // LOGGED IN STATE
         if (data.loggedIn) {
             // Normale Menüpunkte für eingeloggte Benutzer
@@ -49,6 +71,7 @@ window.initAuthNav = async function () {
                         <li><a class="dropdown-item" href="/pages/dashboard/tempPersonalDashboard.html">Dashboard</a></li>
                         <li><a class="dropdown-item" href="/pages/planning/calendarOverview.html">Kalender</a></li>
                         <li><a class="dropdown-item" href="/pages/auth/editProfile.html">Profil bearbeiten</a></li>
+                        <li><a class="dropdown-item" href="/pages/guestCode/guestCode.html">Gast-Code</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
                     </ul>

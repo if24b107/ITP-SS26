@@ -16,11 +16,14 @@ ITP-SS26/
 │   ├── auth-guard.js
 │   ├── auth-nav.js
 │   ├── favorites.js
+│   ├── guest-auth.js
+│   ├── navbar-guest-loader.js
 │   ├── navbar-loader.js
 │   └── footer-loader.js
 ├── partials/
 │   ├── navbar.html
 │   └── footer.html
+│   ├── navbarGuest.html
 ├── pages/
 │   ├── auth/
 │   │   ├── login.html
@@ -29,6 +32,11 @@ ITP-SS26/
 │   ├── dashboard/
 │   │   ├── tempPersonalDashboard.html
 │   │   └── personalDashboard.html
+|   ├── guestCode/
+│   │   ├── guestCalendar.html
+│   │   └── guestCode.html
+│   │   ├── guestDashboard.html
+│   │   └── guestWishlist.html
 │   ├── info/
 │   │   ├── faq.html
 │   │   ├── impressum.html

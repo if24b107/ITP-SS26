@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.success) {
-          //window.location.href = "/pages/dashboard/tempPersonalDashboard.html"; //veraltet Verwendung: personalDashboard.html
           window.location.replace("/pages/dashboard/tempPersonalDashboard.html");
         } else {
           alert(data.message);
@@ -56,7 +55,7 @@ async function register(event) {
     return;
   }
 
-  const res = await fetch("http://localhost:3000/register", {
+  const res = await fetch("/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

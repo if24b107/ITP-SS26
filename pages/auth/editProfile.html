@@ -30,6 +30,26 @@
                 <button type="submit" class="btn btn-primary w-100 login-btn-main">Speichern</button>
                 <div id="editProfileMessage" class="text-center mt-3 small"></div>
             </form>
+
+            <hr class="my-4">
+
+            <h5 class="text-center mb-3"><i class="fas fa-lock"></i> Passwort ändern</h5>
+            <form id="changePasswordForm">
+                <div class="mb-3">
+                    <label class="form-label">Aktuelles Passwort</label>
+                    <input type="password" id="current_password" class="form-control" placeholder="Aktuelles Passwort" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Neues Passwort</label>
+                    <input type="password" id="new_password" class="form-control" placeholder="Neues Passwort (min. 6 Zeichen)" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Neues Passwort bestätigen</label>
+                    <input type="password" id="confirm_password" class="form-control" placeholder="Neues Passwort wiederholen" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 login-btn-main">Passwort ändern</button>
+                <div id="changePasswordMessage" class="text-center mt-3 small"></div>
+            </form>
         </div>
     </section>
 
@@ -43,6 +63,78 @@
     <script src="/js/auth-nav.js"></script>
     <script src="/js/navbar-loader.js"></script>
     <script src="/js/footer-loader.js"></script>
-    
+    <script>
+        // Eigene Daten beim Laden befüllen
+        async function loadUserData() {
+            try {
+                const res = await fetch("/user");
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById("username").value = json.user.username || "";
+                    document.getElementById("email").value = json.user.email || "";
+                }
+            } catch (err) {
+                console.error("Fehler beim Laden:", err);
+            }
+        }
+
+        // Eigene Daten speichern
+        document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const msg = document.getElementById("editProfileMessage");
+
+            try {
+                const res = await fetch("/user", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    msg.style.color = "green";
+                    msg.innerText = "Profil erfolgreich gespeichert.";
+                } else {
+                    msg.style.color = "red";
+                    msg.innerText = json.message || "Fehler beim Speichern.";
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "Serverfehler.";
+            }
+        });
+
+        // Passwort ändern
+        document.getElementById("changePasswordForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const current_password = document.getElementById("current_password").value;
+            const new_password = document.getElementById("new_password").value;
+            const confirm_password = document.getElementById("confirm_password").value;
+            const msg = document.getElementById("changePasswordMessage");
+
+            try {
+                const res = await fetch("/user/password", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ current_password, new_password, confirm_password })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    msg.style.color = "green";
+                    msg.innerText = "Passwort erfolgreich geändert.";
+                    document.getElementById("changePasswordForm").reset();
+                } else {
+                    msg.style.color = "red";
+                    msg.innerText = json.message || "Fehler beim Ändern.";
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "Serverfehler.";
+            }
+        });
+
+        loadUserData();
+    </script>
 </body>
 </html>

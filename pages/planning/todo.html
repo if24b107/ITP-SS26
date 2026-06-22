@@ -20,10 +20,18 @@
         <div class="todo-container">
             <!-- Kopfbereich -->
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-               
+
                 <button id="newTaskBtn" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Neue Aufgabe
                 </button>
+                <div class="d-flex align-items-center gap-2">
+                    <label for="prioritySort" class="mb-0 text-muted small">Sortieren:</label>
+                    <select id="prioritySort" class="form-select form-select-sm" style="width:auto;">
+                        <option value="none">Standard</option>
+                        <option value="high-first">Priorität: Hoch zuerst</option>
+                        <option value="low-first">Priorität: Niedrig zuerst</option>
+                    </select>
+                </div>
             </div>
             <!-- Aufgabenliste -->
             <div id="tasksList" class="tasks-list">
@@ -74,6 +82,7 @@
         let tasks = [];
         let currentPriority = "medium";
         let currentEditId = null;
+        const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 
         // ========== BACKEND HELPERS ==========
         async function apiRequest(url, options = {}) {
@@ -114,7 +123,14 @@
                 return;
             }
             emptyPlaceholder.classList.add("d-none");
-            tasks.forEach(task => {
+            const sortVal = document.getElementById("prioritySort")?.value || "none";
+            let displayTasks = [...tasks];
+            if (sortVal === "high-first") {
+                displayTasks.sort((a, b) => PRIORITY_ORDER[a.priority ?? "medium"] - PRIORITY_ORDER[b.priority ?? "medium"]);
+            } else if (sortVal === "low-first") {
+                displayTasks.sort((a, b) => PRIORITY_ORDER[b.priority ?? "medium"] - PRIORITY_ORDER[a.priority ?? "medium"]);
+            }
+            displayTasks.forEach(task => {
                 const taskDiv = document.createElement("div");
                 taskDiv.className = "task-item";
                 taskDiv.dataset.id = task.id;
@@ -268,7 +284,6 @@
                         method: "POST",
                         body: JSON.stringify(payload)
                     });
-                    // neu oben anhängen (Server sortiert created_at DESC)
                     tasks.unshift(created.todo);
                 }
                 closeModal();
@@ -290,6 +305,8 @@
                 updatePriorityButtons(btn.dataset.priority);
             });
         });
+
+        document.getElementById("prioritySort").addEventListener("change", renderTasks);
 
         // initial laden
         loadTasks();

@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+
 body {
   padding-top: 80px;
   font-family: 'Montserrat', sans-serif;
@@ -6,7 +9,6 @@ body {
 }
 
 /* ===== TYPOGRAPHY ===== */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
 h1, h2, h3, .category-title {
   font-family: 'Cormorant Garamond', serif;
@@ -189,7 +191,7 @@ h1, h2, h3, .category-title {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(212, 165, 165, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 /* Mobile Anpassungen Navbar */
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .navbar-rose .navbar-collapse {
     background-color: var(--weiß);
     padding: 1rem;
@@ -197,6 +199,8 @@ h1, h2, h3, .category-title {
     margin-top: 1rem;
     box-shadow: 0 10px 30px rgba(212, 165, 165, 0.2);
     border: 1px solid var(--rosé-hell);
+    max-height: 80vh;
+    overflow-y: auto;
   }
   .navbar-rose .nav-link {
     padding: 0.8rem 1rem !important;
@@ -436,7 +440,7 @@ h1, h2, h3, .category-title {
 }
 
 /* ===== RESPONSIVE  ===== */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   body {
     padding-top: 70px;
   }
@@ -447,23 +451,27 @@ h1, h2, h3, .category-title {
     margin-bottom: 2rem;
   }
   #auth-nav-item .dropdown-menu {
-    position:static;
-    left: auto !important;
-    right: 0 !important;
-    transform: translate3d(0, 40px, 0) !important;
-    min-width: 180px;
+    position: static !important;
+    transform: none !important;
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    padding-left: 0;
+    text-align: center;
+    width: 100%;
+  }
+  #auth-nav-item .dropdown-menu .dropdown-item {
+    text-align: center;
   }
   #auth-nav-item {
     display: block !important;
     text-align: center !important;
-    margin: 1.5rem 0;
+    margin: 0.5rem 0 1rem 0;
   }
   .profile-icon-btn {
     display: inline-flex !important;
     margin: 0 auto;
-
   }
-  
 }
 @media (max-width: 480px) {
   /* keine globalen Spezifikationen */

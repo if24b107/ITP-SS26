@@ -183,34 +183,6 @@
                 errorMsg.innerText = data.message;
             }
         });
-        /*form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const date = dateInput.value;
-
-            if (!date) {
-                errorMsg.innerText = "Bitte ein Hochzeitsdatum auswählen.";
-                return;
-            }
-
-            const weddingData = {
-                date: date,
-                notes: notesInput.value
-            };
-
-            //user bezogen
-            const user = JSON.parse(localStorage.getItem("user")).email;
-            localStorage.setItem("weddingDate_" + user, JSON.stringify({
-                date: date,
-                notes: notesInput.value
-            }));
-
-            errorMsg.innerText = "";
-
-            alert("Hochzeitsdatum gespeichert!");
-            renderWeddingDate();
-
-        });*/
 
         // ===== RESET =====
         resetBtn.addEventListener("click", function () {

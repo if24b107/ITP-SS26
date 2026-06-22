@@ -1,4 +1,4 @@
-// Lädt den ausgelagerten Footer aus /partials/footer.html
+// Lädt Footer aus /partials/footer.html
 fetch('/partials/footer.html')
   .then(response => response.text())
   .then(data => {

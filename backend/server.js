@@ -4,7 +4,14 @@ const bcrypt = require("bcrypt");
 
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session"); //neu MP
+const session = require("express-session"); 
+const {
+  requireLogin,
+  requireGuest,
+  requireUserOrGuest,
+  denyGuestWrite,
+  getOwnerUserId
+} = require("./access-control");
 
 const app = express();
 const PORT = 3000;
@@ -17,13 +24,13 @@ app.use(express.json());
 
 //Session Config
 app.use(session({
-  secret: process.env.SESSION_SECRET || "devsecret", //fallback
+  secret: process.env.SESSION_SECRET || "devsecret", 
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: false,
     httpOnly: true,
-    sameSite: "lax" //before: none
+    sameSite: "lax" 
   }
 }));
 
@@ -64,20 +71,16 @@ app.post("/login", async (req, res) => {
     }
 
     const user = users[0];
-    console.log("INPUT:", password);
-    console.log("HASH:", user.password_hash);
-
     const isValid = await bcrypt.compare(password, user.password_hash);
-    console.log("PASSWORD VALID:", isValid);
-
+    
     if (!isValid) {
       return res.status(401).json({
         success: false,
-        message: "Falsche Eingaben"  //zuvor: "falsches passwort"
+        message: "Falsche Eingaben"  
       });
     }
 
-    //neu: Session setzen
+    //Session setzen
     req.session.user = {
       id: user.id,
       email: user.email,
@@ -100,7 +103,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-//neu
 /* =========================
    SESSION CHECK
 ========================= */
@@ -112,6 +114,128 @@ app.get("/me", (req, res) => {
   }
 });
 
+/* =========================
+   GAST SESSION CHECK
+========================= */
+
+app.get("/guest/me", (req, res) => {
+
+  if (!req.session.guest) {
+    return res.json({
+      guestLoggedIn: false
+    });
+  }
+
+  return res.json({
+    guestLoggedIn: true,
+    guest: req.session.guest
+  });
+
+});
+
+/* =========================
+   GAST LOGIN
+========================= */
+
+app.post("/guest/login", async (req, res) => {
+  try {
+    const { guest_access_code } = req.body;
+
+    if (!guest_access_code || !guest_access_code.trim()) {
+      return res.status(400).json({ success: false, message: "Zugangscode erforderlich" });
+    }
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, username")
+      .eq("guest_access_code", guest_access_code.trim())
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({ success: false, message: "Ungültiger Zugangscode" });
+    }
+
+    req.session.guest = {
+      ownerUserId: user.id,
+      role: "guest"
+    };
+
+    return res.json({ success: true, message: "Gast-Login erfolgreich" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+
+/* =========================
+   GAST-LESEZUGRIFF: TERMINE & WUNSCHLISTE
+========================= */
+
+// GET /guest/appointments – Termine des Brautpaares für Gäste
+app.get("/guest/appointments", requireGuest, async (req, res) => {
+  try {
+    const ownerUserId = getOwnerUserId(req);
+
+    const { data, error } = await supabase
+      .from("calendar")
+      .select("id, title, date, time, description")
+      .eq("user_id", ownerUserId)
+      .order("date", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+    }
+
+    return res.json({ success: true, appointments: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// GET /guest/wishlist – Wunschliste des Brautpaares für Gäste
+app.get("/guest/wishlist", requireGuest, async (req, res) => {
+  try {
+    const ownerUserId = getOwnerUserId(req);
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .select("id, name, description, price, link, is_reserved, reserved_by")
+      .eq("user_id", ownerUserId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Laden" });
+    }
+
+    return res.json({ success: true, wishes: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+app.post("/guest/logout", (req, res) => {
+
+  req.session.destroy((err) => {
+
+    if (err) {
+      return res.status(500).json({
+        success: false
+      });
+    }
+
+    res.clearCookie("connect.sid");
+
+    return res.json({
+      success: true
+    });
+  });
+
+});
 /* =========================
    REGISTRIERUNG
 ========================= */
@@ -190,18 +314,11 @@ app.post("/register", async (req, res) => {
    LOGOUT
 ========================= */
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {       //neu
+  req.session.destroy(() => {       
     res.json({ success: true });
   });
 });
 
-// Middleware: prüft, ob der User eingeloggt ist
-function requireLogin(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ success: false, message: "Nicht eingeloggt" });
-  }
-  next();
-}
 
 /* =========================
    FAVORITES
@@ -289,7 +406,7 @@ app.delete("/favorites/:type/:id", requireLogin, async (req, res) => {
     const { data, error } = await supabase
       .from("favorites")
       .delete()
-      .eq("user_id", userId)       // wichtig: nur eigene Favoriten loeschbar
+      .eq("user_id", userId)       
       .eq("item_type", type)
       .eq("item_id", id)
       .select();
@@ -342,7 +459,7 @@ app.post("/appointments", async (req, res) => {
       });
     }
 
-    // Zeitformat (HH:MM) – optional
+    // Zeitformat 
     if (time) {
       const timeRegex = /^\d{2}:\d{2}$/;
       if (!timeRegex.test(time)) {
@@ -1156,6 +1273,372 @@ app.post("/budget/costs", requireLogin, async (req, res) => {
     }
 
     return res.status(201).json({ success: true, cost: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
+   BENUTZERPROFIL
+========================= */
+
+// GET /user – eigene Daten lesen
+app.get("/user", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, username, email")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, user: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /user – eigene Daten ändern (nur email und username)
+app.put("/user", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { username, email } = req.body;
+
+    // 1. Benutzername darf nicht leer sein
+    if (!username || !username.trim()) {
+      return res.status(400).json({ success: false, message: "Benutzername darf nicht leer sein" });
+    }
+
+    // 2. E-Mail-Format prüfen
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email.trim())) {
+      return res.status(400).json({ success: false, message: "Ungültiges E-Mail-Format" });
+    }
+
+    // 3. E-Mail bereits von anderem User vergeben?
+    const { data: existing } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email.trim())
+      .neq("id", userId)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      return res.status(409).json({ success: false, message: "Diese E-Mail-Adresse wird bereits verwendet" });
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ username: username.trim(), email: email.trim() })
+      .eq("id", userId)
+      .select("id, username, email")
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+    }
+
+    // Session aktualisieren
+    req.session.user.username = data.username;
+    req.session.user.email = data.email;
+
+    return res.json({ success: true, user: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PATCH /user/password – eigenes Passwort ändern
+app.patch("/user/password", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { current_password, new_password, confirm_password } = req.body;
+
+    // 1. Pflichtfelder prüfen
+    if (!current_password || !new_password || !confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Alle drei Passwort-Felder sind erforderlich"
+      });
+    }
+
+    // 2. Neues Passwort und Bestätigung müssen übereinstimmen
+    if (new_password !== confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Neues Passwort und Bestätigung stimmen nicht überein"
+      });
+    }
+
+    // 3. Mindestlänge neues Passwort
+    if (new_password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Neues Passwort muss mindestens 6 Zeichen lang sein"
+      });
+    }
+
+    // 4. Aktuellen Hash aus der DB laden
+    const { data: userRow, error: fetchError } = await supabase
+      .from("users")
+      .select("password_hash")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError || !userRow) {
+      console.error(fetchError);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    // 5. Aktuelles Passwort verifizieren
+    const isValid = await bcrypt.compare(current_password, userRow.password_hash);
+    if (!isValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Aktuelles Passwort ist falsch"
+      });
+    }
+
+    // 6. Neues Passwort darf nicht identisch mit dem alten sein
+    const isSame = await bcrypt.compare(new_password, userRow.password_hash);
+    if (isSame) {
+      return res.status(400).json({
+        success: false,
+        message: "Das neue Passwort muss sich vom aktuellen unterscheiden"
+      });
+    }
+
+    // 7. Neues Passwort hashen und speichern
+    const new_hash = await bcrypt.hash(new_password, 10);
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ password_hash: new_hash })
+      .eq("id", userId);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern des neuen Passworts" });
+    }
+
+    return res.json({ success: true, message: "Passwort erfolgreich geändert" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
+   GAST-ZUGANGSCODE
+========================= */
+
+// GET /user/guest-code – eigenen Code laden
+app.get("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("guest_access_code")
+      .eq("id", req.session.user.id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, guest_access_code: data.guest_access_code || null });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /user/guest-code – Code setzen oder ändern
+app.put("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { guest_access_code } = req.body;
+
+    if (!guest_access_code || !guest_access_code.trim()) {
+      return res.status(400).json({ success: false, message: "Zugangscode darf nicht leer sein" });
+    }
+
+    const code = guest_access_code.trim();
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ guest_access_code: code })
+      .eq("id", req.session.user.id)
+      .select("guest_access_code")
+      .single();
+
+    if (error) {
+      // 23505 = unique_violation – Code bereits vergeben
+      if (error.code === "23505") {
+        return res.status(409).json({ success: false, message: "Dieser Code wird bereits verwendet" });
+      }
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.json({ success: true, guest_access_code: data.guest_access_code });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /user/guest-code – Code entfernen (Gastzugang sperren)
+app.delete("/user/guest-code", requireLogin, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from("users")
+      .update({ guest_access_code: null })
+      .eq("id", req.session.user.id);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Entfernen" });
+    }
+
+    return res.json({ success: true, message: "Zugangscode entfernt" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+/* =========================
+   WUNSCHLISTE
+========================= */
+
+// GET /wishlist – alle Wünsche des eingeloggten Users laden
+app.get("/wishlist", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { data, error } = await supabase
+      .from("wishlist")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Datenbankfehler" });
+    }
+
+    return res.json({ success: true, wishes: data || [] });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// POST /wishlist – neuen Wunsch erstellen
+app.post("/wishlist", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const { name, description, price, link, is_reserved, reserved_by } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name erforderlich" });
+    }
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .insert([{
+        user_id: userId,
+        name: name.trim(),
+        description: description || null,
+        price: price !== "" && price !== undefined && price !== null ? parseFloat(price) : null,
+        link: link || null,
+        is_reserved: is_reserved === true || is_reserved === "true",
+        reserved_by: reserved_by || null
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Speichern" });
+    }
+
+    return res.status(201).json({ success: true, wish: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// PUT /wishlist/:id – Wunsch aktualisieren
+app.put("/wishlist/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const wishId = req.params.id;
+    const { name, description, price, link, is_reserved, reserved_by } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name erforderlich" });
+    }
+
+    const { data, error } = await supabase
+      .from("wishlist")
+      .update({
+        name: name.trim(),
+        description: description || null,
+        price: price !== "" && price !== undefined && price !== null ? parseFloat(price) : null,
+        link: link || null,
+        is_reserved: is_reserved === true || is_reserved === "true",
+        reserved_by: reserved_by || null
+      })
+      .eq("id", wishId)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Aktualisieren" });
+    }
+
+    if (!data) {
+      return res.status(404).json({ success: false, message: "Wunsch nicht gefunden" });
+    }
+
+    return res.json({ success: true, wish: data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Serverfehler" });
+  }
+});
+
+// DELETE /wishlist/:id – Wunsch löschen
+app.delete("/wishlist/:id", requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+    const wishId = req.params.id;
+
+    const { error } = await supabase
+      .from("wishlist")
+      .delete()
+      .eq("id", wishId)
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Fehler beim Löschen" });
+    }
+
+    return res.json({ success: true });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: "Serverfehler" });

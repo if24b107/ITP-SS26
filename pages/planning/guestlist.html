@@ -30,24 +30,31 @@
 
             <!-- Gästestatistik -->
             <div class="row g-3 my-4" id="guestStats">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="service-card text-center p-3">
                         <h5>Zugesagt</h5>
                         <p id="acceptedCount" class="display-6 fw-bold mb-0">0</p>
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="service-card text-center p-3">
                         <h5>Abgesagt</h5>
                         <p id="declinedCount" class="display-6 fw-bold mb-0">0</p>
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="service-card text-center p-3">
                         <h5>Offen</h5>
                         <p id="pendingCount" class="display-6 fw-bold mb-0">0</p>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="service-card text-center p-3">
+                        <h5>Begleitpersonen</h5>
+                        <p id="companionsCount" class="display-6 fw-bold mb-0">0</p>
                     </div>
                 </div>
             </div>
@@ -124,13 +131,16 @@
         let guests = [];
         let currentGuestFilter = "all";
         function updateGuestStats() {
-            const accepted = guests.filter(g => g.status === "yes").length;
+            const acceptedGuests = guests.filter(g => g.status === "yes");
+            const accepted = acceptedGuests.length;
             const declined = guests.filter(g => g.status === "no").length;
             const pending = guests.filter(g => g.status === "pending").length;
+            const companions = acceptedGuests.reduce((sum, g) => sum + (g.plusOnes || 0), 0);
 
             document.getElementById("acceptedCount").innerText = accepted;
             document.getElementById("declinedCount").innerText = declined;
             document.getElementById("pendingCount").innerText = pending;
+            document.getElementById("companionsCount").innerText = companions;
         }
 
         async function loadGuests() {
@@ -174,7 +184,7 @@
                 row.dataset.id = guest.id;
                 // Name
                 row.insertCell(0).innerText = guest.name;
-                // Status Dropdown (farbig)
+                // Status Dropdown 
                 const statusCell = row.insertCell(1);
                 const select = document.createElement("select");
                 select.className = "status-dropdown";
@@ -186,7 +196,6 @@
                     <option value="no" ${guest.status === "no" ? "selected" : ""}>Abgesagt</option>
                 `;
 
-                //geändert sprint 5 (Me):
                 select.addEventListener("change", async (e) => {
                     const newStatus = e.target.value;
                     const statusMapReverse = { pending: "offen", yes: "zugesagt", no: "abgesagt" };
@@ -210,7 +219,7 @@
 
                     guest.status = newStatus;
                     renderGuestTable();
-                }); //Änderung sprint 5 ende (Me)
+                }); 
 
                 statusCell.appendChild(select);
                 // Begleitpersonen

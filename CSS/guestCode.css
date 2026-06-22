@@ -1,0 +1,148 @@
+/* ===== GUEST CODE SEITE ===== */
+.guest-code-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.guest-code-card {
+    background: var(--weiß);
+    border-radius: 2rem;
+    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.2);
+    border: 1px solid var(--rosé-hell);
+    max-width: 500px;
+    width: 100%;
+    padding: 2rem;
+    margin: 2rem auto;
+}
+
+/* Überschrift */
+.guest-code-title {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--braun-warm);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Untertext (Erklärung) */
+.guest-code-subtitle {
+    color: var(--braun-hell);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Eingabefeld */
+.guest-code-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--rosé-hell);
+    border-radius: 1rem;
+    font-family: inherit;
+    margin-bottom: 1rem;
+}
+
+.guest-code-input:focus {
+    outline: none;
+    border-color: var(--rosé-mittel);
+    box-shadow: 0 0 0 0.2rem rgba(212, 165, 165, 0.2);
+}
+
+/* Button */
+.guest-code-btn {
+    background-color: var(--rosé-mittel);
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem;
+    font-weight: 500;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.guest-code-btn:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-2px);
+}
+
+/* Erfolgs- und Fehlermeldungen */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Hilfetext unter dem Eingabefeld */
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--braun-hell);
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Link zurück zum Dashboard */
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--rosé-dunkel);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: var(--rosé-mittel);
+    text-decoration: underline;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 576px) {
+    .guest-code-card {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    .guest-code-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== GAST-DASHBOARD STYLES ===== */
+.guest-dashboard-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--braun-warm);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logout-btn-guest {
+    background-color: var(--rosé-mittel);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    cursor: pointer;
+}
+.logout-btn-guest:hover {
+    background-color: var(--rosé-dunkel);
+    transform: translateY(-2px);
+}
